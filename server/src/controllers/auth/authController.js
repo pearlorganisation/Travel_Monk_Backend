@@ -8,9 +8,9 @@ import { COOKIE_OPTIONS } from "../../../constants.js";
 
 //SignUp controller
 export const signup = asyncHandler(async (req, res, next) => {
-  const { email, password } = req?.body;
+  const { name, email, password } = req?.body;
 
-  if (!email || !password) {
+  if (!name || !email || !password) {
     return next(new ApiErrorResponse("All fields are required", 400));
   }
 
@@ -18,7 +18,7 @@ export const signup = asyncHandler(async (req, res, next) => {
   if (existingUser)
     return next(new ApiErrorResponse("User already exists!", 400));
 
-  const signUptoken = generateSignUpToken({ email, password });
+  const signUptoken = generateSignUpToken({ name, email, password });
   const verificationUrl = `http://localhost:5000/api/v1/mail/verifySignupToken/${signUptoken}`;
 
   sendMail(email, "From Travel Monk", verificationUrl)
@@ -40,8 +40,6 @@ export const signup = asyncHandler(async (req, res, next) => {
 export const verifySignUpToken = asyncHandler(async (req, res, next) => {
   try {
     const { token } = req.params;
-    console.log(`token: ${token}`);
-
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
     if (!decodedToken) {
@@ -49,12 +47,7 @@ export const verifySignUpToken = asyncHandler(async (req, res, next) => {
         new ApiErrorResponse("Email is not verified or Invalid token", 400)
       );
     }
-    const { email, password } = decodedToken;
-    let user = new User({
-      email,
-      password,
-    });
-
+    let user = new User(decodedToken);
     await user.save();
     res
       .status(200)

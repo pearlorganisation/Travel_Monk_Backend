@@ -3,8 +3,6 @@ import path from "path";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import cors from "cors";
-import authRoutes from "./src/routes/auth/authRoutes.js";
-import userRoutes from "./src/routes/user/userRoutes.js";
 
 // Create an Express application
 const app = express();
@@ -26,8 +24,13 @@ app.use(express.static("public"));
 app.use(cookieParser());
 app.use(morgan("dev"));
 
+//Routes imports
+import authRouter from "./src/routes/auth/authRoutes.js";
+import userRouter from "./src/routes/user/userRoutes.js";
+
 // Routes declaration
-app.use("/api/v1/auth", authRoutes);
-app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/user", userRouter);
+// app.use("/api/v1/destination", destinationRouter);
 
 export { app };

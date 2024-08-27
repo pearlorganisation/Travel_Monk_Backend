@@ -1,12 +1,13 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { AvailableUserRoles, UserRolesEnum } from "../../../constants.js";
 
 const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      // required: [true, "Name is required"],
+      required: [true, "Name is required"],
       trim: true,
     },
     email: {
@@ -23,12 +24,8 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["user", "admin"],
-      default: "user",
-    },
-    profilePicture: {
-      type: String,
-      default: "",
+      enum: AvailableUserRoles,
+      default: UserRolesEnum.USER,
     },
     refreshToken: {
       type: String,
