@@ -23,3 +23,15 @@ export const authenticateToken = asyncHandler(async (req, res, next) => {
   req.user = user;
   next();
 });
+
+export const verifyPermission = (roles = []) =>
+  asyncHandler(async (req, res, next) => {
+    if (!req.user?._id) {
+      return next(new ApiError("Unauthorized request", 401));
+    }
+    if (roles.includes(req.user?.role)) {
+      next();
+    } else {
+      return next(new ApiError("Access denied", 403));
+    }
+  });

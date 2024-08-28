@@ -27,10 +27,11 @@ app.use(morgan("dev"));
 //Routes imports
 import authRouter from "./src/routes/auth/authRoutes.js";
 import userRouter from "./src/routes/user/userRoutes.js";
+import hotelRouter from "./src/routes/hotel/hotelRoutes.js";
 
 // Routes declaration
 app.use("/api/v1/auth", authRouter);
-app.use("/api/v1/user", userRouter);
-// app.use("/api/v1/destination", destinationRouter);
+app.use("/api/v1/users", userRouter);
+app.use("/api/v1/hotels", hotelRouter);
 
 export { app };
