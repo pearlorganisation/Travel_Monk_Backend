@@ -1,5 +1,5 @@
 import { v2 as cloudinary } from "cloudinary";
-import fs from "fs";
+import ApiErrorResponse from "./errors/ApiErrorResponse.js";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -7,17 +7,27 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export const uploadOnCloudinary = async (localFilePath) => {
+const uploadImage = async (filePath) => {
   try {
-    if (!localFilePath) return null;
-    const response = await cloudinary.uploader.upload(localFilePath, {
-      resource_type: "auto",
-    });
-    console.log(`File has been uploaded on cloudinary: ${response.url}`);
-    fs.unlinkSync(localFilePath);
-    return response;
+    const result = await cloudinary.uploader.upload(filePath); // {} || [{}, {}]
+    //UNLINK File if necessary when stored local
+    return { url: result.secure_url, id: result.public_id };
   } catch (error) {
-    fs.unlinkSync(localFilePath);
-    throw new Error(`File upload failed: ${error.message}`);
+    throw new Error(`Image upload failed: ${error.message}`);
+  }
+};
+
+export const uploadFileToCloudinary = async (files) => {
+  try {
+    const isMultipleImages = Array.isArray(files);
+    const imageFiles = isMultipleImages ? files : [files];
+    const uploadPromises = imageFiles.map((file) => uploadImage(file.filepath)); // [{},{},..]
+    const uploadResults = await Promise.all(uploadPromises);
+
+    return uploadResults; //[{ url: result.secure_url, id: result.public_id }, {        }];
+  } catch (error) {
+    return next(
+      new ApiErrorResponse(`File upload failed: ${error.message}`, 400)
+    );
   }
 };

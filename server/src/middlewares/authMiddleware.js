@@ -4,9 +4,16 @@ import { asyncHandler } from "../utils/errors/asyncHandler.js";
 import jwt from "jsonwebtoken";
 
 export const authenticateToken = asyncHandler(async (req, res, next) => {
+  // console.log(req.cookies?.access_token);
+  // console.log(
+  //   "HEADER: ",
+  //   req.header("Authorization")?.replace("Bearer ", "")
+  // );
+
   const token =
     req.cookies?.access_token ||
     req.header("Authorization")?.replace("Bearer ", "");
+
   if (!token) {
     return next(new ApiErrorResponse("Unauthorized user", 401));
   }
@@ -27,11 +34,11 @@ export const authenticateToken = asyncHandler(async (req, res, next) => {
 export const verifyPermission = (roles = []) =>
   asyncHandler(async (req, res, next) => {
     if (!req.user?._id) {
-      return next(new ApiError("Unauthorized request", 401));
+      return next(new ApiErrorResponse("Unauthorized request", 401));
     }
     if (roles.includes(req.user?.role)) {
       next();
     } else {
-      return next(new ApiError("Access denied", 403));
+      return next(new ApiErrorResponse("Access denied", 403));
     }
   });
