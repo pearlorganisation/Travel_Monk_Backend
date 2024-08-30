@@ -1,5 +1,9 @@
 import express from "express";
-import { createHotels } from "../../controllers/hotel/hotelController.js";
+import {
+  createHotels,
+  deleteHotelById,
+  getHotelById,
+} from "../../controllers/hotel/hotelController.js";
 import {
   authenticateToken,
   verifyPermission,
@@ -9,13 +13,20 @@ import fileParser from "../../middlewares/fileParser.js";
 
 const router = express.Router();
 
+router.route("/").post(
+  authenticateToken,
+  verifyPermission([UserRolesEnum.ADMIN]),
+  fileParser,
+  createHotels // Only(admin)
+);
+
 router
-  .route("/")
-  .post(
+  .route("/:id")
+  .get(getHotelById)
+  .delete(
     authenticateToken,
     verifyPermission([UserRolesEnum.ADMIN]),
-    fileParser,
-    createHotels
+    deleteHotelById // Only(admin)
   );
 
 export default router;

@@ -3,6 +3,7 @@ import { uploadFileToCloudinary } from "../../utils/cloudinary.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 
+//Create Hotel
 export const createHotels = asyncHandler(async (req, res, next) => {
   const {
     name,
@@ -37,7 +38,9 @@ export const createHotels = asyncHandler(async (req, res, next) => {
 
   if (images) {
     if (images.length > 5) {
-      return next("Image files cannot be more than 5", 422); //422 Unprocessable Content
+      return next(
+        new ApiErrorResponse("Image files cannot be more than 5", 422)
+      ); //422 Unprocessable Content
     }
     uploadedImages = await uploadFileToCloudinary(images);
   }
@@ -52,7 +55,7 @@ export const createHotels = asyncHandler(async (req, res, next) => {
     childCount: Number(childCount),
     facilities,
     amenities,
-    images: uploadedImages.map((img) => img.url),
+    images: uploadedImages,
     ratingsAverage: Number(ratingsAverage),
     numberOfRatings: Number(numberOfRatings),
   });
@@ -61,4 +64,27 @@ export const createHotels = asyncHandler(async (req, res, next) => {
   res
     .status(201)
     .json({ message: "Hotel created successfully!", data: newHotel });
+});
+
+//Get Hotel by Id
+export const getHotelById = asyncHandler(async (req, res, next) => {
+  const hotel = await Hotel.findById(req.params?.id);
+  if (!hotel) {
+    return next(new ApiErrorResponse("Hotel not found", 404));
+  }
+  return res
+    .status(200)
+    .json({ success: true, message: "Hotel found successfully", data: hotel });
+});
+
+//Delete Hotel By Id
+export const deleteHotelById = asyncHandler(async (req, res, next) => {
+  let hotel = await Hotel.findByIdAndDelete(req.params?.id);
+  if (!hotel) {
+    return next(new ApiErrorResponse("Hotel not found", 404));
+  }
+  return res.status(200).json({
+    success: true,
+    message: "Hotel deleted successfully",
+  });
 });

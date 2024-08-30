@@ -34,7 +34,7 @@ var hotelSchema = new mongoose.Schema(
     },
     facilities: [String],
     amenities: [String],
-    images: [String],
+    images: [{}],
     ratingsAverage: {
       type: Number,
       min: [1, "Rating must be above 1.0"],

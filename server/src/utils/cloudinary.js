@@ -11,7 +11,11 @@ const uploadImage = async (filePath) => {
   try {
     const result = await cloudinary.uploader.upload(filePath); // {} || [{}, {}]
     //UNLINK File if necessary when stored local
-    return { url: result.secure_url, id: result.public_id };
+    return {
+      secure_url: result.secure_url,
+      public_id: result.public_id,
+      asset_id: result.asset_id,
+    };
   } catch (error) {
     throw new Error(`Image upload failed: ${error.message}`);
   }
