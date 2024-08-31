@@ -24,13 +24,19 @@ var hotelSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    numberOfRooms: {
+      type: Number,
+      min: 1,
+    },
     adultCount: {
       type: Number,
       required: true,
+      min: 1,
     },
     childCount: {
       type: Number,
       required: true,
+      min: 1,
     },
     facilities: [String],
     amenities: [String],

@@ -3,6 +3,7 @@ import {
   createHotels,
   deleteHotelById,
   getHotelById,
+  searchHotels,
 } from "../../controllers/hotel/hotelController.js";
 import {
   authenticateToken,
@@ -12,6 +13,8 @@ import { UserRolesEnum } from "../../../constants.js";
 import fileParser from "../../middlewares/fileParser.js";
 
 const router = express.Router();
+
+router.route("/search").get(searchHotels);
 
 router.route("/").post(
   authenticateToken,
