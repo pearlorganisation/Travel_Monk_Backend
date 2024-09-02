@@ -1,6 +1,7 @@
 import express from "express";
 import {
   createHotels,
+  createRoomTypes,
   deleteHotelById,
   getHotelById,
   searchHotels,
@@ -14,14 +15,14 @@ import fileParser from "../../middlewares/fileParser.js";
 
 const router = express.Router();
 
-router.route("/search").get(searchHotels);
-
 router.route("/").post(
   authenticateToken,
   verifyPermission([UserRolesEnum.ADMIN]),
   fileParser,
   createHotels // Only(admin)
 );
+
+router.route("/search").get(searchHotels);
 
 router
   .route("/:id")
@@ -31,5 +32,7 @@ router
     verifyPermission([UserRolesEnum.ADMIN]),
     deleteHotelById // Only(admin)
   );
+
+router.route("/:id/room-types").post(fileParser, createRoomTypes);
 
 export default router;

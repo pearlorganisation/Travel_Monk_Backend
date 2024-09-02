@@ -1,6 +1,18 @@
 import mongoose from "mongoose";
 
-var hotelSchema = new mongoose.Schema(
+const roomTypeSchema = new mongoose.Schema(
+  {
+    name: { type: String },
+    type: { type: String, required: true },
+    pricePerNight: { type: Number, required: true },
+    amenities: [String],
+    roomImages: [{}],
+    availability: { type: Boolean, required: true },
+  },
+  { timestamps: true }
+);
+
+const hotelSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -20,10 +32,7 @@ var hotelSchema = new mongoose.Schema(
       type: String,
       required: [true, "A hotel must have a location"],
     },
-    pricePerNight: {
-      type: Number,
-      required: true,
-    },
+    roomTypes: [roomTypeSchema],
     numberOfRooms: {
       type: Number,
       min: 1,
@@ -41,6 +50,11 @@ var hotelSchema = new mongoose.Schema(
     facilities: [String],
     amenities: [String],
     images: [{}],
+    banner: {
+      secure_url: { type: String },
+      public_id: { type: String },
+      asset_id: { type: String },
+    },
     ratingsAverage: {
       type: Number,
       min: [1, "Rating must be above 1.0"],
@@ -50,8 +64,9 @@ var hotelSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    tag: [String],
+    discount: { type: Number, default: 0 },
   },
-
   { timestamps: true }
 );
 

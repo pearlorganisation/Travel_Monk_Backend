@@ -13,7 +13,7 @@ const uploadImage = async (filePath) => {
     //UNLINK File if necessary when stored local
     return {
       secure_url: result.secure_url,
-      public_id: result.public_id,
+      public_id: result.public_id,  
       asset_id: result.asset_id,
     };
   } catch (error) {
