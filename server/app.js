@@ -28,10 +28,14 @@ app.use(morgan("dev"));
 import authRouter from "./src/routes/auth/authRoutes.js";
 import userRouter from "./src/routes/user/userRoutes.js";
 import hotelRouter from "./src/routes/hotel/hotelRoutes.js";
+import { errorHandler, notFound } from "./src/utils/errors/errorHandler.js";
 
 // Routes declaration
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/hotels", hotelRouter);
+
+app.use(notFound);
+app.use(errorHandler);
 
 export { app };
