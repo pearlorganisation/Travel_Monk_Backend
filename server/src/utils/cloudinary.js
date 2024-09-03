@@ -13,7 +13,7 @@ const uploadImage = async (filePath) => {
     //UNLINK File if necessary when stored local
     return {
       secure_url: result.secure_url,
-      public_id: result.public_id,  
+      public_id: result.public_id,
       asset_id: result.asset_id,
     };
   } catch (error) {
@@ -25,13 +25,12 @@ export const uploadFileToCloudinary = async (files) => {
   try {
     const isMultipleImages = Array.isArray(files);
     const imageFiles = isMultipleImages ? files : [files];
-    const uploadPromises = imageFiles.map((file) => uploadImage(file.filepath)); // [{},{},..]
+    const uploadPromises = imageFiles.map((file) =>
+      uploadImage(file?.filepath)
+    ); // [{},{},..]
     const uploadResults = await Promise.all(uploadPromises);
-
     return uploadResults; //[{ url: result.secure_url, id: result.public_id }, {        }];
   } catch (error) {
-    return next(
-      new ApiErrorResponse(`File upload failed: ${error.message}`, 400)
-    );
+    throw new Error(error.message);
   }
 };
