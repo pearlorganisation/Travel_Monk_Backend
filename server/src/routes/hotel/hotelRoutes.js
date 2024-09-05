@@ -3,6 +3,7 @@ import {
   createHotels,
   createRoomTypes,
   deleteHotelById,
+  deleteRoomTypeById,
   getHotelById,
   searchHotels,
 } from "../../controllers/hotel/hotelController.js";
@@ -25,7 +26,7 @@ router.route("/").post(
 router.route("/search").get(searchHotels);
 
 router
-  .route("/:id")
+  .route("/:hotelId")
   .get(getHotelById)
   .delete(
     authenticateToken,
@@ -33,6 +34,7 @@ router
     deleteHotelById // Only(admin)
   );
 
-router.route("/:id/room-types").post(fileParser, createRoomTypes);
+router.route("/:hotelId/room-types").post(fileParser, createRoomTypes);
+router.route("/:hotelId/room-types/:roomTypeId").delete(deleteRoomTypeById);
 
 export default router;

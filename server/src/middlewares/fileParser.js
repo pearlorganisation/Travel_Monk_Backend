@@ -43,7 +43,7 @@ const fileParser = (req, res, next) => {
         req.files[key] = actualFiles;
       }
     }
-    // console.log("REQ: file:--------- ", req.files);
+    console.log("REQ: file:--------- ", req.files);
     next();
   });
 };

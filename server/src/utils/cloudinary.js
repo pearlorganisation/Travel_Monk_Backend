@@ -29,6 +29,7 @@ export const uploadFileToCloudinary = async (files) => {
       uploadImage(file?.filepath)
     ); // [{},{},..]
     const uploadResults = await Promise.all(uploadPromises);
+   
     return uploadResults; //[{ url: result.secure_url, id: result.public_id }, {        }];
   } catch (error) {
     throw new Error(error.message);

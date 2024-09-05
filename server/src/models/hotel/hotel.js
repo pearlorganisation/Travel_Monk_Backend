@@ -5,7 +5,7 @@ const roomTypeSchema = new mongoose.Schema(
     name: { type: String },
     type: { type: String, required: true },
     pricePerNight: { type: Number, required: true },
-    amenities: [String],
+    amenities: [{}], //name: { type: String }, svg: { type: String }
     roomImages: [{}],
     availability: { type: Boolean, required: true },
   },
@@ -48,7 +48,7 @@ const hotelSchema = new mongoose.Schema(
       min: 1,
     },
     facilities: [String],
-    amenities: [String],
+    amenities: [{}],
     images: [{}],
     banner: {
       secure_url: { type: String },
