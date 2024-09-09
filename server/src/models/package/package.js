@@ -1,26 +1,5 @@
 import mongoose from "mongoose";
 
-// Destination Schema
-const destinationSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  description: String,
-});
-
-// Activity Schema
-const activitySchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  description: String,
-});
-
-// Itinerary Day Schema
-const itineraryDaySchema = new mongoose.Schema({
-  day: { type: Number, required: true },
-  description: String,
-  destinations: [destinationSchema],
-  activities: [activitySchema],
-});
-
-// Package Schema
 const packageSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
@@ -28,7 +7,12 @@ const packageSchema = new mongoose.Schema(
       days: { type: Number, required: true },
       nights: { type: Number, required: true },
     },
-    itinerary: [itineraryDaySchema],
+    itinerary: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Itinerary",
+      },
+    ],
     pricing: {
       innova: {
         capacity: { type: Number, default: 5 },
