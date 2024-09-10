@@ -4,8 +4,7 @@ import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 export const createItinerary = asyncHandler(async (req, res, next) => {
   const newItinerary = await Itinerary.create({
     ...req.body,
-  });
-  console.log(newItinerary);  
+  });  
   res.status(201).json({
     success: true,
     message: "Itinerary created successfully",
