@@ -14,7 +14,7 @@ export const searchHotels = asyncHandler(async (req, res, next) => {
   // Aggregation pipeline
   const hotels = await Hotel.aggregate([
     { $match: query }, // Match the query parameters
-    { $unwind: "$roomTypes" }, // Deconstruct the roomTypes array
+    { $unwind: "$roomTypes" }, // Deconstruct the roomTypes array | each doc will have an element of that array
     { $match: { "roomTypes.availability": true } }, // Filter for available rooms
     {
       $group: {

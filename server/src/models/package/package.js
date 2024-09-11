@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const packageSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
+    destination: { type: String, required: true },
     duration: {
       days: { type: Number, required: true },
       nights: { type: Number, required: true },

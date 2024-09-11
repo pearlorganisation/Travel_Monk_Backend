@@ -2,35 +2,37 @@ import Package from "../../models/package/package.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 
-//Create Package
-export const createPackage = asyncHandler(async (req, res, next) => {
-  const {
-    name,
-    duration,
-    itinerary,
-    pricing,
-    inclusions,
-    exclusions,
-    premiumAddons,
-  } = req.body;
+export const getAllPackages = asyncHandler(async (req, res, next) => {
+  const { destination } = req.query;
 
-  if (!name || !duration) {
-    return next(
-      new ApiErrorResponse("Please provide all required fields", 400)
-    );
+  const limit = req.query?.limit || 10;
+  const pageNumber = parseInt(req.query.page ? req.query.page.toString() : "1");
+  const skip = (pageNumber - 1) * limit;
+
+  let filter = {};
+  if (destination) {
+    filter.destination = { $regex: new RegExp(destination, "i") }; // Case-insensitive search
+  }
+  const packages = await Package.find(filter).skip(skip).limit(limit);
+  const total = await Package.countDocuments(filter);
+  if (!packages || packages.length === 0) {
+    return next(new ApiErrorResponse("Packages not found", 404));
   }
 
-  const newPackage = new Package({
-    name,
-    duration,
-    itinerary,
-    pricing,
-    inclusions,
-    exclusions,
-    premiumAddons,
+  return res.status(200).json({
+    success: true,
+    message: "Packages retrieved successfully",
+    data: packages,
+    pagination: { total, page: pageNumber, pages: Math.ceil(total / limit) },
   });
-  await newPackage.save();
+});
 
+//Create Package
+export const createPackage = asyncHandler(async (req, res, next) => {
+  const newPackage = await Package.create(req.body);
+  if (!newPackage || newPackage.length === 0) {
+    return next(new ApiErrorResponse("Package is not created", 400));
+  }
   return res
     .status(201)
     .json({ success: true, message: "Package is created", data: newPackage });
