@@ -5,13 +5,13 @@ const packageSchema = new mongoose.Schema(
     name: { type: String, required: true },
     destination: { type: String, required: true },
     duration: {
-      days: { type: Number, required: true },
-      nights: { type: Number, required: true },
+      days: { type: Number },
+      nights: { type: Number },
     },
     itinerary: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Itinerary",
+        day: { type: Number, required: true },
+        description: { type: String, required: true },
       },
     ],
     pricing: {

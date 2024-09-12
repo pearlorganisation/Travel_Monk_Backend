@@ -53,18 +53,97 @@ export const getPackageById = asyncHandler(async (req, res, next) => {
   });
 });
 
-//Update Package By Id
 export const updatePackageById = asyncHandler(async (req, res, next) => {
-  const updatedPackage = await Package.findByIdAndUpdate(
-    req.params?.packageId,
-    req.body,
-    { new: true }
-  ).populate("itinerary");
-
-  if (!updatedPackage || updatedPackage.length === 0) {
+  const { packageId } = req.params;
+  const {
+    itinerary,
+    pricing,
+    duration,
+    inclusions,
+    exclusions,
+    premiumAddons,
+    ...otherUpdates
+  } = req.body;
+  // Find the package by ID
+  const packageData = await Package.findById(packageId);
+  if (!packageData) {
     return next(new ApiErrorResponse("Package not found", 404));
   }
 
+  // Update itinerary if provided
+  if (itinerary && Array.isArray(itinerary)) {
+    // Handle updates for existing itinerary items
+    const updatePromises = itinerary.map((item) => {
+      const { _id, day, description } = item;
+      return Package.updateOne(
+        { _id: packageId, "itinerary._id": _id },
+        {
+          $set: {
+            "itinerary.$.day": day,
+            "itinerary.$.description": description,
+          },
+        }
+      );
+    });
+    await Promise.all(updatePromises);
+  }
+
+  // Update pricing fields without replacing existing subfields
+  if (pricing) {
+    Object.keys(pricing).forEach((key) => {
+      packageData.pricing[key] = {
+        ...packageData.pricing[key],
+        ...pricing[key],
+      };
+    });
+  }
+
+  // Update duration fields without replacing existing subfields
+  if (duration) {
+    packageData.duration = {
+      ...packageData.duration,
+      ...duration,
+    };
+  }
+
+  // Push new items to inclusions and exclusions arrays
+  if (inclusions && Array.isArray(inclusions)) {
+    await Package.updateOne(
+      { _id: packageId },
+      { $addToSet: { inclusions: { $each: inclusions } } }
+    );
+  }
+
+  if (exclusions && Array.isArray(exclusions)) {
+    await Package.updateOne(
+      { _id: packageId },
+      { $addToSet: { exclusions: { $each: exclusions } } }
+    );
+  }
+
+  // Handle updates for premiumAddons
+  if (premiumAddons && Array.isArray(premiumAddons)) {
+    premiumAddons.forEach(async (addon) => {
+      const { name, price, _id } = addon;
+      await Package.updateOne(
+        { _id: packageId, "premiumAddons._id": _id },
+        {
+          $set: {
+            "premiumAddons.$.price": price,
+            "premiumAddons.$.name": name,
+          },
+        },
+        { upsert: true } // Use upsert if you want to add the addon if it doesn't exist
+      );
+    });
+  }
+
+  Object.keys(otherUpdates).forEach((key) => {
+    packageData[key] = otherUpdates[key];
+  });
+  await packageData.save();
+
+  const updatedPackage = await Package.findById(packageId); // Get the latest update
   return res.status(200).json({
     success: true,
     message: "Package is updated",
