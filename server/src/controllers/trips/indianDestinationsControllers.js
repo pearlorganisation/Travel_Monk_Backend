@@ -5,7 +5,6 @@ import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 
 export const createIndianDestination = asyncHandler(async (req, res, next) => {
   const { name, startingPrice } = req.body;
-
   if (!name || !startingPrice) {
     return next(new ApiErrorResponse("All fields are required", 400));
   }

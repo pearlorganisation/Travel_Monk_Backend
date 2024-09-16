@@ -1,4 +1,3 @@
-import { populate } from "dotenv";
 import mongoose from "mongoose";
 
 const InternationalDestinationsSchema = new mongoose.Schema(
