@@ -6,21 +6,26 @@ import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 
 export const createInternationalDestination = asyncHandler(
   async (req, res, next) => {
-    const { name, startingPrice } = req.body;
+    const { name, startingPrice, packages } = req.body;
     if (!name || !startingPrice) {
       return next(new ApiErrorResponse("All fields are required", 400));
     }
 
-    const { image } = req.files;
+    const { image, banner } = req.files;
     let uploadedImage = [];
-
+    let uploadedBanner = [];
     if (image) {
       uploadedImage = await uploadFileToCloudinary(image);
+    }
+    if (banner) {
+      uploadedBanner = await uploadFileToCloudinary(banner);
     }
     const newInternationalDestination = new InternationalDestinations({
       name,
       startingPrice,
       image: uploadedImage[0],
+      banner: uploadedBanner[0],
+      packages,
     });
     await newInternationalDestination.save();
 

@@ -6,6 +6,11 @@ const indianDestinationsSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    banner: {
+      secure_url: { type: String },
+      public_id: { type: String },
+      asset_id: { type: String },
+    },
     image: {
       secure_url: { type: String },
       public_id: { type: String },
@@ -15,6 +20,12 @@ const indianDestinationsSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    packages: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Package",
+      },
+    ],
   },
   { timestamps: true }
 );

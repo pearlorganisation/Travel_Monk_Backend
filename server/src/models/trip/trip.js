@@ -2,18 +2,26 @@ import mongoose from "mongoose";
 
 const tripSchema = new mongoose.Schema(
   {
+    user: {
+      type: mongoose.Schema.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    vehicleType: {
+      type: String,
+      enum: ["car", "bus", "motorcycle"],
+      default: "car",
+    },
     indianDestinations: [
       {
         type: mongoose.Types.ObjectId,
         ref: "IndianDestinations",
-        required: true,
       },
     ],
     internationalDestinations: [
       {
         type: mongoose.Types.ObjectId,
         ref: "InternationalDestinations",
-        required: true,
       },
     ],
   },
