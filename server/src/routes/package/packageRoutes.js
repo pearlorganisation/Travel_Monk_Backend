@@ -6,10 +6,11 @@ import {
   getPackageById,
   updatePackageById,
 } from "../../controllers/package/packageController.js";
+import fileParser from "../../middlewares/fileParser.js";
 
 const router = express.Router();
 
-router.route("/").post(createPackage).get(getAllPackages);
+router.route("/").post(fileParser, createPackage).get(getAllPackages);
 
 router
   .route("/:packageId")

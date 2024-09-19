@@ -1,4 +1,5 @@
 import Package from "../../models/package/package.js";
+import { uploadFileToCloudinary } from "../../utils/cloudinary.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 
@@ -29,7 +30,22 @@ export const getAllPackages = asyncHandler(async (req, res, next) => {
 
 //Create Package
 export const createPackage = asyncHandler(async (req, res, next) => {
-  const newPackage = await Package.create(req.body);
+  const { image, banner } = req.files;
+  let uploadedImage = [];
+  let uploadedBanner = [];
+  if (image) {
+    uploadedImage = await uploadFileToCloudinary(image); // [{}]
+    console.log(uploadedImage);
+  }
+  if (banner) {
+    uploadedBanner = await uploadFileToCloudinary(banner); // [{}]
+    console.log(uploadedBanner);
+  }
+  const newPackage = await Package.create({
+    ...req?.body,
+    image: uploadedImage[0],
+    banner: uploadedBanner[0],
+  });
   if (!newPackage || newPackage.length === 0) {
     return next(new ApiErrorResponse("Package is not created", 400));
   }

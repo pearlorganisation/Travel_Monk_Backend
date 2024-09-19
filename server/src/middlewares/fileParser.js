@@ -10,7 +10,7 @@ const fileParser = (req, res, next) => {
     }
     req.body = req.body || {};
 
-    // Convert fields to req.body
+    // Convert fields to req.body 
     for (const key in fields) {
       if (fields[key]) {
         const value = fields[key][0]; // Get the first item in the array
@@ -27,8 +27,8 @@ const fileParser = (req, res, next) => {
           req.body[key] = Number(req.body[key]);
         }
       }
-    }
-    // console.log("REQ: Body:--------- ", req.body);
+    } 
+    console.log("REQ: Body:--------- ", req.body);
 
     req.files = req.files || {};
 
@@ -43,10 +43,9 @@ const fileParser = (req, res, next) => {
         req.files[key] = actualFiles;
       }
     }
-    console.log("REQ: file:--------- ", req.files);
+    // console.log("REQ: file:--------- ", req.files);
     next();
   });
 };
 
 export default fileParser;
-

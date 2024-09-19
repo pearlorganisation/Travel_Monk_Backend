@@ -22,14 +22,14 @@ const uploadImage = async (filePath) => {
 
 export const uploadFileToCloudinary = async (files) => {
   try {
-    const isMultipleImages = Array.isArray(files);
+    const isMultipleImages = Array.isArray(files); //{}-> single file, [{}, {}] -> multiple files
     const imageFiles = isMultipleImages ? files : [files];
     const uploadPromises = imageFiles.map((file) =>
       uploadImage(file?.filepath)
     ); // [{},{},..]
     const uploadResults = await Promise.all(uploadPromises);
-   
-    return uploadResults; //[{ url: result.secure_url, id: result.public_id }, {        }];
+
+    return uploadResults; //[{  secure_url: "uyeriu",  public_id: "hdfh",  asset_id: "jdfhj" }, {        }];
   } catch (error) {
     throw new Error(error.message);
   }

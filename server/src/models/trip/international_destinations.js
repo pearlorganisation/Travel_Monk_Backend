@@ -17,7 +17,7 @@ const InternationalDestinationsSchema = new mongoose.Schema(
       asset_id: { type: String },
     },
     startingPrice: {
-      type: String,
+      type: Number,
       required: true,
     },
     packages: [
