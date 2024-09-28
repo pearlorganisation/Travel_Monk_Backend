@@ -29,8 +29,15 @@ const hotelSchema = new mongoose.Schema(
       required: true,
     },
     location: {
-      type: String,
-      required: [true, "A hotel must have a location"],
+      type: {
+        type: String,
+        enum: ["Point"],
+        required: true,
+      },
+      coordinates: {
+        type: [Number],
+        required: true,
+      },
     },
     roomTypes: [roomTypeSchema],
     numberOfRooms: {
@@ -69,6 +76,9 @@ const hotelSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// Create a 2dsphere index on the location field for geospatial queries
+hotelSchema.index({ location: "2dsphere" });
 
 const Hotel = mongoose.model("Hotel", hotelSchema);
 

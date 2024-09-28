@@ -15,7 +15,7 @@ router.route("/").post(fileParser, createPackage).get(getAllPackages);
 router
   .route("/:packageId")
   .get(getPackageById)
-  .patch(updatePackageById)
+  .patch(fileParser, updatePackageById)
   .delete(deletePackageById);
 
 export default router;

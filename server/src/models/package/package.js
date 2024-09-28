@@ -26,6 +26,7 @@ const packageSchema = new mongoose.Schema(
     itinerary: [
       {
         day: { type: Number, required: true },
+        title: { type: String },
         description: { type: String, required: true },
       },
     ],
@@ -51,6 +52,7 @@ const packageSchema = new mongoose.Schema(
         price: Number,
       },
     ],
+    hotels: [{ type: mongoose.Schema.Types.ObjectId, ref: "Hotel" }],
   },
   { timestamps: true }
 );

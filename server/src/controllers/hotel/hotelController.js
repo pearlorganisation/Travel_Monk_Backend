@@ -95,6 +95,7 @@ export const createHotels = asyncHandler(async (req, res, next) => {
   const { images, banner } = req.files;
   let uploadedImages = [];
   let uploadedBanner = [];
+
   if (images) {
     if (images.length > 5) {
       return next(
