@@ -58,3 +58,47 @@ export const getActivityById = asyncHandler(async (req, res) => {
     data: getActivity,
   });
 });
+
+export const deleteIndianActivityById = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+
+  const isValidId = isValidObjectId(id);
+
+  if (!isValidId)
+    return next(new ApiErrorResponse("Not a valid MongoDB ID", 400));
+
+  const deletedActivity = await IndianActivity.findByIdAndDelete(id);
+
+  if (!deletedActivity)
+    return next(new ApiErrorResponse("Activity not found", 404));
+
+  res.status(200).json({
+    success: true,
+    message: "Activity deleted successfully",
+  });
+});
+
+export const updateIndianActivityById = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+
+  const isValidId = isValidObjectId(id);
+
+  if (!isValidId)
+    return next(new ApiErrorResponse("Not a valid MongoDB ID", 400));
+
+  const updatedActivity = await IndianActivity.findByIdAndUpdate(id, req.body, {
+    new: true, // returns the updated document
+    runValidators: true, // ensures that validation runs on the update
+  });
+
+  if (!updatedActivity)
+    return next(
+      new ApiErrorResponse("Activity not found or update failed", 404)
+    );
+
+  res.status(200).json({
+    success: true,
+    message: "Activity updated successfully",
+    data: updatedActivity,
+  });
+});

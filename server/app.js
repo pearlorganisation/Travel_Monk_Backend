@@ -41,9 +41,8 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/hotels", hotelRouter);
 app.use("/api/v1/packages", packageRouter);
 app.use("/api/v1/trips", tripsRouter);
-// app.use("/api/v1/itineraries", itineraryRouter);
 app.use("/api/v1/contact", contactRouter);
-app.use("/api/v1/activity", activityRouter);
+app.use("/api/v1/activities", activityRouter);
 
 app.use(notFound);
 app.use(errorHandler);
