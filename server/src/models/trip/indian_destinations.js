@@ -26,6 +26,8 @@ const indianDestinationsSchema = new mongoose.Schema(
         ref: "Package",
       },
     ],
+    activities: [String],
+    hotels: [{ type: mongoose.Schema.Types.ObjectId, ref: "Hotel" }],
   },
   { timestamps: true }
 );

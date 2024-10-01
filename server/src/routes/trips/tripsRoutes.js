@@ -24,7 +24,7 @@ router
 router
   .route("/indian/:id")
   .get(getSingleIndianDestination)
-  .patch(updateIndianDestination)
+  .patch(fileParser, updateIndianDestination)
   .delete(deleteIndianDestination);
 
 router

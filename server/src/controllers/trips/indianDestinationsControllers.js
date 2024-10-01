@@ -72,9 +72,25 @@ export const getSingleIndianDestination = asyncHandler(
 
 export const updateIndianDestination = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
+  const { name, banner, image, startingPrice, packages } = req.body;
+  const indianDestination = await IndianDestinations.findById(id);
+  if (!indianDestination) {
+    return next(new ApiErrorResponse("Indian destination not found", 404));
+  }
+
+  //If Packages is provided
+  if (packages && Array.isArray(packages)) {
+    const existingPackages = indianDestination.packages.map((pkg) =>
+      pkg.toString()
+    );
+    const newPackages = packages.filter(
+      (pkg) => !existingPackages.includes(pkg)
+    );
+    indianDestination.packages.push(...newPackages);
+  }
   const updateDestination = await IndianDestinations.findByIdAndUpdate(
     id,
-    req.body,
+    { ...req.body, },
     { new: true }
   );
 

@@ -35,18 +35,16 @@ export const createPackage = asyncHandler(async (req, res, next) => {
   let uploadedBanner = [];
   if (image) {
     uploadedImage = await uploadFileToCloudinary(image); // [{}]
-    console.log(uploadedImage);
   }
   if (banner) {
     uploadedBanner = await uploadFileToCloudinary(banner); // [{}]
-    console.log(uploadedBanner);
   }
   const newPackage = await Package.create({
     ...req?.body,
     image: uploadedImage[0],
     banner: uploadedBanner[0],
   });
-  if (!newPackage || newPackage.length === 0) {
+  if (!newPackage) {
     return next(new ApiErrorResponse("Package is not created", 400));
   }
   return res
@@ -56,10 +54,11 @@ export const createPackage = asyncHandler(async (req, res, next) => {
 
 //Get Package By Id
 export const getPackageById = asyncHandler(async (req, res, next) => {
-  const packageDoc = await Package.findById(req.params?.packageId).populate(
-    "itinerary"
-  );
-  if (!packageDoc || packageDoc.length === 0) {
+  const packageDoc = await Package.findById(req.params?.packageId)
+    .populate("itinerary")
+    .populate("hotels");
+  if (!packageDoc) {
+    // return null if no doc found
     return next(new ApiErrorResponse("Package not found", 404));
   }
   return res.status(200).json({
@@ -71,6 +70,11 @@ export const getPackageById = asyncHandler(async (req, res, next) => {
 
 export const updatePackageById = asyncHandler(async (req, res, next) => {
   const { packageId } = req.params;
+  // Find the package by ID
+  const packageData = await Package.findById(packageId);
+  if (!packageData) {
+    return next(new ApiErrorResponse("Package not found", 404));
+  }
   const {
     itinerary,
     pricing,
@@ -80,10 +84,24 @@ export const updatePackageById = asyncHandler(async (req, res, next) => {
     premiumAddons,
     ...otherUpdates
   } = req.body;
-  // Find the package by ID
-  const packageData = await Package.findById(packageId);
-  if (!packageData) {
-    return next(new ApiErrorResponse("Package not found", 404));
+
+  const { image, banner } = req.files;
+  let uploadedImage = [];
+  let uploadedBanner = [];
+  if (image) {
+    uploadedImage = await uploadFileToCloudinary(image); // [{}]
+  }
+  if (banner) {
+    uploadedBanner = await uploadFileToCloudinary(banner); // [{}]
+  }
+
+  // if array is not empty then we will overwrite the image with new one
+  if (uploadedImage.length > 0) {
+    packageData.image = uploadedImage[0]; // Assign the first image (assuming single image upload)
+  }
+
+  if (uploadedBanner.length > 0) {
+    packageData.banner = uploadedBanner[0]; // Assign the first banner (assuming single banner upload)
   }
 
   // Update itinerary if provided
@@ -169,8 +187,8 @@ export const updatePackageById = asyncHandler(async (req, res, next) => {
 
 //Delete Package By Id
 export const deletePackageById = asyncHandler(async (req, res, next) => {
-  const deletedPackage = await Package.findByIdAndDelete(req.params?.packageId);
-  if (!deletedPackage || deletedPackage.length === 0) {
+  const deletedPackage = await Package.findByIdAndDelete(req.params?.packageId); // Return null if no doc found
+  if (!deletedPackage) {
     return next(new ApiErrorResponse("Package not found.", 404));
   }
   return res

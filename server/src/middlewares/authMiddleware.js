@@ -4,12 +4,6 @@ import { asyncHandler } from "../utils/errors/asyncHandler.js";
 import jwt from "jsonwebtoken";
 
 export const authenticateToken = asyncHandler(async (req, res, next) => {
-  // console.log(req.cookies?.access_token);
-  // console.log(
-  //   "HEADER: ",
-  //   req.header("Authorization")?.replace("Bearer ", "")
-  // );
-
   const token =
     req.cookies?.access_token ||
     req.header("Authorization")?.replace("Bearer ", "");

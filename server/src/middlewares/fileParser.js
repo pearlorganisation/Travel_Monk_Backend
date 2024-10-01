@@ -28,7 +28,7 @@ const fileParser = (req, res, next) => {
         }
       }
     } 
-    console.log("REQ: Body:--------- ", req.body);
+    // console.log("REQ: Body:--------- ", req.body);
 
     req.files = req.files || {};
 
