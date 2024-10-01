@@ -133,6 +133,21 @@ export const createHotels = asyncHandler(async (req, res, next) => {
   });
 });
 
+// Get All Hotels
+export const getAllHotels = asyncHandler(async (req, res, next) => {
+  const findHotels = await Hotel.find();
+
+  if (findHotels.length == 0) {
+    return next(new ApiErrorResponse("No Hotels Found", 404));
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: "Hotels Found Successfully",
+    data: findHotels,
+  });
+});
+
 //Get Hotel by Id
 export const getHotelById = asyncHandler(async (req, res, next) => {
   const hotel = await Hotel.findById(req.params?.hotelId);

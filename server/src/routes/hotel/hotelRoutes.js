@@ -4,6 +4,7 @@ import {
   createRoomTypes,
   deleteHotelById,
   deleteRoomTypeById,
+  getAllHotels,
   getHotelById,
   searchHotels,
 } from "../../controllers/hotel/hotelController.js";
@@ -16,12 +17,15 @@ import fileParser from "../../middlewares/fileParser.js";
 
 const router = express.Router();
 
-router.route("/").post(
-  authenticateToken,
-  verifyPermission([UserRolesEnum.ADMIN]),
-  fileParser,
-  createHotels // Only(admin)
-);
+router
+  .route("/")
+  .post(
+    authenticateToken,
+    verifyPermission([UserRolesEnum.ADMIN]),
+    fileParser,
+    createHotels // Only(admin)
+  )
+  .get(getAllHotels);
 
 router.route("/search").get(searchHotels);
 
