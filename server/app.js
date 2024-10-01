@@ -30,6 +30,7 @@ import userRouter from "./src/routes/user/userRoutes.js";
 import hotelRouter from "./src/routes/hotel/hotelRoutes.js";
 import packageRouter from "./src/routes/package/packageRoutes.js";
 import tripsRouter from "./src/routes/trips/tripsRoutes.js";
+import activityRouter from "./src/routes/activity/activityRoutes.js";
 // import itineraryRouter from "./src/routes/itinerary/itineraryRoutes.js";
 import contactRouter from "./src/routes/contact/contactRoutes.js";
 import { errorHandler, notFound } from "./src/utils/errors/errorHandler.js";
@@ -42,6 +43,7 @@ app.use("/api/v1/packages", packageRouter);
 app.use("/api/v1/trips", tripsRouter);
 // app.use("/api/v1/itineraries", itineraryRouter);
 app.use("/api/v1/contact", contactRouter);
+app.use("/api/v1/activity", activityRouter);
 
 app.use(notFound);
 app.use(errorHandler);
