@@ -31,7 +31,7 @@ export const getAllIndianActivities = asyncHandler(async (req, res, next) => {
 
   if (findAllActivities.length === 0)
     return next(new ApiErrorResponse("No activities found", 404));
-
+ 
   res.status(200).json({
     success: true,
     message: "Activities fetched successfully",
