@@ -39,6 +39,7 @@ export const getIndianDestination = asyncHandler(async (req, res, next) => {
   const findDestionations = await IndianDestinations.find().populate(
     "packages"
   );
+  // .populate("activities");
 
   if (findDestionations.length === 0) {
     return res.status(404).json({ message: "No Destinations Found" });
@@ -90,7 +91,7 @@ export const updateIndianDestination = asyncHandler(async (req, res, next) => {
   }
   const updateDestination = await IndianDestinations.findByIdAndUpdate(
     id,
-    { ...req.body, },
+    { ...req.body },
     { new: true }
   );
 

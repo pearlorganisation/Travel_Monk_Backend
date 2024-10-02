@@ -4,7 +4,6 @@ const packageSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     slug: { type: String },
-    // destination: { type: String, required: true },
     banner: {
       secure_url: { type: String },
       public_id: { type: String },
@@ -52,6 +51,10 @@ const packageSchema = new mongoose.Schema(
         price: Number,
       },
     ],
+    destination: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "IndianDestinations",
+    },
     hotels: [{ type: mongoose.Schema.Types.ObjectId, ref: "Hotel" }],
   },
   { timestamps: true }

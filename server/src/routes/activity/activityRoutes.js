@@ -2,6 +2,7 @@ import express from "express";
 import {
   createIndianActivity,
   deleteIndianActivityById,
+  getActivitiesByDestination,
   getActivityById,
   getAllIndianActivities,
   updateIndianActivityById,
@@ -16,5 +17,9 @@ router
   .get(getActivityById)
   .delete(deleteIndianActivityById)
   .put(updateIndianActivityById);
+
+router
+  .route("/indian/destination/:destinationId")
+  .get(getActivitiesByDestination);
 
 export default router;
