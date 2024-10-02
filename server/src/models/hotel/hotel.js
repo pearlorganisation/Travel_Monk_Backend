@@ -2,12 +2,48 @@ import mongoose from "mongoose";
 
 const roomTypeSchema = new mongoose.Schema(
   {
-    name: { type: String },
-    type: { type: String, required: true },
-    pricePerNight: { type: Number, required: true },
-    amenities: [{}], //name: { type: String }, svg: { type: String }
-    roomImages: [{}],
-    availability: { type: Boolean, required: true },
+    roomName: { type: String, required: true }, 
+    pricePerNight: { type: Number, required: true }, // Price per night for the room
+    dblRoomRate: {
+      type: Number,
+      required: true,
+      default: 0, // Rate for double room
+    },
+    extraBedRate: {
+      type: Number,
+      default: 0, // Rate for an extra bed
+    },
+    noChildBedRate: {
+      rate: {
+        type: Number,
+        required: true,
+        default: 0, // Rate for children without a bed
+      },
+      minAge: {
+        type: Number,
+        required: true,
+        default: 5, // Minimum age for this rate
+      },
+      maxAge: {
+        type: Number,
+        required: true,
+        default: 11, // Maximum age for this rate
+      },
+    },
+    mealPlan: {
+      type: String,
+      enum: ["Dinner & Breakfast", "Breakfast Only", "No Meals"], // Type of meal plan offered
+      required: true,
+    },
+    amenities: [{ name: { type: String }, svg: { type: String } }], // Amenities available in the room
+    roomImages: [
+      {
+        secure_url: { type: String },
+        public_id: { type: String },
+        asset_id: { type: String },
+      },
+    ],
+    availability: { type: Boolean, required: true }, // Room availability
   },
   { timestamps: true }
 );
@@ -55,23 +91,30 @@ const hotelSchema = new mongoose.Schema(
       min: 1,
     },
     facilities: [String],
-    amenities: [{}],
-    images: [{}],
+    amenities: [{ name: { type: String }, svg: { type: String } }],
+    images: [
+      {
+        secure_url: { type: String },
+        public_id: { type: String },
+        asset_id: { type: String },
+      },
+    ],
     banner: {
       secure_url: { type: String },
       public_id: { type: String },
       asset_id: { type: String },
     },
-    ratingsAverage: {
+    averageRatings: {
       type: Number,
       min: [1, "Rating must be above 1.0"],
       max: [5, "Rating must be below 5.0"],
+      default: 0,
     },
     numberOfRatings: {
       type: Number,
       default: 0,
     },
-    tag: [String],
+    tags: [String],
     discount: { type: Number, default: 0 },
   },
   { timestamps: true }
