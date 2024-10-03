@@ -20,8 +20,8 @@ const router = express.Router();
 router
   .route("/")
   .post(
-    authenticateToken,
-    verifyPermission([UserRolesEnum.ADMIN]),
+    // authenticateToken,
+    // verifyPermission([UserRolesEnum.ADMIN]),
     fileParser,
     createHotels // Only(admin)
   )

@@ -25,10 +25,12 @@ const packageSchema = new mongoose.Schema(
     itinerary: [
       {
         day: { type: Number, required: true },
-        location: { type: String },
+        destination: { type: String },
         title: { type: String },
         description: { type: String, required: true },
-        //activities array
+        activities: [
+          { type: mongoose.Schema.Types.ObjectId, ref: "IndianActivity" },
+        ],
       },
     ],
     startingPrice: {
@@ -53,7 +55,7 @@ const packageSchema = new mongoose.Schema(
         price: Number,
       },
     ],
-    destination: {
+    packageDestination: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "IndianDestinations",
     },

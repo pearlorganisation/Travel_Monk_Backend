@@ -70,27 +70,27 @@ export const createHotels = asyncHandler(async (req, res, next) => {
     childCount,
     facilities,
     amenities,
-    ratingsAverage,
+    averageRatings,
     numberOfRatings,
     numberOfRooms,
     tag,
     discount,
   } = req.body;
 
-  if (
-    !name ||
-    !address ||
-    !description ||
-    !location ||
-    !pricePerNight ||
-    !adultCount ||
-    !childCount ||
-    !facilities ||
-    !amenities ||
-    !numberOfRooms
-  ) {
-    return next(new ApiErrorResponse("All fields are required", 400));
-  }
+  // if (
+  //   !name ||
+  //   !address ||
+  //   !description ||
+  //   !location ||
+  //   !pricePerNight ||
+  //   !adultCount ||
+  //   !childCount ||
+  //   !facilities ||
+  //   !amenities ||
+  //   !numberOfRooms
+  // ) {
+  //   return next(new ApiErrorResponse("All fields are required", 400));
+  // }
 
   const { images, banner } = req.files;
   let uploadedImages = [];
@@ -116,10 +116,10 @@ export const createHotels = asyncHandler(async (req, res, next) => {
     adultCount: Number(adultCount),
     childCount: Number(childCount),
     facilities,
-    amenities,
+    // amenities,
     images: uploadedImages,
     banner: uploadedBanner[0],
-    ratingsAverage: Number(ratingsAverage),
+    averageRatings: Number(averageRatings),
     numberOfRatings: Number(numberOfRatings),
     numberOfRooms,
     tag,
