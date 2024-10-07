@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const roomTypeSchema = new mongoose.Schema(
   {
-    roomName: { type: String, required: true }, 
+    roomName: { type: String, required: true },
     pricePerNight: { type: Number, required: true }, // Price per night for the room
     dblRoomRate: {
       type: Number,
@@ -16,17 +16,14 @@ const roomTypeSchema = new mongoose.Schema(
     noChildBedRate: {
       rate: {
         type: Number,
-        required: true,
         default: 0, // Rate for children without a bed
       },
       minAge: {
         type: Number,
-        required: true,
         default: 5, // Minimum age for this rate
       },
       maxAge: {
         type: Number,
-        required: true,
         default: 11, // Maximum age for this rate
       },
     },
@@ -35,7 +32,7 @@ const roomTypeSchema = new mongoose.Schema(
       enum: ["Dinner & Breakfast", "Breakfast Only", "No Meals"], // Type of meal plan offered
       required: true,
     },
-    amenities: [{ name: { type: String }, svg: { type: String } }], // Amenities available in the room
+    amenities: [{ name: { type: String }, icon: { type: String } }], // Amenities available in the room
     roomImages: [
       {
         secure_url: { type: String },
@@ -52,7 +49,7 @@ const hotelSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
+      // required: true,
       unique: true,
     },
     address: {
@@ -62,7 +59,7 @@ const hotelSchema = new mongoose.Schema(
     },
     description: {
       type: String,
-      required: true,
+      // required: true,
     },
     location: {
       type: {
@@ -74,6 +71,9 @@ const hotelSchema = new mongoose.Schema(
         type: [Number],
         required: true,
       },
+    },
+    startingPrice: {
+      type: Number,
     },
     roomTypes: [roomTypeSchema],
     numberOfRooms: {
@@ -91,7 +91,7 @@ const hotelSchema = new mongoose.Schema(
       min: 1,
     },
     facilities: [String],
-    amenities: [{ name: { type: String }, svg: { type: String } }],
+    amenities: [{ name: { type: String }, icon: { type: String } }],
     images: [
       {
         secure_url: { type: String },

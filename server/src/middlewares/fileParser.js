@@ -1,4 +1,5 @@
 import formidable from "formidable";
+import ApiErrorResponse from "../utils/errors/ApiErrorResponse.js";
 
 const fileParser = (req, res, next) => {
   const form = formidable();
@@ -9,8 +10,8 @@ const fileParser = (req, res, next) => {
       return next(err);
     }
     req.body = req.body || {};
-
-    // Convert fields to req.body 
+    // console.log("FIELDS: ", fields);
+    // Convert fields to req.body
     for (const key in fields) {
       if (fields[key]) {
         const value = fields[key][0]; // Get the first item in the array
@@ -19,15 +20,17 @@ const fileParser = (req, res, next) => {
         try {
           req.body[key] = JSON.parse(value);
         } catch (e) {
-          req.body[key] = value; // If parsing fails, keep as string
+          // return next(new ApiErrorResponse("Parsing failed", 400));
+          req.body[key] = value;
         }
 
         // Convert specific fields to numbers
         if (!isNaN(req.body[key])) {
+          // console.log("NaN");
           req.body[key] = Number(req.body[key]);
         }
       }
-    } 
+    }
     // console.log("REQ: Body:--------- ", req.body);
 
     req.files = req.files || {};

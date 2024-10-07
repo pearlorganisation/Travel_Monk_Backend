@@ -65,7 +65,7 @@ export const createHotels = asyncHandler(async (req, res, next) => {
     address,
     description,
     location,
-    pricePerNight,
+    startingPrice,
     adultCount,
     childCount,
     facilities,
@@ -73,7 +73,7 @@ export const createHotels = asyncHandler(async (req, res, next) => {
     averageRatings,
     numberOfRatings,
     numberOfRooms,
-    tag,
+    tags,
     discount,
   } = req.body;
 
@@ -112,17 +112,17 @@ export const createHotels = asyncHandler(async (req, res, next) => {
     address,
     description,
     location,
-    pricePerNight: Number(pricePerNight),
+    startingPrice: Number(startingPrice),
     adultCount: Number(adultCount),
     childCount: Number(childCount),
     facilities,
-    // amenities,
+    amenities,
     images: uploadedImages,
     banner: uploadedBanner[0],
     averageRatings: Number(averageRatings),
     numberOfRatings: Number(numberOfRatings),
     numberOfRooms,
-    tag,
+    tags,
     discount,
   });
   await newHotel.save();
@@ -181,14 +181,10 @@ export const createRoomTypes = asyncHandler(async (req, res, next) => {
 
   const { roomImages } = req.files;
   const uplodedImages = await uploadFileToCloudinary(roomImages);
-  const { name, type, pricePerNight, amenities, availability } = req.body;
+  // const { name, type, pricePerNight, amenities, availability } = req.body;
   console.log(req.body);
   hotel.roomTypes.push({
-    name,
-    type,
-    pricePerNight,
-    amenities,
-    availability,
+    ...req.body,
     roomImages: uplodedImages,
   });
 

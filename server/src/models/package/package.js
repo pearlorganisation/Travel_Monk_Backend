@@ -37,24 +37,24 @@ const packageSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    pricing: {
-      innova: {
-        capacity: { type: Number, default: 5 },
-        price: Number,
-      },
-      tempo: {
-        capacity: { type: Number, default: 10 },
-        price: Number,
-      },
-    },
+    // pricing: {
+    //   innova: {
+    //     capacity: { type: Number, default: 5 },
+    //     price: Number,
+    //   },
+    //   tempo: {
+    //     capacity: { type: Number, default: 10 },
+    //     price: Number,
+    //   },
+    // },
     inclusions: [String],
     exclusions: [String],
-    premiumAddons: [
-      {
-        name: String,
-        price: Number,
-      },
-    ],
+    // premiumAddons: [
+    //   {
+    //     name: String,
+    //     price: Number,
+    //   },
+    // ],
     packageDestination: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "IndianDestinations",
