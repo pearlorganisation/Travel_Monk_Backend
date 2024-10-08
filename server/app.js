@@ -15,8 +15,8 @@ app.set("views", path.resolve("./views"));
 app.use(express.json());
 app.use(
   cors({
-    origin: "http://localhost:5173", // Allow requests from this origin
-    methods: ["GET", "POST", "PUT", "DELETE"], // Specify allowed methods
+    origin: "*", // Allow requests from any origin
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"], // Specify allowed methods
   })
 );
 app.use(express.urlencoded({ extended: true }));
@@ -31,7 +31,6 @@ import hotelRouter from "./src/routes/hotel/hotelRoutes.js";
 import packageRouter from "./src/routes/package/packageRoutes.js";
 import tripsRouter from "./src/routes/trips/tripsRoutes.js";
 import activityRouter from "./src/routes/activity/activityRoutes.js";
-// import itineraryRouter from "./src/routes/itinerary/itineraryRoutes.js";
 import contactRouter from "./src/routes/contact/contactRoutes.js";
 import { errorHandler, notFound } from "./src/utils/errors/errorHandler.js";
 

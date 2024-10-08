@@ -55,7 +55,7 @@ export const createPackage = asyncHandler(async (req, res, next) => {
 //Get Package By Id
 export const getPackageById = asyncHandler(async (req, res, next) => {
   const packageDoc = await Package.findById(req.params?.packageId)
-    .populate("itinerary")
+    .populate("itinerary.activities")
     .populate("hotels");
   if (!packageDoc) {
     // return null if no doc found

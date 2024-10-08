@@ -4,7 +4,7 @@ import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 
 export const createIndianDestination = asyncHandler(async (req, res, next) => {
-  const { name, startingPrice, packages } = req.body;
+  const { name, startingPrice, packages, hotels } = req.body;
   if (!name || !startingPrice) {
     return next(new ApiErrorResponse("All fields are required", 400));
   }
@@ -25,6 +25,7 @@ export const createIndianDestination = asyncHandler(async (req, res, next) => {
     image: uploadedImage[0],
     banner: uploadedBanner[0],
     packages,
+    hotels,
   });
   await newIndianDestination.save();
 
@@ -36,10 +37,9 @@ export const createIndianDestination = asyncHandler(async (req, res, next) => {
 });
 
 export const getIndianDestination = asyncHandler(async (req, res, next) => {
-  const findDestionations = await IndianDestinations.find().populate(
-    "packages"
-  );
-  // .populate("activities");
+  const findDestionations = await IndianDestinations.find()
+    .populate("packages")
+    .populate("hotels");
 
   if (findDestionations.length === 0) {
     return res.status(404).json({ message: "No Destinations Found" });
@@ -56,9 +56,9 @@ export const getSingleIndianDestination = asyncHandler(
   async (req, res, next) => {
     const { id } = req.params;
 
-    const findDestionation = await IndianDestinations.findById(id).populate(
-      "packages"
-    );
+    const findDestionation = await IndianDestinations.findById(id)
+      .populate("packages")
+      .populate("hotels");
     if (findDestionation == null) {
       return res.status(404).json({ message: "No Destination ith ID found" });
     }

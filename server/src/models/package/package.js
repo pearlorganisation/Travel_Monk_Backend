@@ -59,7 +59,6 @@ const packageSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "IndianDestinations",
     },
-    hotels: [{ type: mongoose.Schema.Types.ObjectId, ref: "Hotel" }],
   },
   { timestamps: true }
 );

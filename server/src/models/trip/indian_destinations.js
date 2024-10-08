@@ -3,8 +3,9 @@ import mongoose from "mongoose";
 const indianDestinationsSchema = new mongoose.Schema(
   {
     name: {
-      type: String,
+      type: String, // LEH
       required: true,
+      unique: true,
     },
     banner: {
       secure_url: { type: String },
@@ -26,8 +27,8 @@ const indianDestinationsSchema = new mongoose.Schema(
         ref: "Package",
       },
     ],
-    // activities: [{ type: mongoose.Schema.Types.ObjectId, ref: "Activity" }],
-    // hotels: [{ type: mongoose.Schema.Types.ObjectId, ref: "Hotel" }],
+    // activities: [{ type: mongoose.Schema.Types.ObjectId, ref: "Activity" }],  // can populate but we want acctivity day wise this won't work
+    hotels: [{ type: mongoose.Schema.Types.ObjectId, ref: "Hotel" }],
   },
   { timestamps: true }
 );

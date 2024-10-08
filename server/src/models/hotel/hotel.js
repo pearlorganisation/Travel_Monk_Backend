@@ -106,8 +106,8 @@ const hotelSchema = new mongoose.Schema(
     },
     averageRatings: {
       type: Number,
-      min: [1, "Rating must be above 1.0"],
-      max: [5, "Rating must be below 5.0"],
+      min: 0,
+      max: 5,
       default: 0,
     },
     numberOfRatings: {

@@ -12,4 +12,5 @@ const indianActivitySchema = new mongoose.Schema({
 });
 
 const IndianActivity = mongoose.model("IndianActivity", indianActivitySchema);
+
 export default IndianActivity;
