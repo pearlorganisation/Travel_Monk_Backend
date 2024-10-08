@@ -54,9 +54,10 @@ export const createPackage = asyncHandler(async (req, res, next) => {
 
 //Get Package By Id
 export const getPackageById = asyncHandler(async (req, res, next) => {
-  const packageDoc = await Package.findById(req.params?.packageId)
-    .populate("itinerary.activities");
-  
+  const packageDoc = await Package.findById(req.params?.packageId).populate(
+    "itinerary.activities"
+  );
+
   if (!packageDoc) {
     // return null if no doc found
     return next(new ApiErrorResponse("Package not found", 404));
