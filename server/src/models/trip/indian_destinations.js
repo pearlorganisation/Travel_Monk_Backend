@@ -21,6 +21,7 @@ const indianDestinationsSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+      
     packages: [
       {
         type: mongoose.Schema.Types.ObjectId,

@@ -52,6 +52,10 @@ const hotelSchema = new mongoose.Schema(
       // required: true,
       unique: true,
     },
+    destination:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "IndianDestinations"
+    },
     address: {
       city: { type: String, required: true },
       state: { type: String, required: true },
