@@ -59,6 +59,8 @@ export const getSingleIndianDestination = asyncHandler(
     const findDestionation = await IndianDestinations.findById(id)
       .populate("packages")
       .populate("hotels");
+
+    
     if (findDestionation == null) {
       return res.status(404).json({ message: "No Destination ith ID found" });
     }
