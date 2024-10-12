@@ -4,11 +4,7 @@ import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 
 export const createIndianDestination = asyncHandler(async (req, res, next) => {
-  const { name, startingPrice, packages, hotels } = req.body;
-  if (!name || !startingPrice) {
-    return next(new ApiErrorResponse("All fields are required", 400));
-  }
-
+  const { name, startingPrice, packages, hotels, locations } = req.body;
   const { image, banner } = req.files;
   let uploadedImage = [];
   let uploadedBanner = [];
@@ -26,6 +22,7 @@ export const createIndianDestination = asyncHandler(async (req, res, next) => {
     banner: uploadedBanner[0],
     packages,
     hotels,
+    locations,
   });
   await newIndianDestination.save();
 
