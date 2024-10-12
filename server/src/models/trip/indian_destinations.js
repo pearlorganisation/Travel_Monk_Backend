@@ -1,10 +1,16 @@
 import mongoose from "mongoose";
+const locationsSchema = new mongoose.Schema({
+  day: {
+    type: Number,
+  },
+  location: [String],
+});
 
 const indianDestinationsSchema = new mongoose.Schema(
   {
     name: {
       type: String, // LEH
-      required: true,
+      required: [true, "Indian destination name required"],
       unique: true,
     },
     banner: {
@@ -19,7 +25,11 @@ const indianDestinationsSchema = new mongoose.Schema(
     },
     startingPrice: {
       type: Number,
-      required: true,
+      required: [true, "Starting price is required"],
+    },
+    locations: {
+      type: [locationsSchema],
+      required: [true, "Locations are required"],
     },
     packages: [
       {
@@ -27,7 +37,6 @@ const indianDestinationsSchema = new mongoose.Schema(
         ref: "Package",
       },
     ],
-    // activities: [{ type: mongoose.Schema.Types.ObjectId, ref: "Activity" }],  // can populate but we want acctivity day wise this won't work
     hotels: [{ type: mongoose.Schema.Types.ObjectId, ref: "Hotel" }],
   },
   { timestamps: true }
