@@ -28,6 +28,7 @@ const packageSchema = new mongoose.Schema(
         location: { type: String },
         title: { type: String },
         description: { type: String, required: true },
+        hotels: [{ type: mongoose.Schema.Types.ObjectId, ref: "Hotel" }],
         activities: [
           { type: mongoose.Schema.Types.ObjectId, ref: "IndianActivity" },
         ],
@@ -36,6 +37,12 @@ const packageSchema = new mongoose.Schema(
     startingPrice: {
       type: Number,
       required: true,
+    },
+    inclusions: [String],
+    exclusions: [String],
+    packageDestination: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "IndianDestinations",
     },
     // pricing: {
     //   innova: {
@@ -47,18 +54,12 @@ const packageSchema = new mongoose.Schema(
     //     price: Number,
     //   },
     // },
-    inclusions: [String],
-    exclusions: [String],
     // premiumAddons: [
     //   {
     //     name: String,
     //     price: Number,
     //   },
     // ],
-    packageDestination: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "IndianDestinations",
-    },
   },
   { timestamps: true }
 );
