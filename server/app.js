@@ -36,6 +36,10 @@ import contactRouter from "./src/routes/contact/contactRoutes.js";
 import destinationRouter from "./src/routes/destination/destinationRoutes.js";
 import { errorHandler, notFound } from "./src/utils/errors/errorHandler.js";
 
+app.get("/", (req, res) => {
+  console.log("Service anvailable");
+});
+
 // Routes declaration
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
@@ -47,9 +51,6 @@ app.use("/api/v1/contact", contactRouter);
 app.use("/api/v1/destination", destinationRouter);
 
 app.use(notFound);
-app.get("/", (req, res) => {
-  console.log("Service anvailable");
-});
 app.use(errorHandler);
 
 export { app };
