@@ -47,6 +47,9 @@ app.use("/api/v1/contact", contactRouter);
 app.use("/api/v1/destination", destinationRouter);
 
 app.use(notFound);
+app.get("/", (req, res) => {
+  console.log("Service anvailable");
+});
 app.use(errorHandler);
 
 export { app };
