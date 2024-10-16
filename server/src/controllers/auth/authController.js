@@ -19,7 +19,13 @@ export const signup = asyncHandler(async (req, res, next) => {
     return next(new ApiErrorResponse("User already exists!", 400));
 
   const signUptoken = generateSignUpToken({ name, email, password });
-  const verificationUrl = `http://localhost:5000/api/v1/mail/verifySignupToken/${signUptoken}`;
+
+  // Dynamically set BASE_URL based on NODE_ENV
+  const baseUrl = 
+    process.env.NODE_ENV === "production"
+      ? process.env.PROD_BASE_URL // Production URL
+      : process.env.DEV_BASE_URL; // Development URL
+  const verificationUrl = `${baseUrl}/api/v1/mail/verify-signup/${signUptoken}`;
 
   sendMail(email, "From Travel Monk", verificationUrl)
     .then(() => {
@@ -48,9 +54,7 @@ export const verifySignUpToken = asyncHandler(async (req, res, next) => {
 
   const savedUser = await User.create(decodedToken);
   if (!savedUser) {
-    return next(
-      new ApiErrorResponse("User is not created", 400)
-    );
+    return next(new ApiErrorResponse("User is not created", 400));
   }
 
   // Redirect the user to the login page after successful verification
