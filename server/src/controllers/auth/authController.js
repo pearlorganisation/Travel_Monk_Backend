@@ -36,25 +36,25 @@ export const signup = asyncHandler(async (req, res, next) => {
     });
 });
 
-// Verify Singup Token controller
 export const verifySignUpToken = asyncHandler(async (req, res, next) => {
-  try {
-    const { token } = req.params;
-    const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
+  const { token } = req.params;
+  const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
-    if (!decodedToken) {
-      return next(
-        new ApiErrorResponse("Email is not verified or Invalid token", 400)
-      );
-    }
-    let user = new User(decodedToken);
-    await user.save();
-    res
-      .status(200)
-      .json({ success: true, message: "Email verified successfully" });
-  } catch (error) {
-    next(new ApiErrorResponse(`Internal Server Error! ${error.message}`, 500));
+  if (!decodedToken) {
+    return next(
+      new ApiErrorResponse("Email is not verified or Invalid token", 400)
+    );
   }
+
+  const savedUser = await User.create(decodedToken);
+  if (!savedUser) {
+    return next(
+      new ApiErrorResponse("User is not created", 400)
+    );
+  }
+
+  // Redirect the user to the login page after successful verification
+  res.redirect(302, `${process.env.FRONTEND_LOGIN_PAGE_URL}`);
 });
 
 // Login controller
