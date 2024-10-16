@@ -37,6 +37,8 @@ import destinationRouter from "./src/routes/destination/destinationRoutes.js";
 import { errorHandler, notFound } from "./src/utils/errors/errorHandler.js";
 
 app.get("/", (req, res) => {
+  res.status(200).send("API Works!");
+  
   console.log("Service anvailable");
 });
 
