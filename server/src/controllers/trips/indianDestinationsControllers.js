@@ -4,11 +4,7 @@ import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 
 export const createIndianDestination = asyncHandler(async (req, res, next) => {
-  const { name, startingPrice, packages, hotels } = req.body;
-  if (!name || !startingPrice) {
-    return next(new ApiErrorResponse("All fields are required", 400));
-  }
-
+  const { name, startingPrice, packages, hotels, locations } = req.body;
   const { image, banner } = req.files;
   let uploadedImage = [];
   let uploadedBanner = [];
@@ -26,6 +22,7 @@ export const createIndianDestination = asyncHandler(async (req, res, next) => {
     banner: uploadedBanner[0],
     packages,
     hotels,
+    locations,
   });
   await newIndianDestination.save();
 
@@ -59,6 +56,8 @@ export const getSingleIndianDestination = asyncHandler(
     const findDestionation = await IndianDestinations.findById(id)
       .populate("packages")
       .populate("hotels");
+
+    
     if (findDestionation == null) {
       return res.status(404).json({ message: "No Destination ith ID found" });
     }
@@ -73,13 +72,32 @@ export const getSingleIndianDestination = asyncHandler(
 
 export const updateIndianDestination = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
-  const { name, banner, image, startingPrice, packages } = req.body;
+  const { name, startingPrice, packages, hotels, locations } = req.body;
+  const { image, banner } = req.files;
+
+  // Find the Indian Destination by ID
   const indianDestination = await IndianDestinations.findById(id);
   if (!indianDestination) {
     return next(new ApiErrorResponse("Indian destination not found", 404));
   }
 
-  //If Packages is provided
+  // Upload new image and banner files if provided
+  let uploadedImage = [];
+  let uploadedBanner = [];
+  if (image) {
+    uploadedImage = await uploadFileToCloudinary(image);
+    indianDestination.image = uploadedImage[0];
+  }
+  if (banner) {
+    uploadedBanner = await uploadFileToCloudinary(banner);
+    indianDestination.banner = uploadedBanner[0];
+  }
+
+  // Update fields if provided in the request body
+  if (name) indianDestination.name = name;
+  if (startingPrice) indianDestination.startingPrice = startingPrice;
+
+  // Handle Packages - only add new packages, don't overwrite existing ones
   if (packages && Array.isArray(packages)) {
     const existingPackages = indianDestination.packages.map((pkg) =>
       pkg.toString()
@@ -89,20 +107,34 @@ export const updateIndianDestination = asyncHandler(async (req, res, next) => {
     );
     indianDestination.packages.push(...newPackages);
   }
-  const updateDestination = await IndianDestinations.findByIdAndUpdate(
-    id,
-    { ...req.body },
-    { new: true }
-  );
 
-  if (updateDestination == null) {
-    return res.status(404).json({ message: "No Destination with ID found" });
+  // Handle Hotels
+  if (hotels && Array.isArray(hotels)) {
+    const existingHotels = indianDestination.hotels.map((hotel) =>
+      hotel.toString()
+    );
+    const newHotels = hotels.filter((hotel) => !existingHotels.includes(hotel));
+    indianDestination.hotels.push(...newHotels);
   }
+
+  // Handel locations
+  if (locations && Array.isArray(locations)) {
+    const existingLocations = indianDestination.locations.map((location) =>
+      location.toString()
+    );
+    const newLocations = locations.filter(
+      (location) => !existingLocations.includes(location)
+    );
+    indianDestination.locations.push(...newLocations);
+  }
+
+  // Save the updated Indian Destination
+  await indianDestination.save();
 
   res.status(200).json({
     success: true,
-    message: "Destionation updated successfully",
-    data: updateDestination,
+    message: "Destination updated successfully",
+    data: indianDestination,
   });
 });
 

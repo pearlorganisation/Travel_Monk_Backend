@@ -91,7 +91,7 @@ export const forgotPassword = asyncHandler(async (req, res, next) => {
     }
   );
 
-  const resetLink = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
+  const resetLink = `${process.env.FRONTEND_RESET_PASSWORD_PAGE_URL}/reset-password/${resetToken}`;
 
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",

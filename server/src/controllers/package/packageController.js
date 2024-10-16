@@ -76,15 +76,8 @@ export const updatePackageById = asyncHandler(async (req, res, next) => {
   if (!packageData) {
     return next(new ApiErrorResponse("Package not found", 404));
   }
-  const {
-    itinerary,
-    pricing,
-    duration,
-    inclusions,
-    exclusions,
-    premiumAddons,
-    ...otherUpdates
-  } = req.body;
+  const { itinerary, duration, inclusions, exclusions, ...otherUpdates } =
+    req.body;
 
   const { image, banner } = req.files;
   let uploadedImage = [];
@@ -123,15 +116,15 @@ export const updatePackageById = asyncHandler(async (req, res, next) => {
     await Promise.all(updatePromises);
   }
 
-  // Update pricing fields without replacing existing subfields
-  if (pricing) {
-    Object.keys(pricing).forEach((key) => {
-      packageData.pricing[key] = {
-        ...packageData.pricing[key],
-        ...pricing[key],
-      };
-    });
-  }
+  // // Update pricing fields without replacing existing subfields
+  // if (pricing) {
+  //   Object.keys(pricing).forEach((key) => {
+  //     packageData.pricing[key] = {
+  //       ...packageData.pricing[key],
+  //       ...pricing[key],
+  //     };
+  //   });
+  // }
 
   // Update duration fields without replacing existing subfields
   if (duration) {
