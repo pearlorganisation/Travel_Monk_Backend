@@ -38,8 +38,7 @@ import { errorHandler, notFound } from "./src/utils/errors/errorHandler.js";
 
 app.get("/", (req, res) => {
   res.status(200).send("API Works!");
-  
-  console.log("Service anvailable");
+  console.log("This is Home route");
 });
 
 // Routes declaration
