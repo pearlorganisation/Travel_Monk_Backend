@@ -28,7 +28,7 @@ export const signup = asyncHandler(async (req, res, next) => {
     process.env.NODE_ENV === "production"
       ? process.env.PROD_BASE_URL // Production URL
       : process.env.DEV_BASE_URL; // Development URL
-  const verificationUrl = `${baseUrl}/api/v1/mail/verify-signup/${signUptoken}`;
+  const verificationUrl = `${baseUrl}/api/v1/auth/verify-signup/${signUptoken}`;
 
   sendMail(email, "From Travel Monk", verificationUrl)
     .then(() => {
