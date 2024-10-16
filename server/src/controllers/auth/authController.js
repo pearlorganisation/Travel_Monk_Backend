@@ -5,6 +5,9 @@ import { generateSignUpToken } from "../../utils/generateSignUpToken.js";
 import { sendMail } from "../../utils/Mail/sendMail.js";
 import jwt from "jsonwebtoken";
 import { COOKIE_OPTIONS } from "../../../constants.js";
+import dotnev from "dotenv";
+
+dotnev.config();
 
 //SignUp controller
 export const signup = asyncHandler(async (req, res, next) => {
@@ -21,7 +24,7 @@ export const signup = asyncHandler(async (req, res, next) => {
   const signUptoken = generateSignUpToken({ name, email, password });
 
   // Dynamically set BASE_URL based on NODE_ENV
-  const baseUrl = 
+  const baseUrl =
     process.env.NODE_ENV === "production"
       ? process.env.PROD_BASE_URL // Production URL
       : process.env.DEV_BASE_URL; // Development URL
