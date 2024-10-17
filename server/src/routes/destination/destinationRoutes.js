@@ -3,6 +3,6 @@ import { searchDestinations } from "../../controllers/destination/destinationCon
 
 const router = express.Router();
 
-router.route("/search").post(searchDestinations);
+router.route("/search").get(searchDestinations);
 
 export default router;
