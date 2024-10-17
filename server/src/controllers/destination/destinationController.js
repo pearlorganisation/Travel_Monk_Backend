@@ -32,27 +32,28 @@ export const searchDestinations = asyncHandler(async (req, res, next) => {
   }
 
   // Combine both Indian and International results
-  const combinedResults = {
-    indianDestinations,
-    internationalDestinations,
-  };
+  // const combinedResults = {
+  //   indianDestinations,
+  //   internationalDestinations,
+  // };
 
   const totalIndianDestinations = await IndianDestinations.countDocuments(
     filter
   );
   const totalInternationalDestinations =
     await InternationalDestinations.countDocuments(filter);
+  
   const totalDestinations =
     totalIndianDestinations + totalInternationalDestinations;
 
   // Return the results with the fixed limit applied
-  return res.status(200).json({ 
+  return res.status(200).json({
     success: true,
     message: "Destinations retrieved successfully",
     meta: {
       totalRecords: totalDestinations,
       limit,
     },
-    data: combinedResults,
+    data: [...indianDestinations, ...internationalDestinations],
   });
 });
