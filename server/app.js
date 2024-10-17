@@ -49,7 +49,7 @@ app.use("/api/v1/packages", packageRouter);
 app.use("/api/v1/trips", tripsRouter);
 app.use("/api/v1/activities", activityRouter);
 app.use("/api/v1/contact", contactRouter);
-app.use("/api/v1/destination", destinationRouter);
+app.use("/api/v1/destinations", destinationRouter);
 
 app.use(notFound);
 app.use(errorHandler);
