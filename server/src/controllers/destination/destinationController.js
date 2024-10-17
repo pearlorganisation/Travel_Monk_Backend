@@ -3,16 +3,16 @@ import InternationalDestinations from "../../models/trip/international_destinati
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 
 export const searchDestinations = asyncHandler(async (req, res, next) => {
-  const { name } = req.query;
+  const { destination } = req.query;
   const limit = 10; // Set a fixed limit
 
-  if (!name) {
+  if (!destination) {
     return next(
-      new ApiErrorResponse("Please provide a name to search for", 400)
+      new ApiErrorResponse("Please provide a destination to search for", 400)
     );
   }
 
-  let filter = { name: { $regex: new RegExp(name, "i") } }; // Case-insensitive search
+  let filter = { name: { $regex: new RegExp(destination, "i") } }; // Case-insensitive search
 
   // Fetch Indian and International destinations (up to half of the total limit from each)
   const indianLimit = Math.ceil(limit / 2); // Half of the total limit
@@ -37,18 +37,20 @@ export const searchDestinations = asyncHandler(async (req, res, next) => {
     internationalDestinations,
   };
 
-  const totalIndian = await IndianDestinations.countDocuments(filter);
-  const totalInternational = await InternationalDestinations.countDocuments(
+  const totalIndianDestinations = await IndianDestinations.countDocuments(
     filter
   );
-  const total = totalIndian + totalInternational;
+  const totalInternationalDestinations =
+    await InternationalDestinations.countDocuments(filter);
+  const totalDestinations =
+    totalIndianDestinations + totalInternationalDestinations;
 
   // Return the results with the fixed limit applied
-  return res.status(200).json({
+  return res.status(200).json({ 
     success: true,
     message: "Destinations retrieved successfully",
     meta: {
-      totalRecords: total,
+      totalRecords: totalDestinations,
       limit,
     },
     data: combinedResults,
