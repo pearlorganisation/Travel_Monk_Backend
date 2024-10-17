@@ -1,5 +1,6 @@
 import IndianDestinations from "../../models/trip/indian_destinations.js";
 import InternationalDestinations from "../../models/trip/international_destinations.js";
+import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 
 export const searchDestinations = asyncHandler(async (req, res, next) => {
@@ -42,7 +43,7 @@ export const searchDestinations = asyncHandler(async (req, res, next) => {
   );
   const totalInternationalDestinations =
     await InternationalDestinations.countDocuments(filter);
-  
+
   const totalDestinations =
     totalIndianDestinations + totalInternationalDestinations;
 
