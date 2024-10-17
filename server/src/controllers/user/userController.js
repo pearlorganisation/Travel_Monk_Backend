@@ -160,8 +160,8 @@ export const getUserDetails = asyncHandler(async (req, res, next) => {
 export const getAllUsers = asyncHandler(async (req, res, next) => {
   const users = await User.find().select("-password -refreshToken -role");
 
-  if (users.length === 0)
-    return res.status(404).json({ message: "No Users Found", success: false });
+  if (!users || users.length === 0)
+    return next(new ApiErrorResponse("Users not found", 404));
 
   res.status(200).json({
     message: "Users found successfully",
