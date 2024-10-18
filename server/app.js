@@ -17,7 +17,6 @@ app.use(
   cors({
     origin: "*", // Allow requests from any origin
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"], // Specify allowed methods
-    // credentials: true,
   })
 );
 app.use(express.urlencoded({ extended: true }));
@@ -34,6 +33,8 @@ import tripsRouter from "./src/routes/trips/tripsRoutes.js";
 import activityRouter from "./src/routes/activity/activityRoutes.js";
 import contactRouter from "./src/routes/contact/contactRoutes.js";
 import destinationRouter from "./src/routes/destination/destinationRoutes.js";
+import partnerTypeRouter from "./src/routes/partnerType/partnerTypesRoutes.js";
+import partnerRouter from "./src/routes/partner/partnerRoutes.js";
 import { errorHandler, notFound } from "./src/utils/errors/errorHandler.js";
 
 app.get("/", (req, res) => {
@@ -50,6 +51,8 @@ app.use("/api/v1/trips", tripsRouter);
 app.use("/api/v1/activities", activityRouter);
 app.use("/api/v1/contact", contactRouter);
 app.use("/api/v1/destinations", destinationRouter);
+app.use("/api/v1/partnerTypes", partnerTypeRouter);
+app.use("/api/v1/partners", partnerRouter);
 
 app.use(notFound);
 app.use(errorHandler);
