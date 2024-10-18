@@ -5,8 +5,13 @@ import {
   refreshAccessToken,
   resetPassword,
   getUserDetails,
+  getAllUsers,
 } from "../../controllers/user/userController.js";
-import { authenticateToken } from "../../middlewares/authMiddleware.js";
+import {
+  authenticateToken,
+  verifyPermission,
+} from "../../middlewares/authMiddleware.js";
+import { UserRolesEnum } from "../../../constants.js";
 
 const router = express.Router();
 
@@ -15,5 +20,8 @@ router.route("/change-password").post(authenticateToken, changePassword);
 router.route("/forgot-password").post(forgotPassword);
 router.route("/reset-password/:token").post(resetPassword);
 router.route("/me").get(authenticateToken, getUserDetails);
+router
+  .route("/")
+  .get(authenticateToken, verifyPermission([UserRolesEnum.ADMIN]), getAllUsers);
 
 export default router;
