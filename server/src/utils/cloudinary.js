@@ -1,36 +1,33 @@
 import { v2 as cloudinary } from "cloudinary";
 
+// Configure Cloudinary using environment variables
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const uploadImage = async (filePath) => {
+// Function to handle single or multiple file uploads
+export const uploadFileToCloudinary = async (files) => {
   try {
-    const result = await cloudinary.uploader.upload(filePath); // {} || [{}, {}]
-    //UNLINK File if necessary when stored local
-    return {
+    // Ensure files is always an array for uniform processing
+    const fileArray = Array.isArray(files) ? files : [files];
+
+    // Map each file to the upload function
+    const uploadPromises = fileArray.map((file) =>
+      cloudinary.uploader.upload(file.filepath)
+    );
+
+    // Wait for all promises (uploads) to complete
+    const uploadResults = await Promise.all(uploadPromises);
+
+    // Map and return only the necessary details from the upload results
+    return uploadResults.map((result) => ({
       secure_url: result.secure_url,
       public_id: result.public_id,
       asset_id: result.asset_id,
-    };
+    }));
   } catch (error) {
-    throw new Error(`Image upload failed: ${error.message}`);
-  }
-};
-
-export const uploadFileToCloudinary = async (files) => {
-  try {
-    const isMultipleImages = Array.isArray(files); //{}-> single file, [{}, {}] -> multiple files
-    const imageFiles = isMultipleImages ? files : [files];
-    const uploadPromises = imageFiles.map((file) =>
-      uploadImage(file?.filepath)
-    ); // [{},{},..]
-    const uploadResults = await Promise.all(uploadPromises);
-
-    return uploadResults; //[{  secure_url: "uyeriu",  public_id: "hdfh",  asset_id: "jdfhj" }, {        }];
-  } catch (error) {
-    throw new Error(error.message);
+    throw new Error(`File upload failed: ${error.message}`);
   }
 };

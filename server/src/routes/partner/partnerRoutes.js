@@ -6,14 +6,15 @@ import {
   getPartnerById,
   updatePartnerById,
 } from "../../controllers/partner/partnerController.js";
+import fileParser from "../../middlewares/fileParser.js";
 
 const router = express.Router();
 
-router.route("/").post(createPartner).get(getAllPartners);
+router.route("/").post(fileParser, createPartner).get(getAllPartners);
 router
   .route("/:id")
   .get(getPartnerById)
-  .put(updatePartnerById)
+  .put(fileParser, updatePartnerById)
   .delete(deletePartnerById);
 
 export default router;

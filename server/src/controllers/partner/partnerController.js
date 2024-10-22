@@ -8,6 +8,7 @@ import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 // @route POST /api/v1/partners
 export const createPartner = asyncHandler(async (req, res, next) => {
   const { partnerLogo } = req.files;
+
   let uploadedLogo;
 
   if (partnerLogo) {
@@ -16,7 +17,7 @@ export const createPartner = asyncHandler(async (req, res, next) => {
 
   const newPartner = await Partner.create({
     ...req.body,
-    partnerLogo: uploadedLogo ? uploadedLogo[0] : req.body.partnerLogo, // Fallback if logo upload fails
+    partnerLogo: uploadedLogo[0],
   });
 
   if (!newPartner) {
@@ -39,6 +40,7 @@ export const getAllPartners = asyncHandler(async (req, res, next) => {
   }
   return res.status(200).json({
     success: true,
+    message: "All partners found successfully",
     data: partners,
   });
 });
@@ -52,6 +54,7 @@ export const getPartnerById = asyncHandler(async (req, res, next) => {
   }
   return res.status(200).json({
     success: true,
+    message: "Partner found successfully",
     data: partner,
   });
 });
@@ -59,31 +62,39 @@ export const getPartnerById = asyncHandler(async (req, res, next) => {
 // @desc Update a Partner by ID
 // @route PUT /api/v1/partners/:id
 export const updatePartnerById = asyncHandler(async (req, res, next) => {
-  const { partnerLogo } = req.files;
+  const { partnerLogo } = req.files; // Safely access req.files
   let uploadedLogo;
 
+  // Only upload logo if it's provided
   if (partnerLogo) {
     uploadedLogo = await uploadFileToCloudinary(partnerLogo); // Assuming this function exists
   }
 
+  // Prepare the update object
+  const updateData = {
+    ...req.body,
+  };
+
+  // If a new logo is uploaded, include it in the update
+  if (uploadedLogo) {
+    updateData.partnerLogo = uploadedLogo[0]; // Assuming uploadFileToCloudinary returns an array
+  }
+
   const updatedPartner = await Partner.findByIdAndUpdate(
     req.params.id,
-    {
-      ...req.body,
-      partnerLogo: uploadedLogo ? uploadedLogo[0] : req.body.partnerLogo, // Fallback if logo upload fails
-    },
+    updateData,
     {
       new: true,
       runValidators: true,
     }
   );
-
   if (!updatedPartner) {
     return next(new ApiErrorResponse("Partner not found or not updated", 404));
   }
+
   return res.status(200).json({
     success: true,
-    message: "Partner updated",
+    message: "Partner is updated",
     data: updatedPartner,
   });
 });
@@ -97,6 +108,6 @@ export const deletePartnerById = asyncHandler(async (req, res, next) => {
   }
   return res.status(200).json({
     success: true,
-    message: "Partner deleted",
+    message: "Partner is deleted",
   });
 });

@@ -1,25 +1,24 @@
 import express from "express";
+
 import {
-  createIndianActivity,
-  deleteIndianActivityById,
+  createActivity,
+  deleteActivityById,
   getActivitiesByDestination,
   getActivityById,
-  getAllIndianActivities,
-  updateIndianActivityById,
-} from "../../controllers/activity/indianActivityController.js";
+  getAllActivities,
+  updateActivityById,
+} from "../../controllers/activity/activityController.js";
 
 const router = express.Router();
 
-router.route("/indian").post(createIndianActivity).get(getAllIndianActivities);
+router.route("/").post(createActivity).get(getAllActivities);
 
 router
-  .route("/indian/:id")
+  .route("/:id")
   .get(getActivityById)
-  .delete(deleteIndianActivityById)
-  .put(updateIndianActivityById);
+  .delete(deleteActivityById)
+  .put(updateActivityById);
 
-router
-  .route("/indian/destination/:destinationId")
-  .get(getActivitiesByDestination);
+router.route("/destination/:destinationId").get(getActivitiesByDestination);
 
 export default router;
