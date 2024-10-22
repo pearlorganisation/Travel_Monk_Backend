@@ -11,7 +11,7 @@ export const searchDestinations = asyncHandler(async (req, res, next) => {
     );
   }
 
-  let filter = { name: { $regex: new RegExp(name, "i") } }; // Case-insensitive search
+  let filter = { name: { $regex: new RegExp(destination, "i") } }; // Case-insensitive search
 
   // Fetch Indian and International destinations with the fixed limit
   const destinations = await Destinations.find(filter).limit(limit);
