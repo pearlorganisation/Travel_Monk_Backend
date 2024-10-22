@@ -12,18 +12,24 @@ const tripSchema = new mongoose.Schema(
       enum: ["car", "bus", "motorcycle"],
       default: "car",
     },
-    indianDestinations: [
+    destinations: [
       {
         type: mongoose.Types.ObjectId,
-        ref: "IndianDestinations",
+        ref: "Destinations",
       },
     ],
-    internationalDestinations: [
-      {
-        type: mongoose.Types.ObjectId,
-        ref: "InternationalDestinations",
-      },
-    ],
+    // indianDestinations: [
+    //   {
+    //     type: mongoose.Types.ObjectId,
+    //     ref: "IndianDestinations",
+    //   },
+    // ],
+    // internationalDestinations: [
+    //   {
+    //     type: mongoose.Types.ObjectId,
+    //     ref: "InternationalDestinations",
+    //   },
+    // ],
   },
   { timestamps: true }
 );

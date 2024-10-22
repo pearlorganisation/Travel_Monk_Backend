@@ -1,16 +1,16 @@
-import mongoose from "mongoose";
+// import mongoose from "mongoose";
 
-const indianActivitySchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  destination: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "IndianDestinations",
-  },
-});
+// const indianActivitySchema = new mongoose.Schema({
+//   name: {
+//     type: String,
+//     required: true,
+//   },
+//   destination: {
+//     type: mongoose.Schema.Types.ObjectId,
+//     ref: "IndianDestinations",
+//   },
+// });
 
-const IndianActivity = mongoose.model("IndianActivity", indianActivitySchema);
+// const IndianActivity = mongoose.model("IndianActivity", indianActivitySchema);
 
-export default IndianActivity;
+// export default IndianActivity;

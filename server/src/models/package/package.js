@@ -29,9 +29,7 @@ const packageSchema = new mongoose.Schema(
         title: { type: String },
         description: { type: String, required: true },
         hotels: [{ type: mongoose.Schema.Types.ObjectId, ref: "Hotel" }],
-        activities: [
-          { type: mongoose.Schema.Types.ObjectId, ref: "IndianActivity" },
-        ],
+        activities: [{ type: mongoose.Schema.Types.ObjectId, ref: "Activity" }],
       },
     ],
     startingPrice: {
@@ -42,7 +40,7 @@ const packageSchema = new mongoose.Schema(
     exclusions: [String],
     packageDestination: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "IndianDestinations",
+      ref: "Destinations",
     },
     // pricing: {
     //   innova: {
