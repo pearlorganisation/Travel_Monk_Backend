@@ -1,6 +1,4 @@
-import IndianDestinations from "../../models/trip/indian_destinations.js";
-import InternationalDestinations from "../../models/trip/international_destinations.js";
-import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
+import Destinations from "../../models/trip/destinations.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 
 export const searchDestinations = asyncHandler(async (req, res, next) => {
@@ -13,22 +11,13 @@ export const searchDestinations = asyncHandler(async (req, res, next) => {
     );
   }
 
-  let filter = { name: { $regex: new RegExp(destination, "i") } }; // Case-insensitive search
-
-  // Fetch Indian and International destinations (up to half of the total limit from each)
-  const indianLimit = Math.ceil(limit / 2); // Half of the total limit
-  const internationalLimit = limit - indianLimit; // Ensure the total is exactly 10
+  let filter = { name: { $regex: new RegExp(name, "i") } }; // Case-insensitive search
 
   // Fetch Indian and International destinations with the fixed limit
-  const indianDestinations = await IndianDestinations.find(filter).limit(
-    indianLimit
-  );
-  const internationalDestinations = await InternationalDestinations.find(
-    filter
-  ).limit(internationalLimit);
+  const destinations = await Destinations.find(filter).limit(limit);
 
   // If no destinations are found in either collection
-  if (!indianDestinations.length && !internationalDestinations.length) {
+  if (!destinations.length) {
     return next(new ApiErrorResponse("No destinations found", 404));
   }
 
@@ -38,14 +27,7 @@ export const searchDestinations = asyncHandler(async (req, res, next) => {
   //   internationalDestinations,
   // };
 
-  const totalIndianDestinations = await IndianDestinations.countDocuments(
-    filter
-  );
-  const totalInternationalDestinations =
-    await InternationalDestinations.countDocuments(filter);
-
-  const totalDestinations =
-    totalIndianDestinations + totalInternationalDestinations;
+  const totalDestinations = await Destinations.countDocuments(filter);
 
   // Return the results with the fixed limit applied
   return res.status(200).json({
@@ -55,6 +37,6 @@ export const searchDestinations = asyncHandler(async (req, res, next) => {
       totalRecords: totalDestinations,
       limit,
     },
-    data: [...indianDestinations, ...internationalDestinations],
+    data: destinations,
   });
 });
