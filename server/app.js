@@ -3,6 +3,7 @@ import path from "path";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import cors from "cors";
+import dontenv from "dotenv";
 
 // Create an Express application
 const app = express();
@@ -11,12 +12,18 @@ const app = express();
 app.set("view engine", "ejs");
 app.set("views", path.resolve("./views"));
 
+dontenv.config();
+
 // Middlewares
 app.use(express.json());
 app.use(
   cors({
-    origin: "*", // Allow requests from any origin
+    origin:
+      process.env.NODE_ENV === "development"
+        ? ["http://localhost:5173", "http://localhost:5174"]
+        : ["https://travel-monk-mern.vercel.app"],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"], // Specify allowed methods
+    credentials: true,
   })
 );
 app.use(express.urlencoded({ extended: true }));
