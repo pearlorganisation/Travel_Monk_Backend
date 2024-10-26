@@ -7,22 +7,24 @@ const preBuiltPackageBookingSchema = new Schema(
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
     packageId: { type: Schema.Types.ObjectId, ref: "Package", required: true },
     numberOfTravellers: { type: Number, required: true },
+    totalPrice: { type: Number, required: true },
     customizations: [
       {
-        day: { type: Number, required: true },
+        // day: { type: Number, required: true },
         customizedHotel: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Hotel",
           required: true,
         },
-        customizedActivities: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Activity",
-          required: true,
-        },
+        customizedActivities: [
+          {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Activity",
+            required: true,
+          },
+        ],
       },
     ],
-    totalPrice: { type: Number, required: true },
     bookingStatus: {
       type: String,
       enum: ["Pending", "Completed", "Failed"],
