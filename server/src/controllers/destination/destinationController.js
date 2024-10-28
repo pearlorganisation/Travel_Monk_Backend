@@ -14,19 +14,14 @@ export const searchDestinations = asyncHandler(async (req, res, next) => {
   let filter = { name: { $regex: new RegExp(destination, "i") } }; // Case-insensitive search
 
   // Fetch Indian and International destinations with the fixed limit
-  const destinations = await Destinations.find(filter).limit(limit);
+  const destinations = await Destinations.find(filter)
+    .select("name")
+    .limit(limit);
 
   // If no destinations are found in either collection
   if (!destinations.length) {
     return next(new ApiErrorResponse("No destinations found", 404));
   }
-
-  // Combine both Indian and International results
-  // const combinedResults = {
-  //   indianDestinations,
-  //   internationalDestinations,
-  // };
-
   const totalDestinations = await Destinations.countDocuments(filter);
 
   // Return the results with the fixed limit applied
