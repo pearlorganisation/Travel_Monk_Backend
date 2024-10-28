@@ -137,6 +137,7 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
   if (!user) {
     return next(new ApiErrorResponse("User not found!", 401));
   }
+
   user.password = password;
   await user.save();
   return res
