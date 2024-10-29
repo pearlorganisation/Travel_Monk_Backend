@@ -24,9 +24,12 @@ export const submitContactForm = asyncHandler(async (req, res, next) => {
        console.log(validateData);
    } catch (error) {
       if (error instanceof z.ZodError) {
-        console.error(error.errors);  
+
+        console.error(error.errors);
+        return next(new ApiErrorResponse("Enter correct no format",error))  
       } else {
         console.error("An unexpected error occurred:", error);
+        return next(new ApiErrorResponse("Unexpected error",error));
       }
    }
   const contactInfo = await Contact.create(req.body);

@@ -146,6 +146,9 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
 
 //Get user details Contoller
 export const getUserDetails = asyncHandler(async (req, res, next) => {
+  // const user = req.user;
+
+  // console.log(user, "user")
   const user = await User.findById(req.user?._id).select(
     "-password -refreshToken"
   );
@@ -153,7 +156,7 @@ export const getUserDetails = asyncHandler(async (req, res, next) => {
     return next(new ApiErrorResponse("User is not found", 404));
   }
   return res
-    .status()
+    .status(200)
     .json({ success: true, message: "User found successfully", data: user });
 });
 
