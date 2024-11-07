@@ -84,8 +84,9 @@ export const forgotPassword = asyncHandler(async (req, res, next) => {
   const existingUser = await User.findOne({ email });
   if (!existingUser) return next(new ApiErrorResponse("No user found!!", 400));
   const resetToken = jwt.sign(
-    { userId: existingUser._id, email },
-    process.env.JWT_SECRET_KEY,
+    { 
+      userId: existingUser._id, email },
+      process.env.JWT_SECRET_KEY,
     {
       expiresIn: "1d",
     }
