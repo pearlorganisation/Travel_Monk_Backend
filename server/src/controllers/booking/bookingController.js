@@ -23,9 +23,9 @@ export const createBooking = asyncHandler(async (req, res, next) => {
     const order = await razorpayInstance.orders.create(options);
     const preBuiltPackageBooking = await PreBuiltPackageBooking.create({
       bookingId: `BID_${Date.now()}`,
-      user: "670f7d22de6dad830bd241e0",
-      packageId: "670e521c1a925010284229bf",
-      numberOfTravellers: 3,
+      user,
+      packageId,
+      numberOfTravellers,
       totalPrice,
       bookingStatus: "Pending",
       paymentStatus: "Unpaid",
@@ -36,6 +36,7 @@ export const createBooking = asyncHandler(async (req, res, next) => {
     res.status(200).json({
       success: true,
       order,
+      bookingId: preBuiltPackageBooking.bookingId,
     });
   } catch (error) {
     console.error("Error creating Razorpay order:", error); // Log the complete error object for debugging
