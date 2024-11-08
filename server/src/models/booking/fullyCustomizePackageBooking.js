@@ -5,7 +5,7 @@ const customizableBookingSchema = new mongoose.Schema(
     bookingId: { type: String, required: true, unique: true },
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
     numberOfTravellers: { type: Number, required: true },
-    totalPrice: { type: Number, required: true }, // Total price calculated for the customized trip
+    totalPrice: { type: Number, required: true },
     bookingStatus: {
       type: String,
       enum: ["Pending", "Completed", "Failed"],
