@@ -1,6 +1,7 @@
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 import { razorpayInstance } from "../../configs/razorpay/razorpay.js";
 import crypto from "crypto";
+import { nanoid } from "nanoid";
 import PreBuiltPackageBooking from "../../models/booking/preBuiltPackageBooking.js";
 
 export const createBooking = asyncHandler(async (req, res, next) => {
@@ -22,7 +23,7 @@ export const createBooking = asyncHandler(async (req, res, next) => {
   try {
     const order = await razorpayInstance.orders.create(options);
     const preBuiltPackageBooking = await PreBuiltPackageBooking.create({
-      bookingId: `BID_${Date.now()}`,
+      bookingId: `BID_${nanoid(6)}${Date.now()}`,
       user,
       packageId,
       numberOfTravellers,
