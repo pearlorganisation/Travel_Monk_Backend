@@ -92,7 +92,7 @@ export const forgotPassword = asyncHandler(async (req, res, next) => {
     }
   );
 
-  const resetLink = `${process.env.FRONTEND_RESET_PASSWORD_PAGE_URL}/reset-password/${resetToken}`;
+  const resetLink = `${process.env.FRONTEND_RESET_PASSWORD_PAGE_URL}/${resetToken}`;
 
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
@@ -140,6 +140,7 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
   }
   user.password = password;
   await user.save();
+  
   return res
     .status(200)
     .json({ success: true, message: "Password reset successfully." });
