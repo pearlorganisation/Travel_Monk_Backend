@@ -98,11 +98,17 @@ export const login = asyncHandler(async (req, res, next) => {
 //Logout controller
 export const logout = asyncHandler(async (req, res, next) => {
   try {
-    await User.findByIdAndUpdate(
+    const user = await User.findByIdAndUpdate(
       req.user._id,
       { $unset: { refreshToken: 1 } },
       { new: true }
     );
+
+    // Check if user was found
+    if (!user) {
+      return next(new ApiErrorResponse("User not found", 404)); // Return 404 if no user found
+    }
+
     res
       .cookie("access-token", "", { ...COOKIE_OPTIONS, maxAge: 0 })
       .cookie("refresh-token", "", { ...COOKIE_OPTIONS, maxAge: 0 })

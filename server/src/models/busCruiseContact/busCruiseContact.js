@@ -40,7 +40,7 @@ const busCruiseContactSchema = new mongoose.Schema(
 );
 
 const BusCruiseContact = mongoose.model(
-  "BusCruiseContactSchema",
+  "BusCruiseContact",
   busCruiseContactSchema
 );
 
