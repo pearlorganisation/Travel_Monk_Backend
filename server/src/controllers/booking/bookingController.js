@@ -6,24 +6,17 @@ import PreBuiltPackageBooking from "../../models/booking/preBuiltPackageBooking.
 
 export const createBooking = asyncHandler(async (req, res, next) => {
   const { totalPrice, user, packageId, numberOfTravellers } = req.body;
-
-  // Basic validation
-  if (!totalPrice) {
-    return res
-      .status(400)
-      .json({ message: "Amount and currency are required" });
-  }
   const options = {
     amount: totalPrice * 100, // Convert amount to smallest unit (paise for INR)
     currency: "INR",
-    receipt: `order_rcptid_${Math.floor(1000 + Math.random() * 9000)}`, // Generate unique receipt id
+    receipt: `order_rcptid_${nanoid(8)}${Date.now()}`, // Generate unique receipt id
   };
 
   // Create the order using Razorpay instance
   try {
     const order = await razorpayInstance.orders.create(options);
     const preBuiltPackageBooking = await PreBuiltPackageBooking.create({
-      bookingId: `BID_${nanoid(6)}${Date.now()}`,
+      bookingId: `BID_${nanoid(8)}${Date.now()}`,
       user,
       packageId,
       numberOfTravellers,
