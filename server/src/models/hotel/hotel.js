@@ -37,7 +37,6 @@ const roomTypeSchema = new mongoose.Schema(
       {
         secure_url: { type: String },
         public_id: { type: String },
-        asset_id: { type: String },
       },
     ],
     availability: { type: Boolean, required: true }, // Room availability
@@ -62,15 +61,9 @@ const hotelSchema = new mongoose.Schema(
       // required: true,
     },
     location: {
-      type: {
-        type: String,
-        enum: ["Point"],
-        required: true,
-      },
-      coordinates: {
-        type: [Number],
-        required: true,
-      },
+      // Google map Embeded link
+      type: String,
+      // required: true,
     },
     startingPrice: {
       type: Number,
@@ -96,13 +89,11 @@ const hotelSchema = new mongoose.Schema(
       {
         secure_url: { type: String },
         public_id: { type: String },
-        asset_id: { type: String },
       },
     ],
     banner: {
       secure_url: { type: String },
       public_id: { type: String },
-      asset_id: { type: String },
     },
     averageRatings: {
       type: Number,
