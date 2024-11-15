@@ -77,21 +77,6 @@ export const createHotels = asyncHandler(async (req, res, next) => {
     discount,
   } = req.body;
 
-  // if (
-  //   !name ||
-  //   !address ||
-  //   !description ||
-  //   !location ||
-  //   !pricePerNight ||
-  //   !adultCount ||
-  //   !childCount ||
-  //   !facilities ||
-  //   !amenities ||
-  //   !numberOfRooms
-  // ) {
-  //   return next(new ApiErrorResponse("All fields are required", 400));
-  // }
-
   const { images, banner } = req.files;
   let uploadedImages = [];
   let uploadedBanner = [];
@@ -181,7 +166,6 @@ export const createRoomTypes = asyncHandler(async (req, res, next) => {
 
   const { roomImages } = req.files;
   const uplodedImages = await uploadFileToCloudinary(roomImages);
-  // const { name, type, pricePerNight, amenities, availability } = req.body;
   console.log(req.body);
   hotel.roomTypes.push({
     ...req.body,

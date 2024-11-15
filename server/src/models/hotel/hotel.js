@@ -111,8 +111,8 @@ const hotelSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Create a 2dsphere index on the location field for geospatial queries
-hotelSchema.index({ location: "2dsphere" });
+// // Create a 2dsphere index on the location field for geospatial queries
+// hotelSchema.index({ location: "2dsphere" });
 
 const Hotel = mongoose.model("Hotel", hotelSchema);
 
