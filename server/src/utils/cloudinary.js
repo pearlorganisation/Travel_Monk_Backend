@@ -25,7 +25,6 @@ export const uploadFileToCloudinary = async (files) => {
     return uploadResults.map((result) => ({
       secure_url: result.secure_url,
       public_id: result.public_id,
-      asset_id: result.asset_id,
     }));
   } catch (error) {
     throw new Error(`File upload failed: ${error.message}`);

@@ -42,3 +42,34 @@ export const submitContactForm = asyncHandler(async (req, res, next) => {
     data: contactInfo,
   });
 });
+
+export const getAllContacts = asyncHandler(async (req, res, next) => {
+  const contacts = await Contact.find();
+  if (!contacts || contacts.length === 0) {
+    return next(new ApiErrorResponse("No Contacts found", 404));
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: "All contacts found successfully",
+    data: contacts,
+  });
+});
+
+export const deleteContactById = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+
+  // Find and delete the contact by ID
+  const deletedContact = await Contact.findByIdAndDelete(id);
+
+  // If the contact is not found
+  if (!deletedContact || deletedContact.length === 0) {
+    return next(new ApiErrorResponse("Contact not found", 404));
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: "Contact deleted successfully",
+    data: deletedContact,
+  });
+});
