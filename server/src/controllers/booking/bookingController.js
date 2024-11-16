@@ -3,6 +3,7 @@ import { razorpayInstance } from "../../configs/razorpay/razorpay.js";
 import crypto from "crypto";
 import { nanoid } from "nanoid";
 import PreBuiltPackageBooking from "../../models/booking/preBuiltPackageBooking.js";
+import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 
 export const createBooking = asyncHandler(async (req, res, next) => {
   const { totalPrice, user, packageId, numberOfTravellers } = req.body;
@@ -64,4 +65,18 @@ export const verifyPayment = asyncHandler(async (req, res, next) => {
       .status(400)
       .json({ success: false, message: "Payment verification failed" });
   }
+});
+
+export const preBuiltPackages = asyncHandler(async (req, res, next) => {
+  const preBuiltPackageBookings = await PreBuiltPackageBooking.find();
+  if (!preBuiltPackageBookings || preBuiltPackageBookings.length === 0) {
+    return next(
+      new ApiErrorResponse("No pre buil package bookings found", 400)
+    );
+  }
+  return res.status(200).json({
+    success: true,
+    message: "Pre built packages bookings found successfully",
+    data: preBuiltPackageBookings,
+  });
 });

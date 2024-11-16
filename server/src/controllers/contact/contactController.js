@@ -41,6 +41,5 @@ export const deleteContactById = asyncHandler(async (req, res, next) => {
   return res.status(200).json({
     success: true,
     message: "Contact deleted successfully",
-    data: deletedContact,
   });
 });
