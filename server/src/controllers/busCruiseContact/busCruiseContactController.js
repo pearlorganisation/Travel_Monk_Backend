@@ -16,13 +16,16 @@ export const createBusCruiseContact = asyncHandler(async (req, res, next) => {
 
 export const getAllBusCruiseContacts = asyncHandler(async (req, res, next) => {
   const { type } = req.query;
-
+ 
   // Define the query filter
   let filter = {};
-  if (type) {
-    filter.type = { $regex: type, $options: "i" };
-  }
+  if (type && type.length > 0) {
+   filter.type = {
+    $in: type.map(t => new RegExp(t, "i"))
+   };
+ }
 
+ 
   // Find contacts with the filter
   const busCruiseContacts = await BusCruiseContact.find(filter);
 
