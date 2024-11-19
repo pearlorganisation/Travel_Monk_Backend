@@ -3,6 +3,7 @@ import { razorpayInstance } from "../../configs/razorpay/razorpay.js";
 import crypto from "crypto";
 import { nanoid } from "nanoid";
 import PreBuiltPackageBooking from "../../models/booking/preBuiltPackageBooking.js";
+import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 
 export const createBooking = asyncHandler(async (req, res, next) => {
   const { totalPrice, user, packageId, numberOfTravellers } = req.body;
@@ -26,7 +27,6 @@ export const createBooking = asyncHandler(async (req, res, next) => {
       razorpay_order_id: order.id,
     });
 
-    // Return success response with order details
     res.status(200).json({
       success: true,
       order,
@@ -34,10 +34,7 @@ export const createBooking = asyncHandler(async (req, res, next) => {
     });
   } catch (error) {
     console.error("Error creating Razorpay order:", error); // Log the complete error object for debugging
-    return res.status(500).json({
-      message: "Failed to create Razorpay order",
-      error: error.message,
-    });
+    return next(new ApiErrorResponse("Failed to create Razorpay order", 500));
   }
 });
 
@@ -64,4 +61,18 @@ export const verifyPayment = asyncHandler(async (req, res, next) => {
       .status(400)
       .json({ success: false, message: "Payment verification failed" });
   }
+});
+
+export const preBuiltPackages = asyncHandler(async (req, res, next) => {
+  const preBuiltPackageBookings = await PreBuiltPackageBooking.find();
+  if (!preBuiltPackageBookings || preBuiltPackageBookings.length === 0) {
+    return next(
+      new ApiErrorResponse("No pre buil package bookings found", 400)
+    );
+  }
+  return res.status(200).json({
+    success: true,
+    message: "Pre built packages bookings found successfully",
+    data: preBuiltPackageBookings,
+  });
 });

@@ -1,18 +1,7 @@
 import Contact from "../../models/contact/contact.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
- import { z } from "zod"
-
-// schema for contact validation
-const contactSchemaValidation = z.object({
-   name: z.string().min(1, "At least 1 character"),
-   email: z.string().email(),  
-   phoneNumber: z.string().min(1, "At least 1 character")    
-   .regex(/^\+?[1-9]\d{1,14}$/, {
-     message: "Invalid phone number format"
-   }),  
-   message: z.string().min(1, "At least 1 character"),
-})
+import { paginate } from "../../utils/pagination.js";
 
 export const submitContactForm = asyncHandler(async (req, res, next) => {
     // validation 
@@ -44,15 +33,30 @@ export const submitContactForm = asyncHandler(async (req, res, next) => {
 });
 
 export const getAllContacts = asyncHandler(async (req, res, next) => {
-  const contacts = await Contact.find();
+  const page = parseInt(req.query.page || "1");
+  const limit = parseInt(req.query.limit || "10");
+
+  // Use the pagination utility function
+  const { data: contacts, pagination } = await paginate(
+    Contact, // Model
+    page, // Current page
+    limit, // Limit per page
+    // [], // No population needed
+    // {}, // No filters
+    // "" // No fields to exclude or select
+  );
+
+  // Check if no contacts are found
   if (!contacts || contacts.length === 0) {
     return next(new ApiErrorResponse("No Contacts found", 404));
   }
 
+  // Return the paginated response
   return res.status(200).json({
     success: true,
     message: "All contacts found successfully",
     data: contacts,
+    pagination, // Include pagination metadata
   });
 });
 
@@ -70,6 +74,5 @@ export const deleteContactById = asyncHandler(async (req, res, next) => {
   return res.status(200).json({
     success: true,
     message: "Contact deleted successfully",
-    data: deletedContact,
   });
 });
