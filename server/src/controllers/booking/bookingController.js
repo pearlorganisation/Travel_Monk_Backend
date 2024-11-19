@@ -27,7 +27,6 @@ export const createBooking = asyncHandler(async (req, res, next) => {
       razorpay_order_id: order.id,
     });
 
-    // Return success response with order details
     res.status(200).json({
       success: true,
       order,
@@ -35,10 +34,7 @@ export const createBooking = asyncHandler(async (req, res, next) => {
     });
   } catch (error) {
     console.error("Error creating Razorpay order:", error); // Log the complete error object for debugging
-    return res.status(500).json({
-      message: "Failed to create Razorpay order",
-      error: error.message,
-    });
+    return next(new ApiErrorResponse("Failed to create Razorpay order", 500));
   }
 });
 

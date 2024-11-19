@@ -4,6 +4,7 @@ import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import { COOKIE_OPTIONS } from "../../../constants.js";
+import { paginate } from "../../utils/pagination.js";
 
 //Controller for refreshing Access token
 export const refreshAccessToken = asyncHandler(async (req, res, next) => {
@@ -157,17 +158,26 @@ export const getUserDetails = asyncHandler(async (req, res, next) => {
     .json({ success: true, message: "User found successfully", data: user });
 });
 
+// Get all Users with pagination
 export const getAllUsers = asyncHandler(async (req, res, next) => {
-  const users = await User.find().select("-password -refreshToken -role");
+  const page = parseInt(req.query.page || "1");
+  const limit = parseInt(req.query.limit || "10");
 
-  if (!users || users.length === 0)
+  // Use the pagination utility function
+  const { data: users, pagination } = await paginate(
+    User,
+    page,
+    limit,
+    [], // No population needed
+    {}, // No filters
+    "-password -refreshToken -role" // Fields to exclude
+  );
+
+  // Check if no users found
+  if (!users || users.length === 0) {
     return next(new ApiErrorResponse("Users not found", 404));
+  }
 
-  res.status(200).json({
-    message: "Users found successfully",
-    success: true,
-    data: users,
-  });
+  // Return paginated response
+  return res.status(200).json({ success: true, data: users, pagination });
 });
-
-
