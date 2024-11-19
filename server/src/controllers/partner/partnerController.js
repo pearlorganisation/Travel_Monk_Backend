@@ -17,7 +17,7 @@ export const createPartner = asyncHandler(async (req, res, next) => {
 
   const newPartner = await Partner.create({
     ...req.body,
-    partnerLogo: uploadedLogo[0],
+    partnerLogo: uploadedLogo && uploadedLogo[0], // Will set to undefined for empty array and will get validation error
   });
 
   if (!newPartner) {

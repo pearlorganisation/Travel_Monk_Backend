@@ -64,6 +64,15 @@ export const changePassword = asyncHandler(async (req, res, next) => {
     return next(new ApiErrorResponse("Wrong password", 400));
   }
 
+  if (newPassword === currentPassword) {
+    return next(
+      new ApiErrorResponse(
+        "New password cannot be the same as the old password",
+        400
+      )
+    );
+  }
+
   if (newPassword !== confirmNewPassword) {
     return next(new ApiErrorResponse("New passwords do not match", 400));
   }
@@ -85,15 +94,21 @@ export const forgotPassword = asyncHandler(async (req, res, next) => {
   const existingUser = await User.findOne({ email });
   if (!existingUser) return next(new ApiErrorResponse("No user found!!", 400));
   const resetToken = jwt.sign(
-    { 
-      userId: existingUser._id, email },
-      process.env.JWT_SECRET_KEY,
+    {
+      userId: existingUser._id,
+      email,
+    },
+    process.env.JWT_SECRET_KEY,
     {
       expiresIn: "1d",
     }
   );
 
-  const resetLink = `${process.env.FRONTEND_RESET_PASSWORD_PAGE_URL}/${resetToken}`;
+  // Determine reset link based on user role
+  const resetLink =
+    existingUser.role === "ADMIN"
+      ? `${process.env.ADMIN_RESET_PASSWORD_PAGE_URL}/${resetToken}`
+      : `${process.env.FRONTEND_RESET_PASSWORD_PAGE_URL}/${resetToken}`;
 
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
@@ -141,7 +156,7 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
   }
   user.password = password;
   await user.save();
-  
+
   return res
     .status(200)
     .json({ success: true, message: "Password reset successfully." });
