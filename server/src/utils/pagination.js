@@ -16,7 +16,7 @@ export const paginate = async (
     .find(filter)
     .skip(skip)
     .limit(limit)
-    .sort({ createdAt: -1 });
+    .sort({ createdAt: -1 }); // Ascending Order/Increasing Order | Latest will come first
 
   // Apply field selection if provided
   if (select) {
@@ -31,7 +31,7 @@ export const paginate = async (
   }
 
   const data = await query;
-  console.log(data);
+  //   console.log(data);
   // Calculate total pages and create pages array
   const totalPages = Math.ceil(totalDocuments / limit);
   let pagesArray = [1];
