@@ -14,7 +14,7 @@ export const createPartner = asyncHandler(async (req, res, next) => {
   if (partnerLogo) {
     uploadedLogo = await uploadFileToCloudinary(partnerLogo); // Assuming this function exists
   }
-
+console.log("------",uploadedLogo);
   const newPartner = await Partner.create({
     ...req.body,
     partnerLogo: uploadedLogo[0],
