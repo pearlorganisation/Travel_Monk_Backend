@@ -4,8 +4,7 @@ import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 import { paginate } from "../../utils/pagination.js";
 
 export const submitContactForm = asyncHandler(async (req, res, next) => {
-    // validation 
-  const {name , email, phoneNumber, message } = req.body;
+  
   const contactInfo = await Contact.create(req.body);
   if (!contactInfo) {
     return next(new ApiErrorResponse("Contact form submission failed", 400));
