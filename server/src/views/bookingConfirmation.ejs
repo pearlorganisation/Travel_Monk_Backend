@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+      }
+      .container {
+        max-width: 600px;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+      h2 {
+        color: #4caf50;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Booking Confirmation</h2>
+      <p>Hi <%= name %>,</p>
+      <p>We are excited to confirm your booking! Here are the details:</p>
+      <ul>
+        <li><strong>Booking ID:</strong> <%= bookingId %></li>
+        <li><strong>Package Name:</strong> <%= packageName %></li>
+        <li>
+          <strong>Number of Travellers:</strong> <%= numberOfTravellers %>
+        </li>
+        <li><strong>Total Price:</strong> ₹<%= totalPrice %></li>
+      </ul>
+      <p>
+        Thank you for choosing us! If you have any questions, feel free to
+        contact our support team.
+      </p>
+      <p>Best regards,<br />Travel Monk</p>
+    </div>
+  </body>
+</html>
