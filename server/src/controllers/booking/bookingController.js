@@ -4,6 +4,7 @@ import crypto from "crypto";
 import { nanoid } from "nanoid";
 import PreBuiltPackageBooking from "../../models/booking/preBuiltPackageBooking.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
+import { sendBookingConfirmationMail } from "../../utils/Mail/emailTemplates.js";
 
 export const createBooking = asyncHandler(async (req, res, next) => {
   const { totalPrice, user, packageId, numberOfTravellers } = req.body;
@@ -49,13 +50,44 @@ export const verifyPayment = asyncHandler(async (req, res, next) => {
     .digest("hex");
 
   if (generated_signature === razorpay_signature) {
-    await PreBuiltPackageBooking.findOneAndUpdate(
+    const booking = await PreBuiltPackageBooking.findOneAndUpdate(
       { razorpay_order_id },
-      { paymentStatus: "Paid", bookingStatus: "Completed" }
-    );
-    res
-      .status(200)
-      .json({ success: true, message: "Payment verified successfully" });
+      { paymentStatus: "Paid", bookingStatus: "Completed" },
+      { new: true }
+    )
+      .populate("user", "email name")
+      .populate("packageId", "name");
+
+    if (booking) {
+      await sendBookingConfirmationMail(
+        booking.user?.email, // Recipient's email
+        {
+          name: booking.user.name,
+          bookingId: booking.bookingId,
+          packageName: booking.packageId.name,
+          numberOfTravellers: booking.numberOfTravellers,
+          totalPrice: booking.totalPrice,
+        }
+      )
+        .then(() => {
+          return res.status(200).json({
+            success: true,
+            message:
+              "Mail sent successfully. Please check your email, including the spam or junk folder to verify your account",
+          });
+        })
+        .catch((error) => {
+          res.status(400).json({
+            success: false,
+            message: `Unable to send mail: ${error.message}`,
+          });
+        });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Payment verified and booking confirmed",
+    });
   } else {
     res
       .status(400)
