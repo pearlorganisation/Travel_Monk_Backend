@@ -48,7 +48,7 @@ export const refreshAccessToken = asyncHandler(async (req, res, next) => {
     .json({ access_token, refresh_token });
 });
 
-// Change password controller
+// Change password controller for logged in user //
 export const changePassword = asyncHandler(async (req, res, next) => {
   const { currentPassword, newPassword, confirmNewPassword } = req.body;
   const { email } = req.user;
