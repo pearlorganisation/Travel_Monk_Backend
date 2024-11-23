@@ -42,22 +42,6 @@ const packageSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Destinations",
     },
-    // pricing: {
-    //   innova: {
-    //     capacity: { type: Number, default: 5 },
-    //     price: Number,
-    //   },
-    //   tempo: {
-    //     capacity: { type: Number, default: 10 },
-    //     price: Number,
-    //   },
-    // },
-    // premiumAddons: [
-    //   {
-    //     name: String,
-    //     price: Number,
-    //   },
-    // ],
   },
   { timestamps: true }
 );
