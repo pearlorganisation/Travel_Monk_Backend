@@ -29,6 +29,13 @@ const vehicleSchema = new mongoose.Schema(
       type: Boolean,
       default: true, // Vehicles are available by default
     },
+    destinations: [
+      {
+        type: mongoose.Schema.Types.ObjectId, // Reference to Destination model
+        ref: "Destinations",
+        required: true, // Set this to `true` if a destination is mandatory
+      },
+    ],
   },
 
   { timestamps: true }
