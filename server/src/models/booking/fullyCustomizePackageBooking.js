@@ -2,10 +2,10 @@ import mongoose from "mongoose";
 
 const fullyCustomizableBookingSchema = new mongoose.Schema(
   {
-    bookingId: { type: String, required: true, unique: true },
+    // bookingId: { type: String, required: true, unique: true },
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
     numberOfTravellers: { type: Number, required: true },
-    totalPrice: { type: Number, required: true },
+    totalPrice: { type: Number, required: true }, //Estimated price
     tripDetails: {
       startDate: { type: Date, required: true },
       endDate: { type: Date, required: true },
@@ -39,12 +39,6 @@ const fullyCustomizableBookingSchema = new mongoose.Schema(
       enum: ["Paid", "Unpaid"],
       default: "Unpaid",
       required: true,
-    },
-    razorpay_order_id: {
-      type: String,
-    },
-    razorpay_payment_id: {
-      type: String,
     },
   },
   { timestamps: true }
