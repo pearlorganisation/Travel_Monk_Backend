@@ -33,7 +33,7 @@ const vehicleSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId, // Reference to Destination model
         ref: "Destinations",
-        required: true, // Set this to `true` if a destination is mandatory
+        required: true,
       },
     ],
   },

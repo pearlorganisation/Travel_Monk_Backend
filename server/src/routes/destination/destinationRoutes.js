@@ -4,7 +4,7 @@ import { getVehiclesForDestination } from "../../controllers/vehicle/vehicleCont
 
 const router = express.Router();
 
-router.route("/search").get(searchDestinations);
+router.route("/search").get(searchDestinations); // For separate searching 
 router.route("/:destinationId/vehicles").get(getVehiclesForDestination); // For selectin vehicle during customization
 
 export default router;

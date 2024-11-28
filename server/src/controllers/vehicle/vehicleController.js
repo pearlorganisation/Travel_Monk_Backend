@@ -1,5 +1,8 @@
 import Vehicle from "../../models/Vehicle/Vehicle.js";
-import { uploadFileToCloudinary } from "../../utils/cloudinary.js";
+import {
+  deleteFileFromCloudinary,
+  uploadFileToCloudinary,
+} from "../../utils/cloudinary.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 
@@ -53,29 +56,27 @@ export const getVehicleById = asyncHandler(async (req, res, next) => {
   });
 });
 
-
 export const updateVehicleById = asyncHandler(async (req, res, next) => {
-  const { images } = req.files || {};
-  let uploadedImages;
+  const { images } = req.files;
+
+  // Fetch the university to check for existing images
+  const existingVehicle = await Vehicle.findById(req.params.id);
+  if (!existingVehicle) {
+    return next(new ApiError("Vehicle not found", 404));
+  }
+  let uploadedImagesResponse;
 
   // Only upload images if they are provided
   if (images) {
-    uploadedImages = await uploadFileToCloudinary(images); // Assuming this function exists
-  }
-
-  // Prepare the update object
-  const updateData = {
-    ...req.body,
-  };
-
-  // Include new images if uploaded
-  if (uploadedImages) {
-    updateData.images = uploadedImages;
+    uploadedImagesResponse = await uploadFileToCloudinary(images); // Assuming this function exists
   }
 
   const updatedVehicle = await Vehicle.findByIdAndUpdate(
     req.params.id,
-    updateData,
+    {
+      ...req.body,
+      images: uploadedImagesResponse,
+    },
     {
       new: true,
       runValidators: true,
@@ -98,6 +99,35 @@ export const deleteVehicleById = asyncHandler(async (req, res, next) => {
   if (!deletedVehicle) {
     return next(new ApiErrorResponse("Vehicle not found", 404));
   }
+
+  // Delete images from Cloudinary
+  if (
+    Array.isArray(deletedVehicle.images) &&
+    deletedVehicle.images.length > 0
+  ) {
+    try {
+      const deleteResponse = await deleteFileFromCloudinary(
+        deletedVehicle.images
+      );
+      console.log(deleteResponse);
+      if (!deleteResponse.success) {
+        console.error(
+          "Failed to delete some images:",
+          deleteResponse.failedDeletes
+        );
+        // Optionally, include partial failure information in the API response
+        return res.status(200).json({
+          success: true,
+          message: "Vehicle deleted, but some images failed to delete",
+          failedImages: deleteResponse.failedDeletes,
+        });
+      }
+    } catch (error) {
+      console.error("Error deleting images from Cloudinary:", error);
+      return next(new ApiErrorResponse("Error deleting vehicle images", 500));
+    }
+  }
+
   return res.status(200).json({
     success: true,
     message: "Vehicle deleted successfully",
