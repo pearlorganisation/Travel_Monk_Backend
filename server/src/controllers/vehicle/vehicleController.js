@@ -5,6 +5,7 @@ import {
 } from "../../utils/cloudinary.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
+import { paginate } from "../../utils/pagination.js";
 
 export const createVehicle = asyncHandler(async (req, res, next) => {
   const { images } = req.files; // If no files the we wil get {], and images will be undefined
@@ -33,14 +34,23 @@ export const createVehicle = asyncHandler(async (req, res, next) => {
 });
 
 export const getAllVehicles = asyncHandler(async (req, res, next) => {
-  const vehicles = await Vehicle.find();
+  const page = parseInt(req.query.page || "1"); // Default to page 1
+  const limit = parseInt(req.query.limit || "10"); // Default to 10 items per page
+
+  // Use the pagination utility function
+  const { data: vehicles, pagination } = await paginate(Vehicle, page, limit);
+
+  // Check if no vehicles are found
   if (!vehicles || vehicles.length === 0) {
     return next(new ApiErrorResponse("No vehicles found", 404));
   }
+
+  // Return the paginated response
   return res.status(200).json({
     success: true,
     message: "All vehicles retrieved successfully",
     data: vehicles,
+    pagination,
   });
 });
 
@@ -139,7 +149,10 @@ export const getVehiclesForDestination = asyncHandler(
     const { destinationId } = req.params;
 
     // Find vehicles that are linked to the specified destination
-    const vehicles = await Vehicle.find({ destinations: destinationId }); //Will check directly in array for single value
+    const vehicles = await Vehicle.find({
+      destinations: destinationId,
+      isAvailable: true,
+    }); //Will check directly in array for single value
 
     if (!vehicles || vehicles.length === 0) {
       return next(
