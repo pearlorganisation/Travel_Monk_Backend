@@ -28,12 +28,23 @@ const preBuiltPackageCustomizationEnquirySchema = new mongoose.Schema(
           {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Activity",
-            required: true, 
+            required: true,
           },
         ],
       },
     ],
     message: { type: String, required: true },
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      match: [/.+@.+\..+/, "Please enter a valid email address"],
+    },
+    mobileNumber: { type: String, required: true },
   },
   { timestamps: true }
 );
