@@ -40,3 +40,9 @@ export const sendPreBuiltPackageCustomizationEnquiryMail = async (
   const templateName = "preBuiltPackageCustomizationEnquiry";
   return sendMail(email, subject, templateName, data);
 };
+
+export const sendFullyCustomizeEnquiryMail = async (email, data) => {
+  const subject = "Fully Customization Enquiry";
+  const templateName = "fullyCustomizationEnquiry";
+  return sendMail(email, subject, templateName, data);
+};

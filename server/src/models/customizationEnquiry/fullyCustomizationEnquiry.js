@@ -1,30 +1,33 @@
 import mongoose from "mongoose";
 
-const preBuiltPackageCustomizationEnquirySchema = new mongoose.Schema(
+const fullyCustomizeEnquirySchema = new mongoose.Schema(
   {
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    package: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Package",
-      required: true,
-    },
     numberOfTravellers: { type: Number, required: true },
-    estimatedPrice: { type: Number, required: true },
+    estimatedPrice: { type: Number, required: true }, //Estimated price
     selectedVehicle: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Vehicle",
       required: true,
     },
+    destinationName: { type: String, required: true }, // Leh
+    startDate: { type: Date, required: true },
+    endDate: { type: Date, required: true },
+    duration: {
+      days: { type: Number, required: true },
+      nights: { type: Number, required: true },
+    },
     itinerary: [
       {
         day: { type: Number, required: true },
-        location: { type: String, required: true },
-        seletedHotel: {
+        date: { type: Date, required: true },
+        selectedLocation: { type: String, required: true },
+        selectedHotel: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Hotel",
           required: true,
         },
-        seletedActivities: [
+        selectedActivities: [
           {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Activity",
@@ -49,9 +52,9 @@ const preBuiltPackageCustomizationEnquirySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const PreBuiltPackageCustomizationEnquiry = mongoose.model(
-  "PreBuiltPackageCustomizationEnquiry",
-  preBuiltPackageCustomizationEnquirySchema
+const FullyCustomizeEnquiry = mongoose.model(
+  "FullyCustomizeEnquiry",
+  fullyCustomizeEnquirySchema
 );
 
-export default PreBuiltPackageCustomizationEnquiry;
+export default FullyCustomizeEnquiry;

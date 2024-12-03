@@ -1,5 +1,5 @@
 import express from "express";
-import { createPreBuiltPackageCustomizationEnquiry } from "../../controllers/customizationEnquiry/customizationEnquiryController.js";
+import { createPreBuiltPackageCustomizationEnquiry } from "../../controllers/customizationEnquiry/prebuiltCustomizationEnquiryController.js";
 
 const router = express.Router();
 

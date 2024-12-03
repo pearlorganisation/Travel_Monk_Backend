@@ -44,7 +44,8 @@ import partnerTypeRouter from "./src/routes/partnerType/partnerTypesRoutes.js";
 import partnerRouter from "./src/routes/partner/partnerRoutes.js";
 import bookingRouter from "./src/routes/booking/bookingRoutes.js";
 import vehicleRouter from "./src/routes/vehicle/vehicleRoutes.js";
-import customizationEnquiry from "./src/routes/customizationEnquiry/customizationEnquiry.js";
+import preBuiltCustomizationEnquiryRouter from "./src/routes/customizationEnquiry/preBuiltCustomizationEnquiryRoutes.js";
+import fullyCustomizationEnquiryRouter from "./src/routes/customizationEnquiry/fullyCustomizationEnquiryRoutes.js";
 import { errorHandler, notFound } from "./src/utils/errors/errorHandler.js";
 
 app.get("/", (req, res) => {
@@ -65,7 +66,14 @@ app.use("/api/v1/partnerTypes", partnerTypeRouter);
 app.use("/api/v1/partners", partnerRouter);
 app.use("/api/v1/bookings", bookingRouter);
 app.use("/api/v1/vehicles", vehicleRouter);
-app.use("/api/v1/customization-enquiry", customizationEnquiry);
+app.use(
+  "/api/v1/customization-enquiries/pre-built",
+  preBuiltCustomizationEnquiryRouter
+);
+app.use(
+  "/api/v1/customization-enquiries/fully-customize",
+  fullyCustomizationEnquiryRouter
+);
 
 app.use(notFound);
 app.use(errorHandler);
