@@ -35,3 +35,19 @@ export const searchDestinations = asyncHandler(async (req, res, next) => {
     data: destinations,
   });
 });
+
+export const getAllDestinations = asyncHandler(async (req, res, next) => {
+  const allDestinations = await Destinations.find().select("name");
+
+  if (allDestinations.length === 0) {
+    return res
+      .status(404)
+      .json({ success: false, message: "No Destinations found" });
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "All Destinations found successfully",
+    destinations: allDestinations,
+  });
+});
