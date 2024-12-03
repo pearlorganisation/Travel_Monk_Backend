@@ -15,7 +15,6 @@ const partnerSchema = new mongoose.Schema(
     partnerLogo: {
       secure_url: { type: String, required: true },
       public_id: { type: String, required: true },
-      asset_id: { type: String, required: true },
     },
   },
   { timestamps: true }

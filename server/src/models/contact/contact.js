@@ -6,6 +6,7 @@ const contactSchema = new mongoose.Schema(
     email: { type: String, required: true },
     phoneNumber: { type: String, required: true },
     message: { type: String, required: true },
+    page: { type: String }, // Contain the url of page where contact form had been submited
   },
   { timestamps: true }
 );

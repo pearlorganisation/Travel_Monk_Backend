@@ -4,6 +4,9 @@ import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import { COOKIE_OPTIONS } from "../../../constants.js";
+import { paginate } from "../../utils/pagination.js";
+import { generateForgotPasswordResetToken } from "../../utils/tokenHelper.js";
+import { sendForgotPasswordMail } from "../../utils/Mail/emailTemplates.js";
 
 //Controller for refreshing Access token
 export const refreshAccessToken = asyncHandler(async (req, res, next) => {
@@ -63,6 +66,15 @@ export const changePassword = asyncHandler(async (req, res, next) => {
     return next(new ApiErrorResponse("Wrong password", 400));
   }
 
+  if (newPassword === currentPassword) {
+    return next(
+      new ApiErrorResponse(
+        "New password cannot be the same as the old password",
+        400
+      )
+    );
+  }
+
   if (newPassword !== confirmNewPassword) {
     return next(new ApiErrorResponse("New passwords do not match", 400));
   }
@@ -83,42 +95,27 @@ export const forgotPassword = asyncHandler(async (req, res, next) => {
 
   const existingUser = await User.findOne({ email });
   if (!existingUser) return next(new ApiErrorResponse("No user found!!", 400));
-  const resetToken = jwt.sign(
-    { userId: existingUser._id, email },
-    process.env.JWT_SECRET_KEY,
-    {
-      expiresIn: "1d",
-    }
-  );
-
-  const resetLink = `${process.env.FRONTEND_RESET_PASSWORD_PAGE_URL}/reset-password/${resetToken}`;
-
-  const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 465,
-    service: "gmail",
-    auth: {
-      user: process.env.NODEMAILER_EMAIL_USER,
-      pass: process.env.NODEMAILER_EMAIL_PASS,
-    },
+  const forgotPasswordResetToken = generateForgotPasswordResetToken({
+    userId: existingUser._id,
+    email,
   });
-
-  let mailOptions = {
-    from: process.env.NODEMAILER_EMAIL_USER,
-    to: email,
-    subject: "Password Reset Rquest",
-    html: `<p>You requested a password reset</p><p>Click <a href="${resetLink}">here</a> to reset your password.</p>`,
-  };
-
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      return error;
-    } else {
-      return res
-        .status(200)
-        .json({ message: "Password reset mail sent successfuly" });
-    }
-  });
+  await sendForgotPasswordMail(
+    email,
+    forgotPasswordResetToken,
+    existingUser.role
+  )
+    .then(() => {
+      return res.status(200).json({
+        success: true,
+        message: "Mail sent successfully.",
+      });
+    })
+    .catch((error) => {
+      res.status(400).json({
+        success: false,
+        message: `Unable to send mail! ${error.message}`,
+      });
+    });
 });
 
 //Reset Password Controller
@@ -140,6 +137,7 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
 
   user.password = password;
   await user.save();
+
   return res
     .status(200)
     .json({ success: true, message: "Password reset successfully." });
@@ -147,6 +145,9 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
 
 //Get user details Contoller
 export const getUserDetails = asyncHandler(async (req, res, next) => {
+  // const user = req.user;
+
+  // console.log(user, "user")
   const user = await User.findById(req.user?._id).select(
     "-password -refreshToken"
   );
@@ -158,15 +159,26 @@ export const getUserDetails = asyncHandler(async (req, res, next) => {
     .json({ success: true, message: "User found successfully", data: user });
 });
 
+// Get all Users with pagination
 export const getAllUsers = asyncHandler(async (req, res, next) => {
-  const users = await User.find().select("-password -refreshToken -role");
+  const page = parseInt(req.query.page || "1");
+  const limit = parseInt(req.query.limit || "10");
 
-  if (!users || users.length === 0)
+  // Use the pagination utility function
+  const { data: users, pagination } = await paginate(
+    User,
+    page,
+    limit,
+    [], // No population needed
+    {}, // No filters
+    "-password -refreshToken -role" // Fields to exclude
+  );
+
+  // Check if no users found
+  if (!users || users.length === 0) {
     return next(new ApiErrorResponse("Users not found", 404));
+  }
 
-  res.status(200).json({
-    message: "Users found successfully",
-    success: true,
-    data: users,
-  });
+  // Return paginated response
+  return res.status(200).json({ success: true, data: users, pagination });
 });

@@ -1,12 +1,10 @@
 import express from "express";
-import {
-  getAllDestinations,
-  searchDestinations,
-} from "../../controllers/destination/destinationController.js";
+import { searchDestinations } from "../../controllers/destination/destinationController.js";
+import { getVehiclesForDestination } from "../../controllers/vehicle/vehicleController.js";
 
 const router = express.Router();
 
-router.route("/search").get(searchDestinations);
-router.route("/").get(getAllDestinations);
+router.route("/search").get(searchDestinations); // For separate searching
+router.route("/:destinationId/vehicles").get(getVehiclesForDestination); // For selectin vehicle during customization | available vehicle will get
 
 export default router;

@@ -1,11 +1,11 @@
 import User from "../../models/user/user.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
-import { generateSignUpToken } from "../../utils/generateSignUpToken.js";
-import { sendMail } from "../../utils/Mail/sendMail.js";
+import { generateSignUpToken } from "../../utils/tokenHelper.js";
 import jwt from "jsonwebtoken";
 import { COOKIE_OPTIONS } from "../../../constants.js";
 import dotnev from "dotenv";
+import { sendSignupMail } from "../../utils/Mail/emailTemplates.js";
 
 dotnev.config();
 
@@ -23,14 +23,7 @@ export const signup = asyncHandler(async (req, res, next) => {
 
   const signUptoken = generateSignUpToken({ name, email, password });
 
-  // Dynamically set BASE_URL based on NODE_ENV
-  const baseUrl =
-    process.env.NODE_ENV === "production"
-      ? process.env.PROD_BASE_URL // Production URL
-      : process.env.DEV_BASE_URL; // Development URL
-  const verificationUrl = `${baseUrl}/api/v1/auth/verify-signup/${signUptoken}`;
-
-  sendMail(email, "From Travel Monk", verificationUrl)
+  sendSignupMail(email, signUptoken)
     .then(() => {
       return res.status(200).json({
         success: true,

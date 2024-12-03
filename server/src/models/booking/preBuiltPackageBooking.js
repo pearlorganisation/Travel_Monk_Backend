@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 // PreBuiltPackageBooking Schema
 const preBuiltPackageBookingSchema = new mongoose.Schema(
   {
-    bookingId: { type: String, required: true, unique: true },
+    // bookingId: { type: String, required: true, unique: true },
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     packageId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -12,23 +12,23 @@ const preBuiltPackageBookingSchema = new mongoose.Schema(
     },
     numberOfTravellers: { type: Number, required: true },
     totalPrice: { type: Number, required: true },
-    customizations: [
-      {
-        // day: { type: Number, required: true },
-        customizedHotel: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Hotel",
-          required: true,
-        },
-        customizedActivities: [
-          {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Activity",
-            required: true,
-          },
-        ],
-      },
-    ],
+    // customizations: [
+    //   {
+    //     // day: { type: Number, required: true },
+    //     customizedHotel: {
+    //       type: mongoose.Schema.Types.ObjectId,
+    //       ref: "Hotel",
+    //       required: true,
+    //     },
+    //     customizedActivities: [
+    //       {
+    //         type: mongoose.Schema.Types.ObjectId,
+    //         ref: "Activity",
+    //         required: true,
+    //       },
+    //     ],
+    //   },
+    // ],
     bookingStatus: {
       type: String,
       enum: ["Pending", "Completed", "Failed"],

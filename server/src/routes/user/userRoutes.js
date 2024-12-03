@@ -20,6 +20,7 @@ router.route("/change-password").post(authenticateToken, changePassword);
 router.route("/forgot-password").post(forgotPassword);
 router.route("/reset-password/:token").post(resetPassword);
 router.route("/me").get(authenticateToken, getUserDetails);
+// router.route("/bookings/pre-built-packages").get(authenticateToken, getMyPreBuiltPackageBookings)
 router
   .route("/")
   .get(authenticateToken, verifyPermission([UserRolesEnum.ADMIN]), getAllUsers);

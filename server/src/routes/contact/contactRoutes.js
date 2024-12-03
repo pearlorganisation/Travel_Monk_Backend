@@ -1,5 +1,9 @@
 import express from "express";
-import { submitContactForm } from "../../controllers/contact/contactController.js";
+import {
+  deleteContactById,
+  getAllContacts,
+  submitContactForm,
+} from "../../controllers/contact/contactController.js";
 import {
   createBusCruiseContact,
   getAllBusCruiseContacts,
@@ -10,7 +14,8 @@ import {
 
 const router = express.Router();
 
-router.route("/").post(submitContactForm);
+router.route("/").post(submitContactForm).get(getAllContacts);
+router.route("/:id").delete(deleteContactById);
 router
   .route("/bus-cruise")
   .post(createBusCruiseContact)

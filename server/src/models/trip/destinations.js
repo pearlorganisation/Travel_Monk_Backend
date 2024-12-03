@@ -10,7 +10,7 @@ const destinationSchema = new mongoose.Schema(
   {
     name: {
       type: String, // LEH
-      required: [true, "Indian destination name required"],
+      required: [true, "Destination name required"],
       unique: true,
     },
     type: {

@@ -7,3 +7,10 @@ export const generateSignUpToken = (data) => {
   console.log(`token: ${token}`);
   return token;
 };
+
+export const generateForgotPasswordResetToken = (data) => {
+  const token = jwt.sign(data, process.env.JWT_SECRET_KEY, {
+    expiresIn: "1d", // Set to min later
+  });
+  return token;
+};

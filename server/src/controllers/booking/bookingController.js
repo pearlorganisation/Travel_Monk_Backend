@@ -3,27 +3,22 @@ import { razorpayInstance } from "../../configs/razorpay/razorpay.js";
 import crypto from "crypto";
 import { nanoid } from "nanoid";
 import PreBuiltPackageBooking from "../../models/booking/preBuiltPackageBooking.js";
+import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
+import { sendBookingConfirmationMail } from "../../utils/Mail/emailTemplates.js";
 
 export const createBooking = asyncHandler(async (req, res, next) => {
   const { totalPrice, user, packageId, numberOfTravellers } = req.body;
-
-  // Basic validation
-  if (!totalPrice) {
-    return res
-      .status(400)
-      .json({ message: "Amount and currency are required" });
-  }
   const options = {
     amount: totalPrice * 100, // Convert amount to smallest unit (paise for INR)
     currency: "INR",
-    receipt: `order_rcptid_${Math.floor(1000 + Math.random() * 9000)}`, // Generate unique receipt id
+    receipt: `order_rcptid_${nanoid(8)}${Date.now()}`, // Generate unique receipt id
   };
 
   // Create the order using Razorpay instance
   try {
     const order = await razorpayInstance.orders.create(options);
     const preBuiltPackageBooking = await PreBuiltPackageBooking.create({
-      bookingId: `BID_${nanoid(6)}${Date.now()}`,
+      bookingId: `BID_${nanoid(8)}${Date.now()}`,
       user,
       packageId,
       numberOfTravellers,
@@ -33,7 +28,6 @@ export const createBooking = asyncHandler(async (req, res, next) => {
       razorpay_order_id: order.id,
     });
 
-    // Return success response with order details
     res.status(200).json({
       success: true,
       order,
@@ -41,10 +35,7 @@ export const createBooking = asyncHandler(async (req, res, next) => {
     });
   } catch (error) {
     console.error("Error creating Razorpay order:", error); // Log the complete error object for debugging
-    return res.status(500).json({
-      message: "Failed to create Razorpay order",
-      error: error.message,
-    });
+    return next(new ApiErrorResponse("Failed to create Razorpay order", 500));
   }
 });
 
@@ -59,16 +50,61 @@ export const verifyPayment = asyncHandler(async (req, res, next) => {
     .digest("hex");
 
   if (generated_signature === razorpay_signature) {
-    await PreBuiltPackageBooking.findOneAndUpdate(
+    const booking = await PreBuiltPackageBooking.findOneAndUpdate(
       { razorpay_order_id },
-      { paymentStatus: "Paid", bookingStatus: "Completed" }
-    );
-    res
-      .status(200)
-      .json({ success: true, message: "Payment verified successfully" });
+      { paymentStatus: "Paid", bookingStatus: "Completed" },
+      { new: true }
+    )
+      .populate("user", "email name")
+      .populate("packageId", "name");
+
+    if (booking) {
+      await sendBookingConfirmationMail(
+        booking.user?.email, // Recipient's email
+        {
+          name: booking.user.name,
+          bookingId: booking.bookingId,
+          packageName: booking.packageId.name,
+          numberOfTravellers: booking.numberOfTravellers,
+          totalPrice: booking.totalPrice,
+        }
+      )
+        .then(() => {
+          return res.status(200).json({
+            success: true,
+            message:
+              "Mail sent successfully. Please check your email, including the spam or junk folder to verify your account",
+          });
+        })
+        .catch((error) => {
+          res.status(400).json({
+            success: false,
+            message: `Unable to send mail: ${error.message}`,
+          });
+        });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Payment verified and booking confirmed",
+    });
   } else {
     res
       .status(400)
       .json({ success: false, message: "Payment verification failed" });
   }
+});
+
+export const preBuiltPackages = asyncHandler(async (req, res, next) => {
+  const preBuiltPackageBookings = await PreBuiltPackageBooking.find();
+  if (!preBuiltPackageBookings || preBuiltPackageBookings.length === 0) {
+    return next(
+      new ApiErrorResponse("No pre buil package bookings found", 400)
+    );
+  }
+  return res.status(200).json({
+    success: true,
+    message: "Pre built packages bookings found successfully",
+    data: preBuiltPackageBookings,
+  });
 });

@@ -25,7 +25,6 @@ export const uploadFileToCloudinary = async (files) => {
     return uploadResults.map((result) => ({
       secure_url: result.secure_url,
       public_id: result.public_id,
-      asset_id: result.asset_id,
     }));
   } catch (error) {
     throw new Error(`File upload failed: ${error.message}`);
@@ -52,11 +51,17 @@ export const deleteFileFromCloudinary = async (files) => {
             `Error deleting file with public_id: ${publicId}:`,
             error
           );
-          return { publicId, error: error.message || "Deletion failed" }; // Return error for each file
+          return {
+            publicId,
+            error: {
+              code: error.code || "UNKNOWN_ERROR",
+              message: error.message || "Deletion failed",
+            },
+          };
         }
       })
     );
-    console.log("Deleted Result: ", deleteResults);
+    //console.log("Deleted Result: ", deleteResults); // [{ publicId:'', result: { result: 'ok' } }, {}]
     // Check if there were any errors
     const failedDeletes = deleteResults.filter((res) => res.error); // response when deletion failed = {"result": "", "error": {}}
     if (failedDeletes.length > 0) {
