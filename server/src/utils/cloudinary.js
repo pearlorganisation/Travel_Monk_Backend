@@ -51,11 +51,17 @@ export const deleteFileFromCloudinary = async (files) => {
             `Error deleting file with public_id: ${publicId}:`,
             error
           );
-          return { publicId, error: error.message || "Deletion failed" }; // Return error for each file
+          return {
+            publicId,
+            error: {
+              code: error.code || "UNKNOWN_ERROR",
+              message: error.message || "Deletion failed",
+            },
+          };
         }
       })
     );
-    console.log("Deleted Result: ", deleteResults);
+    //console.log("Deleted Result: ", deleteResults); // [{ publicId:'', result: { result: 'ok' } }, {}]
     // Check if there were any errors
     const failedDeletes = deleteResults.filter((res) => res.error); // response when deletion failed = {"result": "", "error": {}}
     if (failedDeletes.length > 0) {

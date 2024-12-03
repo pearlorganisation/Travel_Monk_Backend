@@ -236,3 +236,24 @@ const constructSearchQuery = (query) => {
 
   return constructedQuery;
 };
+
+export const getHotelsByDestination = async (req, res) => {
+  const { destinationId } = req.params;
+  console.log("");
+  try {
+    const hotels = await Hotel.find({
+      destination: destinationId,
+    });
+
+    if (hotels.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No hotels found for this destination." });
+    }
+
+    res.status(200).json(hotels);
+  } catch (error) {
+    console.error("Error fetching activities:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};

@@ -19,6 +19,6 @@ router
   .delete(deleteActivityById)
   .put(updateActivityById);
 
-router.route("/destination/:destinationId").get(getActivitiesByDestination);
+// router.route("/destination/:destinationId").get(getActivitiesByDestination);
 
 export default router;

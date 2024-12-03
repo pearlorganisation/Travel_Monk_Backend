@@ -6,6 +6,7 @@ import {
   deleteRoomTypeById,
   getAllHotels,
   getHotelById,
+  getHotelsByDestination,
   searchHotels,
 } from "../../controllers/hotel/hotelController.js";
 import {
@@ -28,6 +29,8 @@ router
   .get(getAllHotels);
 
 router.route("/search").get(searchHotels);
+
+// router.route("/destination/:destinationId").get(getHotelsByDestination);
 
 router
   .route("/:hotelId")
