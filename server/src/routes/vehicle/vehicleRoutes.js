@@ -4,6 +4,7 @@ import {
   deleteVehicleById,
   getAllVehicles,
   getVehicleById,
+  toggleVehicleAvailability,
   updateVehicleById,
 } from "../../controllers/vehicle/vehicleController.js";
 import fileParser from "../../middlewares/fileParser.js";
@@ -16,5 +17,8 @@ router
   .get(getVehicleById)
   .patch(fileParser, updateVehicleById)
   .delete(deleteVehicleById);
+router
+  .route("/:vehicleId/toggle-availability")
+  .patch(toggleVehicleAvailability);
 
 export default router;

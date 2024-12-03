@@ -167,3 +167,34 @@ export const getVehiclesForDestination = asyncHandler(
     });
   }
 );
+
+// Controller to toggle vehicle availability
+export const toggleVehicleAvailability = asyncHandler(
+  async (req, res, next) => {
+    const { vehicleId } = req.params;
+
+    // Check if vehicleId is provided
+    if (!vehicleId) {
+      return next(new ApiErrorResponse("Vehicle ID is required", 400));
+    }
+
+    // Find the vehicle by ID
+    const vehicle = await Vehicle.findById(vehicleId);
+
+    if (!vehicle) {
+      return next(new ApiErrorResponse("Vehicle not found", 404));
+    }
+
+    // Toggle the isAvailable field
+    vehicle.isAvailable = !vehicle.isAvailable;
+
+    // Save the updated vehicle
+    await vehicle.save();
+
+    res.status(200).json({
+      success: true,
+      message: `Vehicle availability toggled to ${vehicle.isAvailable}`,
+      data: vehicle,
+    });
+  }
+);

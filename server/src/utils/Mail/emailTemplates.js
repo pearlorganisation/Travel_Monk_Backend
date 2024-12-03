@@ -31,3 +31,12 @@ export const sendBookingConfirmationMail = async (email, data) => {
   const templateName = "bookingConfirmation";
   return sendMail(email, subject, templateName, data);
 };
+
+export const sendPreBuiltPackageCustomizationEnquiryMail = async (
+  email,
+  data
+) => {
+  const subject = "Pre-Built Package Customization Enquiry";
+  const templateName = "preBuiltPackageCustomizationEnquiry";
+  return sendMail(email, subject, templateName, data);
+};
