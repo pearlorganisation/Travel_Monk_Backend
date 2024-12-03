@@ -53,7 +53,7 @@ const hotelSchema = new mongoose.Schema(
     },
     destination: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "IndianDestinations",
+      ref: "Destinations",
     },
     address: {
       city: { type: String, required: true },
