@@ -1,12 +1,9 @@
 import express from "express";
 import {
-  createHotels,
-  createRoomTypes,
+  createHotel,
   deleteHotelById,
-  deleteRoomTypeById,
   getAllHotels,
   getHotelById,
-  getHotelsByDestination,
   searchHotels,
 } from "../../controllers/hotel/hotelController.js";
 import {
@@ -24,13 +21,11 @@ router
     // authenticateToken,
     // verifyPermission([UserRolesEnum.ADMIN]),
     fileParser,
-    createHotels // Only(admin)
+    createHotel // Only(admin)
   )
   .get(getAllHotels);
 
 router.route("/search").get(searchHotels);
-
-// router.route("/destination/:destinationId").get(getHotelsByDestination);
 
 router
   .route("/:hotelId")
@@ -40,8 +35,5 @@ router
     verifyPermission([UserRolesEnum.ADMIN]),
     deleteHotelById // Only(admin)
   );
-
-router.route("/:hotelId/room-types").post(fileParser, createRoomTypes);
-router.route("/:hotelId/room-types/:roomTypeId").delete(deleteRoomTypeById);
 
 export default router;

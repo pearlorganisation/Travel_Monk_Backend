@@ -6,7 +6,7 @@ import { getActivitiesByDestination } from "../../controllers/activity/activityC
 
 const router = express.Router();
 
-router.route("/search").get(searchDestinations); // For separate searching
+router.route("/search").get(searchDestinations); // For separate searching when customizing
 router.route("/:destinationId/hotels").get(getHotelsByDestination);
 router.route("/:destinationId/vehicles").get(getVehiclesForDestination); // For selectin vehicle during customization | available vehicle will get
 router.route("/:destinationId/activities").get(getActivitiesByDestination);

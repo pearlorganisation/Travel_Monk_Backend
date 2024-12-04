@@ -2,6 +2,7 @@ import { isValidObjectId } from "mongoose";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import Activity from "../../models/activity/activity.js";
+import { paginate } from "../../utils/pagination.js";
 
 export const createActivity = asyncHandler(async (req, res, next) => {
   const { name, destination } = req.body;
@@ -27,15 +28,27 @@ export const createActivity = asyncHandler(async (req, res, next) => {
 });
 
 export const getAllActivities = asyncHandler(async (req, res, next) => {
-  const findAllActivities = await Activity.find();
+  const page = parseInt(req.query.page || "1");
+  const limit = parseInt(req.query.limit || "10");
 
-  if (findAllActivities.length === 0)
-    return next(new ApiErrorResponse("No activities found", 404));
+  // Use the pagination utility function
+  const { data: activities, pagination } = await paginate(
+    Activity,
+    page,
+    limit,
+    [{ path: "destination", select: "name" }]
+  );
+
+  // Check if no contacts are found
+  if (!activities || activities.length === 0) {
+    return next(new ApiErrorResponse("No Contacts found", 404));
+  }
 
   res.status(200).json({
     success: true,
     message: "Activities fetched successfully",
-    data: findAllActivities,
+    pagination,
+    data: activities,
   });
 });
 

@@ -24,7 +24,7 @@ export const getAllContacts = asyncHandler(async (req, res, next) => {
   const { data: contacts, pagination } = await paginate(
     Contact, // Model
     page, // Current page
-    limit, // Limit per page
+    limit // Limit per page
     // [], // No population needed
     // {}, // No filters
     // "" // No fields to exclude or select
@@ -39,8 +39,8 @@ export const getAllContacts = asyncHandler(async (req, res, next) => {
   return res.status(200).json({
     success: true,
     message: "All contacts found successfully",
-    data: contacts,
     pagination, // Include pagination metadata
+    data: contacts,
   });
 });
 
