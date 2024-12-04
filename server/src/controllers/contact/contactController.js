@@ -4,23 +4,27 @@ import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 import { paginate } from "../../utils/pagination.js";
 
 export const submitContactForm = asyncHandler(async (req, res, next) => {
-    // validation 
-   const {name , email, phoneNumber, message } = req.body;
-   // try catch for validation
-   try {
-       const validateData = contactSchemaValidation.parse({name , email, phoneNumber, message});
+  // validation
+  const { name, email, phoneNumber, message } = req.body;
+  // try catch for validation
+  try {
+    const validateData = contactSchemaValidation.parse({
+      name,
+      email,
+      phoneNumber,
+      message,
+    });
 
-       console.log(validateData);
-   } catch (error) {
-      if (error instanceof z.ZodError) {
-
-        console.error(error.errors);
-        return next(new ApiErrorResponse("Enter correct no format",error))  
-      } else {
-        console.error("An unexpected error occurred:", error);
-        return next(new ApiErrorResponse("Unexpected error",error));
-      }
-   }
+    console.log(validateData);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      console.error(error.errors);
+      return next(new ApiErrorResponse("Enter correct no format", error));
+    } else {
+      console.error("An unexpected error occurred:", error);
+      return next(new ApiErrorResponse("Unexpected error", error));
+    }
+  }
   const contactInfo = await Contact.create(req.body);
   if (!contactInfo) {
     return next(new ApiErrorResponse("Contact form submission failed", 400));
@@ -40,7 +44,7 @@ export const getAllContacts = asyncHandler(async (req, res, next) => {
   const { data: contacts, pagination } = await paginate(
     Contact, // Model
     page, // Current page
-    limit, // Limit per page
+    limit // Limit per page
     // [], // No population needed
     // {}, // No filters
     // "" // No fields to exclude or select
@@ -55,8 +59,8 @@ export const getAllContacts = asyncHandler(async (req, res, next) => {
   return res.status(200).json({
     success: true,
     message: "All contacts found successfully",
-    data: contacts,
     pagination, // Include pagination metadata
+    data: contacts,
   });
 });
 
