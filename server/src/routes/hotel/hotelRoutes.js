@@ -4,7 +4,6 @@ import {
   deleteHotelById,
   getAllHotels,
   getHotelById,
-  searchHotels,
 } from "../../controllers/hotel/hotelController.js";
 import {
   authenticateToken,
@@ -24,8 +23,6 @@ router
     createHotel // Only(admin)
   )
   .get(getAllHotels);
-
-router.route("/search").get(searchHotels);
 
 router
   .route("/:hotelId")
