@@ -15,9 +15,10 @@ const vehicleSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    price: {
+    pricePerDay: {
       type: Number,
       required: true,
+      min: [0, "Price per day must be positive"], // Ensures price is positive
     },
     images: [
       {

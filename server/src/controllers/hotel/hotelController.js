@@ -58,63 +58,44 @@ export const searchHotels = asyncHandler(async (req, res, next) => {
   });
 });
 
-//Create Hotel
-export const createHotels = asyncHandler(async (req, res, next) => {
-  const {
-    name,
-    address,
-    description,
-    location,
-    startingPrice,
-    adultCount,
-    childCount,
-    facilities,
-    amenities,
-    averageRatings,
-    numberOfRatings,
-    numberOfRooms,
-    tags,
-    discount,
-  } = req.body;
+// Create Hotel
+export const createHotel = asyncHandler(async (req, res, next) => {
+  const { banner, amenities } = req.files || {};
+  const { amenitiesNames, ...hotelData } = req.body;
 
-  const { images, banner } = req.files;
-  let uploadedImages = [];
-  let uploadedBanner = [];
+  // Upload banner image
+  const uploadedBanner = banner ? await uploadFileToCloudinary(banner) : [];
+  console.log("---------------", uploadedBanner);
+  // Handle amenities upload
+  const uploadedAmenities = [];
+  if (amenities) {
+    const amenitiesArray = Array.isArray(amenities) ? amenities : [amenities];
+    const uploadedIcons = await Promise.all(
+      amenitiesArray.map(async (file, index) => {
+        const name = amenitiesNames[index] || `Amenity ${index + 1}`;
+        const uploaded = await uploadFileToCloudinary(file);
+        return { name, icon: uploaded[0] }; // Assuming uploadFileToCloudinary returns an array
+      })
+    );
+    uploadedAmenities.push(...uploadedIcons);
+  }
+  console.log(uploadedAmenities);
+  // Prepare hotel data
+  const newHotelData = {
+    ...hotelData,
+    amenities: uploadedAmenities,
+    banner: uploadedBanner ? uploadedBanner[0] : undefined, // undefiend will ignore the banner
+  };
 
-  if (images) {
-    if (images.length > 5) {
-      return next(
-        new ApiErrorResponse("Image files cannot be more than 5", 422)
-      ); //422 Unprocessable Content
-    }
-    uploadedImages = await uploadFileToCloudinary(images);
+  // Save hotel to database
+  const newHotel = await Hotel.create(newHotelData);
+  if (!newHotel) {
+    return next(new ApiErrorResponse("Hotel creation failed", 400));
   }
-  if (banner) {
-    uploadedBanner = await uploadFileToCloudinary(banner); // [{}]
-  }
-  const newHotel = new Hotel({
-    name,
-    address,
-    description,
-    location,
-    startingPrice: Number(startingPrice),
-    adultCount: Number(adultCount),
-    childCount: Number(childCount),
-    facilities,
-    amenities,
-    images: uploadedImages,
-    banner: uploadedBanner[0],
-    averageRatings: Number(averageRatings),
-    numberOfRatings: Number(numberOfRatings),
-    numberOfRooms,
-    tags,
-    discount,
-  });
-  await newHotel.save();
 
   res.status(201).json({
     success: true,
-    message: "Hotel created successfully!",
+    message: "Hotel created successfully",
     data: newHotel,
   });
 });
@@ -155,52 +136,6 @@ export const deleteHotelById = asyncHandler(async (req, res, next) => {
     success: true,
     message: "Hotel deleted successfully",
   });
-});
-
-//Create Room Types
-export const createRoomTypes = asyncHandler(async (req, res, next) => {
-  let hotel = await Hotel.findById(req.params.hotelId);
-  if (!hotel) {
-    return next(new ApiErrorResponse("Hotel not found", 404));
-  }
-
-  const { roomImages } = req.files;
-  const uplodedImages = await uploadFileToCloudinary(roomImages);
-  console.log(req.body);
-  hotel.roomTypes.push({
-    ...req.body,
-    roomImages: uplodedImages,
-  });
-
-  await hotel.save();
-  return res.status(201).json({
-    success: true,
-    message: "Room type is created",
-    data: hotel,
-  });
-});
-
-//Delete Room Type By Id
-export const deleteRoomTypeById = asyncHandler(async (req, res, next) => {
-  const { hotelId, roomTypeId } = req.params;
-  let hotel = await Hotel.findById(hotelId);
-  if (!hotel) {
-    return next(new ApiErrorResponse("Hotel not found", 404));
-  }
-
-  const roomTypeExists = hotel.roomTypes.some(
-    (roomType) => roomType._id.toString() === roomTypeId // Return true if test pass(roomTypeId find), return false if all test failed
-  );
-  if (!roomTypeExists) {
-    return next(new ApiErrorResponse("Room type not found", 404));
-  }
-  const result = await Hotel.updateOne(
-    { _id: req.params.hotelId },
-    { $pull: { roomTypes: { _id: req.params.roomTypeId } } } // Find object with _id
-  );
-  return res
-    .status(200)
-    .json({ success: true, message: "Room Type is deleted" });
 });
 
 const constructSearchQuery = (query) => {
