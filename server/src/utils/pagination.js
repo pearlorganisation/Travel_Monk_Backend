@@ -26,7 +26,6 @@ export const paginate = async (
       query = query.populate(option);
     });
   }
-
   const data = await query;
 
   // Calculate total pages and create pages array
