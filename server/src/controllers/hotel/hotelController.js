@@ -3,61 +3,6 @@ import { uploadFileToCloudinary } from "../../utils/cloudinary.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 
-//Search Hotels
-export const searchHotels = asyncHandler(async (req, res, next) => {
-  const query = constructSearchQuery(req.query);
-
-  const limit = req.query?.limit || 10;
-  const pageNumber = parseInt(req.query.page ? req.query.page.toString() : "1");
-  const skip = (pageNumber - 1) * limit;
-
-  // Aggregation pipeline
-  const hotels = await Hotel.aggregate([
-    { $match: query }, // Match the query parameters
-    { $unwind: "$roomTypes" }, // Deconstruct the roomTypes array | each doc will have an element of that array
-    { $match: { "roomTypes.availability": true } }, // Filter for available rooms
-    {
-      $group: {
-        _id: "$_id",
-        name: { $first: "$name" },
-        address: { $first: "$address" },
-        description: { $first: "$description" },
-        location: { $first: "$location" },
-        roomTypes: { $addToSet: "$roomTypes" }, // Re-group roomTypes into an array
-        numberOfRooms: { $first: "$numberOfRooms" },
-        adultCount: { $first: "$adultCount" },
-        childCount: { $first: "$childCount" },
-        facilities: { $first: "$facilities" },
-        amenities: { $first: "$amenities" },
-        images: { $first: "$images" },
-        banner: { $first: "$banner" },
-        ratingsAverage: { $first: "$ratingsAverage" },
-        numberOfRatings: { $first: "$numberOfRatings" },
-        tag: { $first: "$tag" },
-        discount: { $first: "$discount" },
-      },
-    },
-    { $skip: skip },
-    { $limit: limit },
-  ]);
-
-  // Get the total count for pagination
-  const total = await Hotel.countDocuments(query);
-
-  if (!hotels || hotels.length === 0) {
-    return next(
-      new ApiErrorResponse("Hotels with available rooms not found", 404)
-    );
-  }
-
-  res.status(200).json({
-    success: true,
-    message: "Hotels with available rooms retrieved successfully",
-    data: hotels,
-    pagination: { total, page: pageNumber, pages: Math.ceil(total / limit) },
-  });
-});
-
 // Create Hotel
 export const createHotel = asyncHandler(async (req, res, next) => {
   const { banner, amenities } = req.files || {};
@@ -174,7 +119,6 @@ const constructSearchQuery = (query) => {
 
 export const getHotelsByDestination = async (req, res) => {
   const { destinationId } = req.params;
-  console.log("");
   try {
     const hotels = await Hotel.find({
       destination: destinationId,

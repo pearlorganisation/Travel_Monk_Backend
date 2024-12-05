@@ -24,7 +24,7 @@ export const createActivity = asyncHandler(async (req, res, next) => {
 
   res
     .status(201)
-    .json({ success: true, message: " New Activity created Successfully" });
+    .json({ success: true, message: "New Activity created Successfully" });
 });
 
 export const getAllActivities = asyncHandler(async (req, res, next) => {
@@ -41,7 +41,7 @@ export const getAllActivities = asyncHandler(async (req, res, next) => {
 
   // Check if no contacts are found
   if (!activities || activities.length === 0) {
-    return next(new ApiErrorResponse("No Contacts found", 404));
+    return next(new ApiErrorResponse("No Activities found", 404));
   }
 
   res.status(200).json({
