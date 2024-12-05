@@ -1,4 +1,4 @@
-import Destinations from "../../models/trip/destinations.js";
+import Destinations from "../../models/destination/destinations.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 
 export const searchDestinations = asyncHandler(async (req, res, next) => {
@@ -51,3 +51,34 @@ export const getAllDestinations = asyncHandler(async (req, res, next) => {
     destinations: allDestinations,
   });
 });
+
+// Controller to toggle destination popularity
+export const toggleDestinationPopularity = asyncHandler(
+  async (req, res, next) => {
+    const { destinationId } = req.params;
+
+    // Check if vehicleId is provided
+    if (!destinationId) {
+      return next(new ApiErrorResponse("Destination ID is required", 400));
+    }
+
+    // Find the vehicle by ID
+    const destination = await Destinations.findById(destinationId);
+    console.log(destination);
+    if (!destination) {
+      return next(new ApiErrorResponse("Destination not found", 404));
+    }
+    console.log("des", !destination.isPopular);
+    // Toggle the isAvailable field
+    destination.isPopular = !destination.isPopular;
+
+    // Save the updated vehicle
+    await destination.save();
+
+    res.status(200).json({
+      success: true,
+      message: `Destination popularity toggled to ${destination.isPopular}`,
+      data: destination,
+    });
+  }
+);

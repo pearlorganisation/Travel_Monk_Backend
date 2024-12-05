@@ -189,3 +189,17 @@ export const deletePackageById = asyncHandler(async (req, res, next) => {
     .status(200)
     .json({ success: true, message: "Package is deleted." });
 });
+
+//Get Package By Destination Id
+export const getPackagesByDestination = asyncHandler(async (req, res, next) => {
+  const { destinationId } = req.params;
+  const packages = await Package.find({ packageDestination: destinationId });
+  if (!packages || packages.length === 0) {
+    return next(new ApiErrorResponse("No packages found for destination", 404));
+  }
+  return res.status(200).json({
+    success: true,
+    message: "Packages found for destination",
+    data: packages,
+  });
+});

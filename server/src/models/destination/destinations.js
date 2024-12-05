@@ -42,6 +42,7 @@ const destinationSchema = new mongoose.Schema(
       },
     ],
     hotels: [{ type: mongoose.Schema.Types.ObjectId, ref: "Hotel" }],
+    isPopular: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
