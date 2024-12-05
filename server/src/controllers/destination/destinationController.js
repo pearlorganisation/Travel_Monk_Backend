@@ -183,6 +183,20 @@ export const searchDestinations = asyncHandler(async (req, res, next) => {
   });
 });
 
+export const getPopularDestinations = asyncHandler(async (req, res, next) => {
+  const popularDestinations = await Destinations.find({ isPopular: true });
+
+  if (!popularDestinations || popularDestinations.length === 0) {
+    return next(new ApiErrorResponse("No popular destinations found", 404));
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Popular destinations retrieved successfully",
+    data: popularDestinations,
+  });
+});
+
 export const getAllDestinations = asyncHandler(async (req, res, next) => {
   const allDestinations = await Destinations.find().select("name");
 

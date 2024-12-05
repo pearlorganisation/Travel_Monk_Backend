@@ -3,6 +3,7 @@ import {
   createDestination,
   deleteDestination,
   getDestination,
+  getPopularDestinations,
   getSingleDestination,
   searchDestinations,
   toggleDestinationPopularity,
@@ -17,13 +18,14 @@ import fileParser from "../../middlewares/fileParser.js";
 const router = express.Router();
 
 router.route("/").post(fileParser, createDestination).get(getDestination);
+router.route("/search").get(searchDestinations); // For separate searching of destinations when customizing
+router.route("/popular").get(getPopularDestinations);
 router
   .route("/:id")
   .get(getSingleDestination)
   .patch(fileParser, updateDestination)
   .delete(deleteDestination);
 
-router.route("/search").get(searchDestinations); // For separate searching when customizing
 router.route("/:destinationId/hotels").get(getHotelsByDestination);
 router.route("/:destinationId/vehicles").get(getVehiclesForDestination); //For selectin vehicle during customization|available vehicle will get
 router.route("/:destinationId/activities").get(getActivitiesByDestination);

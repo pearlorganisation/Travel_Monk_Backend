@@ -3,7 +3,6 @@ import { uploadFileToCloudinary } from "../../utils/cloudinary.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 
-
 // Create Hotel
 export const createHotel = asyncHandler(async (req, res, next) => {
   const { banner, amenities } = req.files || {};
@@ -120,7 +119,6 @@ const constructSearchQuery = (query) => {
 
 export const getHotelsByDestination = async (req, res) => {
   const { destinationId } = req.params;
-  console.log("");
   try {
     const hotels = await Hotel.find({
       destination: destinationId,
