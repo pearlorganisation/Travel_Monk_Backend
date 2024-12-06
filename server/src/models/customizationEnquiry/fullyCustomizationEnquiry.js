@@ -6,9 +6,11 @@ const fullyCustomizeEnquirySchema = new mongoose.Schema(
     numberOfTravellers: { type: Number, required: true },
     estimatedPrice: { type: Number, required: true }, //Estimated price
     selectedVehicle: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Vehicle",
-      required: true,
+      name: String,
+      hotel: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Vehicle",
+      },
     },
     destinationName: { type: String, required: true }, // Leh
     startDate: { type: Date, required: true },
