@@ -19,16 +19,20 @@ const preBuiltPackageCustomizationEnquirySchema = new mongoose.Schema(
       {
         day: { type: Number, required: true },
         location: { type: String, required: true },
-        seletedHotel: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Hotel",
-          required: true,
+        selectedHotel: {
+          name: String,
+          hotel: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Hotel",
+          },
         },
         seletedActivities: [
           {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Activity",
-            required: true,
+            label: { type: String },
+            value: {
+              type: mongoose.Schema.Types.ObjectId,
+              ref: "Activity",
+            },
           },
         ],
       },

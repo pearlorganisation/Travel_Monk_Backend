@@ -23,15 +23,19 @@ const fullyCustomizeEnquirySchema = new mongoose.Schema(
         date: { type: Date, required: true },
         selectedLocation: { type: String, required: true },
         selectedHotel: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Hotel",
-          required: true,
+          name: String,
+          hotel: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Hotel",
+          },
         },
         selectedActivities: [
           {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Activity",
-            required: true,
+            label: { type: String },
+            value: {
+              type: mongoose.Schema.Types.ObjectId,
+              ref: "Activity",
+            },
           },
         ],
       },
