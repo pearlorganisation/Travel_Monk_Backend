@@ -11,9 +11,11 @@ const preBuiltPackageCustomizationEnquirySchema = new mongoose.Schema(
     numberOfTravellers: { type: Number, required: true },
     estimatedPrice: { type: Number, required: true },
     selectedVehicle: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Vehicle",
-      required: true,
+      name: String,
+      hotel: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Vehicle",
+      },
     },
     itinerary: [
       {
