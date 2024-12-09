@@ -5,6 +5,10 @@ import { sendPreBuiltPackageCustomizationEnquiryMail } from "../../utils/Mail/em
 
 export const createPreBuiltPackageCustomizationEnquiry = asyncHandler(
   async (req, res, next) => {
+    const {
+      itinerary
+    } = req.body
+    console.log("------------------itineraray", itinerary)
     const newEnquiry = await PreBuiltPackageCustomizationEnquiry.create(
       req.body
     );

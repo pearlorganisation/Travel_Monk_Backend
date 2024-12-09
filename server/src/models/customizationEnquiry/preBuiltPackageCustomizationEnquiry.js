@@ -12,15 +12,15 @@ const preBuiltPackageCustomizationEnquirySchema = new mongoose.Schema(
     estimatedPrice: { type: Number, required: true },
     selectedVehicle: {
       name: String,
-      hotel: {
+      vehicle: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Vehicle",
       },
     },
     itinerary: [
       {
-        day: { type: Number, required: true },
-        location: { type: String, required: true },
+        day: { type: Number },
+        location: { type: String },
         selectedHotel: {
           name: String,
           hotel: {
@@ -28,7 +28,7 @@ const preBuiltPackageCustomizationEnquirySchema = new mongoose.Schema(
             ref: "Hotel",
           },
         },
-        seletedActivities: [
+        selectedActivities: [
           {
             label: { type: String },
             value: {
