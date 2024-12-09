@@ -117,13 +117,13 @@
       </div>
 
       <div class="detail">
-        <div class="detail-label">Estimated Price</div>
-        <div class="detail-value"><%= estimatedPrice %></div>
+        <div class="detail-label">Destination</div>
+        <div class="detail-value"><%= destinationName %></div>
       </div>
 
       <div class="detail">
-        <div class="detail-label">Destination</div>
-        <div class="detail-value"><%= destinationName %></div>
+        <div class="detail-label">Vehicle</div>
+        <div class="detail-value"><%= vehicleName %></div>
       </div>
 
       <div class="detail">
@@ -139,6 +139,11 @@
         <div class="detail-value">
           <%= duration.days %> days, <%= duration.nights %> nights
         </div>
+      </div>
+
+      <div class="detail">
+        <div class="detail-label">Estimated Price</div>
+        <div class="detail-value">₹<%= estimatedPrice %></div>
       </div>
 
       <div class="message-section"><%= message %></div>

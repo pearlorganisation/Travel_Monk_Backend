@@ -12,6 +12,10 @@ export const createFullyCustomizeEnquiry = asyncHandler(
     if (!newEnquiry) {
       return next(new ApiErrorResponse("Enquiry not created", 400));
     }
+    const enquiryData = await FullyCustomizeEnquiry.findById(newEnquiry._id)
+      .select("selectedVehicle destination")
+      .populate({ path: "selectedVehicle", select: "vehicleName -_id" })
+      .populate({ path: "destination", select: "name -_id" });
 
     // Destructure the required fields from the created enquiry
     const {
@@ -21,7 +25,6 @@ export const createFullyCustomizeEnquiry = asyncHandler(
       mobileNumber,
       numberOfTravellers,
       estimatedPrice,
-      destinationName,
       startDate,
       endDate,
       duration,
@@ -35,23 +38,58 @@ export const createFullyCustomizeEnquiry = asyncHandler(
       numberOfTravellers,
       estimatedPrice,
       message,
-      destinationName,
       startDate,
       endDate,
       duration,
+      destinationName: enquiryData.destination.name,
+      vehicleName: enquiryData.selectedVehicle.vehicleName,
     };
 
     // Send an email notification about the new enquiry
-    await sendFullyCustomizeEnquiryMail(
-      process.env.NODEMAILER_EMAIL_USER,
-      data
-    );
-
-    // Return a success response with the created enquiry
-    return res.status(201).json({
-      success: true,
-      message: "Enquiry created successfully",
-      data: newEnquiry,
-    });
+    await sendFullyCustomizeEnquiryMail(process.env.NODEMAILER_EMAIL_USER, data)
+      .then(() => {
+        return res.status(200).json({
+          success: true,
+          message:
+            "Your enquiry has been successfully created. A notification email has been sent to our team, and we will get back to you shortly.",
+          data: newEnquiry,
+        });
+      })
+      .catch((error) => {
+        res.status(400).json({
+          success: false,
+          message: `Your enquiry has been created, but we encountered an issue while sending a notification email to our team. Please rest assured, we will still review your enquiry. Error: ${error.message}`,
+        });
+      });
   }
 );
+
+export const getAllEnquiries = asyncHandler(async (req, res, next) => {
+  // Fetch all enquiries with selected fields and populate references
+  const enquiries = await FullyCustomizeEnquiry.find()
+    .select(
+      "user numberOfTravellers estimatedPrice destinationName startDate endDate itinerary selectedVehicle name email mobileNumber"
+    )
+    // .populate({ path: "user", select: "userName email -_id" }) // Populate user details
+    .populate({ path: "selectedVehicle", select: "vehicleName -_id" }) // Populate vehicle details
+    .populate({
+      path: "itinerary.selectedHotel",
+      select: "name -_id",
+    }) // Populate hotel details
+    .populate({
+      path: "itinerary.selectedActivities.value",
+      select: "name -_id",
+    }); // Populate activity details
+
+  // Check if enquiries exist
+  if (!enquiries || enquiries.length === 0) {
+    return next(new ApiErrorResponse("No enquiries found", 404));
+  }
+
+  // Respond with the populated enquiries
+  res.status(200).json({
+    success: true,
+    count: enquiries.length,
+    data: enquiries,
+  });
+});

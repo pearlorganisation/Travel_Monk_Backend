@@ -4,14 +4,16 @@ const preBuiltPackageCustomizationEnquirySchema = new mongoose.Schema(
   {
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     package: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Package",
-      required: true,
+      name: String, // To show on mail
+      packageId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Package",
+      },
     },
     numberOfTravellers: { type: Number, required: true },
     estimatedPrice: { type: Number, required: true },
     selectedVehicle: {
-      name: String,
+      name: String, // To show on mail
       vehicle: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Vehicle",
