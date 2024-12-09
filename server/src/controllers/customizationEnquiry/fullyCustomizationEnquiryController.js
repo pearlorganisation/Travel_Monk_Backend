@@ -65,21 +65,17 @@ export const createFullyCustomizeEnquiry = asyncHandler(
 );
 
 export const getAllEnquiries = asyncHandler(async (req, res, next) => {
-  // Fetch all enquiries with selected fields and populate references
   const enquiries = await FullyCustomizeEnquiry.find()
-    .select(
-      "user numberOfTravellers estimatedPrice destinationName startDate endDate itinerary selectedVehicle name email mobileNumber"
-    )
-    // .populate({ path: "user", select: "userName email -_id" }) // Populate user details
-    .populate({ path: "selectedVehicle", select: "vehicleName -_id" }) // Populate vehicle details
+    .populate({ path: "destination", select: "name -_id" })
+    .populate({ path: "selectedVehicle", select: "vehicleName -_id" })
     .populate({
       path: "itinerary.selectedHotel",
       select: "name -_id",
-    }) // Populate hotel details
+    })
     .populate({
       path: "itinerary.selectedActivities.value",
       select: "name -_id",
-    }); // Populate activity details
+    });
 
   // Check if enquiries exist
   if (!enquiries || enquiries.length === 0) {
@@ -89,7 +85,7 @@ export const getAllEnquiries = asyncHandler(async (req, res, next) => {
   // Respond with the populated enquiries
   res.status(200).json({
     success: true,
-    count: enquiries.length,
+    message: "Enquiries found successfully",
     data: enquiries,
   });
 });
