@@ -13,8 +13,9 @@ export const createFullyCustomizeEnquiry = asyncHandler(
       return next(new ApiErrorResponse("Enquiry not created", 400));
     }
     const enquiryData = await FullyCustomizeEnquiry.findById(newEnquiry._id)
-      .select("selectedVehicle")
-      .populate({ path: "selectedVehicle", select: "vehicleName -_id" });
+      .select("selectedVehicle destination")
+      .populate({ path: "selectedVehicle", select: "vehicleName -_id" })
+      .populate({ path: "destination", select: "name -_id" });
 
     // Destructure the required fields from the created enquiry
     const {
@@ -24,7 +25,6 @@ export const createFullyCustomizeEnquiry = asyncHandler(
       mobileNumber,
       numberOfTravellers,
       estimatedPrice,
-      destinationName,
       startDate,
       endDate,
       duration,
@@ -38,10 +38,10 @@ export const createFullyCustomizeEnquiry = asyncHandler(
       numberOfTravellers,
       estimatedPrice,
       message,
-      destinationName,
       startDate,
       endDate,
       duration,
+      destinationName: enquiryData.destination.name,
       vehicleName: enquiryData.selectedVehicle.vehicleName,
     };
 
@@ -63,3 +63,33 @@ export const createFullyCustomizeEnquiry = asyncHandler(
       });
   }
 );
+
+export const getAllEnquiries = asyncHandler(async (req, res, next) => {
+  // Fetch all enquiries with selected fields and populate references
+  const enquiries = await FullyCustomizeEnquiry.find()
+    .select(
+      "user numberOfTravellers estimatedPrice destinationName startDate endDate itinerary selectedVehicle name email mobileNumber"
+    )
+    // .populate({ path: "user", select: "userName email -_id" }) // Populate user details
+    .populate({ path: "selectedVehicle", select: "vehicleName -_id" }) // Populate vehicle details
+    .populate({
+      path: "itinerary.selectedHotel",
+      select: "name -_id",
+    }) // Populate hotel details
+    .populate({
+      path: "itinerary.selectedActivities.value",
+      select: "name -_id",
+    }); // Populate activity details
+
+  // Check if enquiries exist
+  if (!enquiries || enquiries.length === 0) {
+    return next(new ApiErrorResponse("No enquiries found", 404));
+  }
+
+  // Respond with the populated enquiries
+  res.status(200).json({
+    success: true,
+    count: enquiries.length,
+    data: enquiries,
+  });
+});
