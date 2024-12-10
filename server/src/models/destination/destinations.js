@@ -20,12 +20,10 @@ const destinationSchema = new mongoose.Schema(
     banner: {
       secure_url: { type: String },
       public_id: { type: String },
-      asset_id: { type: String },
     },
     image: {
       secure_url: { type: String },
       public_id: { type: String },
-      asset_id: { type: String },
     },
     startingPrice: {
       type: Number,
@@ -33,15 +31,8 @@ const destinationSchema = new mongoose.Schema(
     },
     locations: {
       type: [locationsSchema],
-      required: [true, "Locations are required"],
+      // required: [true, "Locations are required"],
     },
-    packages: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Package",
-      },
-    ],
-    hotels: [{ type: mongoose.Schema.Types.ObjectId, ref: "Hotel" }],
     isPopular: { type: Boolean, default: false },
   },
   { timestamps: true }

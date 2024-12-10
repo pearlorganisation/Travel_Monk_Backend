@@ -3,7 +3,8 @@ import { uploadFileToCloudinary } from "../../utils/cloudinary.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 
 export const createDestination = asyncHandler(async (req, res, next) => {
-  const { name, startingPrice, packages, hotels, locations, type } = req.body;
+  const { name, slug, startingPrice, packages, hotels, locations, type } =
+    req.body;
   const { image, banner } = req.files;
   let uploadedImage = [];
   let uploadedBanner = [];
@@ -19,9 +20,8 @@ export const createDestination = asyncHandler(async (req, res, next) => {
     startingPrice,
     image: uploadedImage[0],
     banner: uploadedBanner[0],
-    packages,
     type,
-    hotels,
+    slug,
     locations,
   });
   await newDestination.save();
