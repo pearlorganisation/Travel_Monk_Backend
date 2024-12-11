@@ -34,7 +34,7 @@ export const createDestination = asyncHandler(async (req, res, next) => {
 });
 
 export const getDestination = asyncHandler(async (req, res, next) => {
-  const findDestionations = await Destinations.find();
+  const findDestionations = await Destination.find();
   // .populate("packages")
   // .populate("hotels");
 
