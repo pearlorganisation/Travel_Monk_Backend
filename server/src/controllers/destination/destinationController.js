@@ -1,9 +1,10 @@
 import Destinations from "../../models/destination/destinations.js";
 import { uploadFileToCloudinary } from "../../utils/cloudinary.js";
+import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 
 export const createDestination = asyncHandler(async (req, res, next) => {
-  const { name, startingPrice, packages, hotels, locations, type } = req.body;
+  const { name, slug, startingPrice, locations, type } = req.body;
   const { image, banner } = req.files;
   let uploadedImage = [];
   let uploadedBanner = [];
@@ -19,9 +20,8 @@ export const createDestination = asyncHandler(async (req, res, next) => {
     startingPrice,
     image: uploadedImage[0],
     banner: uploadedBanner[0],
-    packages,
+    slug,
     type,
-    hotels,
     locations,
   });
   await newDestination.save();
@@ -34,9 +34,9 @@ export const createDestination = asyncHandler(async (req, res, next) => {
 });
 
 export const getDestination = asyncHandler(async (req, res, next) => {
-  const findDestionations = await Destinations.find()
-    .populate("packages")
-    .populate("hotels");
+  const findDestionations = await Destinations.find();
+  // .populate("packages")
+  // .populate("hotels");
 
   if (findDestionations.length === 0) {
     return res.status(404).json({ message: "No Destinations Found" });
@@ -52,9 +52,9 @@ export const getDestination = asyncHandler(async (req, res, next) => {
 export const getSingleDestination = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
 
-  const findDestionation = await Destinations.findById(id)
-    .populate("packages")
-    .populate("hotels");
+  const findDestionation = await Destinations.findById(id);
+  // .populate("packages")
+  // .populate("hotels");
 
   if (findDestionation == null) {
     return res.status(404).json({ message: "No Destination ith ID found" });
