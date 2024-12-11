@@ -40,7 +40,7 @@ const packageSchema = new mongoose.Schema(
     exclusions: [String],
     packageDestination: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Destinations",
+      ref: "Destination",
     },
   },
   { timestamps: true }

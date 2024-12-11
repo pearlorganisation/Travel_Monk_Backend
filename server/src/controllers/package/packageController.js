@@ -2,6 +2,7 @@ import Package from "../../models/package/package.js";
 import { uploadFileToCloudinary } from "../../utils/cloudinary.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
+import { paginate } from "../../utils/pagination.js";
 
 export const getAllPackages = asyncHandler(async (req, res, next) => {
   const { destination } = req.query;
@@ -192,14 +193,26 @@ export const deletePackageById = asyncHandler(async (req, res, next) => {
 
 //Get Package By Destination Id
 export const getPackagesByDestination = asyncHandler(async (req, res, next) => {
+  const page = parseInt(req.query.page || "1");
+  const limit = parseInt(req.query.limit || "10");
+
+  // Use the pagination utility function
+  const { data: packages, pagination } = await paginate(
+    Package,
+    page,
+    limit,
+    [{ path: "packageDestination", select: " name banner" }],
+    { packageDestination: req.params.destinationId }
+  );
   const { destinationId } = req.params;
-  const packages = await Package.find({ packageDestination: destinationId });
+  // const packages = await Package.find({ packageDestination: destinationId });
   if (!packages || packages.length === 0) {
     return next(new ApiErrorResponse("No packages found for destination", 404));
   }
   return res.status(200).json({
     success: true,
     message: "Packages found for destination",
+    pagination,
     data: packages,
   });
 });

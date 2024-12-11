@@ -1,8 +1,21 @@
 import express from "express";
-import { createPreBuiltPackageCustomizationEnquiry } from "../../controllers/customizationEnquiry/prebuiltCustomizationEnquiryController.js";
+import {
+  createPreBuiltPackageCustomizationEnquiry,
+  deletePreBuiltPackageCustomizationEnquiryById,
+  getAllPreBuiltPackageCustomizationEnquiries,
+  getPreBuiltPackageCustomizationEnquiryById,
+} from "../../controllers/customizationEnquiry/prebuiltCustomizationEnquiryController.js";
 
 const router = express.Router();
 
-router.route("/").post(createPreBuiltPackageCustomizationEnquiry);
+router
+  .route("/")
+  .post(createPreBuiltPackageCustomizationEnquiry)
+  .get(getAllPreBuiltPackageCustomizationEnquiries);
+
+router
+  .route("/:id")
+  .get(getPreBuiltPackageCustomizationEnquiryById)
+  .delete(deletePreBuiltPackageCustomizationEnquiryById);
 
 export default router;
