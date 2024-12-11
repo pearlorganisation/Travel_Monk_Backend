@@ -13,6 +13,11 @@ const destinationSchema = new mongoose.Schema(
       required: [true, "Destination name required"],
       unique: true,
     },
+    slug: {
+      type: String, // LEH
+      required: [true, "Slug is required"],
+      unique: true,
+    },
     type: {
       type: String,
       required: true,

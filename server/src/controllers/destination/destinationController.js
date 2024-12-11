@@ -4,11 +4,11 @@ import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 
 export const createDestination = asyncHandler(async (req, res, next) => {
-  const { name, slug, startingPrice, packages, hotels, locations, type } =
-    req.body;
+  const { name, slug, startingPrice, locations, type } = req.body;
   const { image, banner } = req.files;
   let uploadedImage = [];
   let uploadedBanner = [];
+
   if (image) {
     uploadedImage = await uploadFileToCloudinary(image);
   }
@@ -16,6 +16,7 @@ export const createDestination = asyncHandler(async (req, res, next) => {
   if (banner) {
     uploadedBanner = await uploadFileToCloudinary(banner);
   }
+
   const newDestination = new Destination({
     name,
     startingPrice,
@@ -25,6 +26,7 @@ export const createDestination = asyncHandler(async (req, res, next) => {
     slug,
     locations,
   });
+
   await newDestination.save();
 
   res.status(201).json({
@@ -35,10 +37,7 @@ export const createDestination = asyncHandler(async (req, res, next) => {
 });
 
 export const getDestination = asyncHandler(async (req, res, next) => {
-  const findDestionations = await Destination.find()
-    .populate("packages")
-    .populate("hotels");
-
+  const findDestionations = await Destination.find();
   if (findDestionations.length === 0) {
     return res.status(404).json({ message: "No Destinations Found" });
   }
@@ -53,9 +52,7 @@ export const getDestination = asyncHandler(async (req, res, next) => {
 export const getSingleDestination = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
 
-  const findDestionation = await Destination.findById(id)
-    .populate("packages")
-    .populate("hotels");
+  const findDestionation = await Destination.findById(id);
 
   if (findDestionation == null) {
     return res.status(404).json({ message: "No Destination ith ID found" });
@@ -166,10 +163,15 @@ export const searchDestinations = asyncHandler(async (req, res, next) => {
     .select("name")
     .limit(limit);
 
-  // If no destinations are found in either collection
+  // Return an empty array with a 200 OK status when no results are found for searching
   if (!destinations.length) {
-    return next(new ApiErrorResponse("No destinations found", 404));
+    return res.status(200).json({
+      success: true,
+      message: "No destinations found",
+      data: [],
+    });
   }
+
   const totalDestinations = await Destination.countDocuments(filter);
 
   // Return the results with the fixed limit applied

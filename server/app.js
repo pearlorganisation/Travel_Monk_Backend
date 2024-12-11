@@ -45,7 +45,7 @@ import bookingRouter from "./src/routes/booking/bookingRoutes.js";
 import vehicleRouter from "./src/routes/vehicle/vehicleRoutes.js";
 import preBuiltCustomizationEnquiryRouter from "./src/routes/customizationEnquiry/preBuiltCustomizationEnquiryRoutes.js";
 import fullyCustomizationEnquiryRouter from "./src/routes/customizationEnquiry/fullyCustomizationEnquiryRoutes.js";
-import { errorHandler, notFound } from "./src/utils/errors/errorHandler.js";
+import { notFound, errorHandler } from "./src/utils/errors/errorHandler.js";
 
 app.get("/", (req, res) => {
   res.status(200).send("API Works!");
