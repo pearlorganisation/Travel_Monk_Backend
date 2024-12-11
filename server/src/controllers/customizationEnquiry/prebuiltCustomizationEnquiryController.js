@@ -5,7 +5,6 @@ import { sendPreBuiltPackageCustomizationEnquiryMail } from "../../utils/Mail/em
 
 export const createPreBuiltPackageCustomizationEnquiry = asyncHandler(
   async (req, res, next) => {
-    
     const newEnquiry = await PreBuiltPackageCustomizationEnquiry.create(
       req.body
     );
@@ -19,24 +18,37 @@ export const createPreBuiltPackageCustomizationEnquiry = asyncHandler(
       message,
       mobileNumber,
       numberOfTravellers,
-      package: packageId,
+      package: packageDetails,
+      selectedVehicle,
+      estimatedPrice,
     } = newEnquiry;
     const data = {
       name,
       email,
       mobileNumber,
       numberOfTravellers,
-      package: packageId,
+      package: packageDetails.name,
       message,
+      vehicle: selectedVehicle.name,
+      estimatedPrice,
     };
     await sendPreBuiltPackageCustomizationEnquiryMail(
       process.env.NODEMAILER_EMAIL_USER,
       data
-    );
-    return res.status(201).json({
-      success: true,
-      message: "Enquiry created successfully",
-      data: newEnquiry,
-    });
+    )
+      .then(() => {
+        return res.status(200).json({
+          success: true,
+          message:
+            "Your enquiry has been successfully created. A notification email has been sent to our team, and we will get back to you shortly.",
+          data: newEnquiry,
+        });
+      })
+      .catch((error) => {
+        res.status(400).json({
+          success: false,
+          message: `Your enquiry has been created, but we encountered an issue while sending a notification email to our team. Please rest assured, we will still review your enquiry. Error: ${error.message}`,
+        });
+      });
   }
 );

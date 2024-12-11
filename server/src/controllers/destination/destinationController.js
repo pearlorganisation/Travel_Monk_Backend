@@ -1,5 +1,6 @@
 import Destination from "../../models/destination/destinations.js";
 import { uploadFileToCloudinary } from "../../utils/cloudinary.js";
+import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 
 export const createDestination = asyncHandler(async (req, res, next) => {
@@ -169,7 +170,7 @@ export const searchDestinations = asyncHandler(async (req, res, next) => {
   if (!destinations.length) {
     return next(new ApiErrorResponse("No destinations found", 404));
   }
-  const totalDestinations = await Destinations.countDocuments(filter);
+  const totalDestinations = await Destination.countDocuments(filter);
 
   // Return the results with the fixed limit applied
   return res.status(200).json({
@@ -213,7 +214,6 @@ export const getAllDestinations = asyncHandler(async (req, res, next) => {
   });
 });
 
-// Controller to toggle destination popularity
 export const toggleDestinationPopularity = asyncHandler(
   async (req, res, next) => {
     const { destinationId } = req.params;
