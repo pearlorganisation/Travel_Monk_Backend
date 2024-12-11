@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 // PreBuiltPackageBooking Schema
 const preBuiltPackageBookingSchema = new mongoose.Schema(
   {
-    // bookingId: { type: String, required: true, unique: true },
+    bookingId: { type: String, required: true, unique: true },
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     packageId: {
       type: mongoose.Schema.Types.ObjectId,
