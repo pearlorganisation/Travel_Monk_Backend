@@ -5,14 +5,8 @@ const fullyCustomizeEnquirySchema = new mongoose.Schema(
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     numberOfTravellers: { type: Number, required: true },
     estimatedPrice: { type: Number, required: true }, //Estimated price
-    selectedVehicle: {
-      name: String,
-      hotel: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Vehicle",
-      },
-    },
-    destinationName: { type: String, required: true }, // Leh
+    selectedVehicle: { type: mongoose.Schema.Types.ObjectId, ref: "Vehicle" },
+    destination: { type: mongoose.Schema.Types.ObjectId, ref: "Destination" }, // Leh
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
     duration: {
@@ -25,11 +19,8 @@ const fullyCustomizeEnquirySchema = new mongoose.Schema(
         date: { type: Date, required: true },
         selectedLocation: { type: String, required: true },
         selectedHotel: {
-          name: String,
-          hotel: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Hotel",
-          },
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Hotel",
         },
         selectedActivities: [
           {

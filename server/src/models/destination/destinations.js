@@ -39,12 +39,13 @@ const destinationSchema = new mongoose.Schema(
     locations: {
       type: [locationsSchema],
       // required: [true, "Locations are required"],
+      // required: [true, "Locations are required"],
     },
     isPopular: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
 
-const Destinations = mongoose.model("Destinations", destinationSchema);
+const Destinations = mongoose.model("Destination", destinationSchema);
 
 export default Destinations;
