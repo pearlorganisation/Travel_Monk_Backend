@@ -1,10 +1,11 @@
-import Destinations from "../../models/destination/destinations.js";
+import Destination from "../../models/destination/destinations.js";
 import { uploadFileToCloudinary } from "../../utils/cloudinary.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 
 export const createDestination = asyncHandler(async (req, res, next) => {
-  const { name, startingPrice, packages, hotels, locations, type } = req.body;
+  const { name, slug, startingPrice, packages, hotels, locations, type } =
+    req.body;
   const { image, banner } = req.files;
   let uploadedImage = [];
   let uploadedBanner = [];
@@ -15,14 +16,13 @@ export const createDestination = asyncHandler(async (req, res, next) => {
   if (banner) {
     uploadedBanner = await uploadFileToCloudinary(banner);
   }
-  const newDestination = new Destinations({
+  const newDestination = new Destination({
     name,
     startingPrice,
     image: uploadedImage[0],
     banner: uploadedBanner[0],
-    packages,
     type,
-    hotels,
+    slug,
     locations,
   });
   await newDestination.save();
@@ -35,7 +35,7 @@ export const createDestination = asyncHandler(async (req, res, next) => {
 });
 
 export const getDestination = asyncHandler(async (req, res, next) => {
-  const findDestionations = await Destinations.find()
+  const findDestionations = await Destination.find()
     .populate("packages")
     .populate("hotels");
 
@@ -53,7 +53,7 @@ export const getDestination = asyncHandler(async (req, res, next) => {
 export const getSingleDestination = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
 
-  const findDestionation = await Destinations.findById(id)
+  const findDestionation = await Destination.findById(id)
     .populate("packages")
     .populate("hotels");
 
@@ -74,7 +74,7 @@ export const updateDestination = asyncHandler(async (req, res, next) => {
   const { image, banner } = req.files;
 
   // Find the Indian Destination by ID
-  const destination = await Destinations.findById(id);
+  const destination = await Destination.findById(id);
   if (!destination) {
     return next(new ApiErrorResponse("Indian destination not found", 404));
   }
@@ -136,7 +136,7 @@ export const updateDestination = asyncHandler(async (req, res, next) => {
 export const deleteDestination = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
 
-  const deleteDestination = await Destinations.findByIdAndDelete(id);
+  const deleteDestination = await Destination.findByIdAndDelete(id);
 
   if (deleteDestination == null) {
     return res.status(404).json({ message: "No Destination with ID found" });
@@ -162,7 +162,7 @@ export const searchDestinations = asyncHandler(async (req, res, next) => {
   let filter = { name: { $regex: new RegExp(destination, "i") } }; // Case-insensitive search
 
   // Fetch Indian and International destinations with the fixed limit
-  const destinations = await Destinations.find(filter)
+  const destinations = await Destination.find(filter)
     .select("name")
     .limit(limit);
 
@@ -170,7 +170,7 @@ export const searchDestinations = asyncHandler(async (req, res, next) => {
   if (!destinations.length) {
     return next(new ApiErrorResponse("No destinations found", 404));
   }
-  const totalDestinations = await Destinations.countDocuments(filter);
+  const totalDestinations = await Destination.countDocuments(filter);
 
   // Return the results with the fixed limit applied
   return res.status(200).json({
@@ -185,7 +185,7 @@ export const searchDestinations = asyncHandler(async (req, res, next) => {
 });
 
 export const getPopularDestinations = asyncHandler(async (req, res, next) => {
-  const popularDestinations = await Destinations.find({ isPopular: true });
+  const popularDestinations = await Destination.find({ isPopular: true });
 
   if (!popularDestinations || popularDestinations.length === 0) {
     return next(new ApiErrorResponse("No popular destinations found", 404));
@@ -199,7 +199,7 @@ export const getPopularDestinations = asyncHandler(async (req, res, next) => {
 });
 
 export const getAllDestinations = asyncHandler(async (req, res, next) => {
-  const allDestinations = await Destinations.find().select("name");
+  const allDestinations = await Destination.find().select("name");
 
   if (allDestinations.length === 0) {
     return res
@@ -214,7 +214,6 @@ export const getAllDestinations = asyncHandler(async (req, res, next) => {
   });
 });
 
-// Controller to toggle destination popularity
 export const toggleDestinationPopularity = asyncHandler(
   async (req, res, next) => {
     const { destinationId } = req.params;
@@ -225,7 +224,7 @@ export const toggleDestinationPopularity = asyncHandler(
     }
 
     // Find the vehicle by ID
-    const destination = await Destinations.findById(destinationId);
+    const destination = await Destination.findById(destinationId);
     console.log(destination);
     if (!destination) {
       return next(new ApiErrorResponse("Destination not found", 404));
