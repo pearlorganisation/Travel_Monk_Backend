@@ -130,7 +130,13 @@ export const getHotelsByDestination = async (req, res) => {
         .json({ message: "No hotels found for this destination." });
     }
 
-    res.status(200).json(hotels);
+    res
+      .status(200)
+      .json({
+        success: true,
+        data: hotels,
+        message: "Hotels found for Destination successfully",
+      });
   } catch (error) {
     console.error("Error fetching activities:", error);
     res.status(500).json({ message: "Internal Server Error" });
