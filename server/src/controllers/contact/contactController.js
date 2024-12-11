@@ -2,6 +2,7 @@ import Contact from "../../models/contact/contact.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 import { paginate } from "../../utils/pagination.js";
+import { z } from "zod";
 
 export const submitContactForm = asyncHandler(async (req, res, next) => {
   // validation
@@ -17,13 +18,15 @@ export const submitContactForm = asyncHandler(async (req, res, next) => {
 
     console.log(validateData);
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      console.error(error.errors);
-      return next(new ApiErrorResponse("Enter correct no format", error));
-    } else {
-      console.error("An unexpected error occurred:", error);
-      return next(new ApiErrorResponse("Unexpected error", error));
-    }
+    // if (error instanceof z.ZodError) {
+    //   console.error(error.errors, "jaiho");
+    //   return next(new ApiErrorResponse("Enter correct no format", error));
+    // } else {
+    //   console.error("An unexpected error occurred:", error);
+    //   return next(new ApiErrorResponse("Unexpected error", error));
+    // }
+
+    console.log(error, "my error");
   }
   const contactInfo = await Contact.create(req.body);
   if (!contactInfo) {
