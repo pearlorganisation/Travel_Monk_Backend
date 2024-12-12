@@ -14,8 +14,8 @@ const destinationSchema = new mongoose.Schema(
       unique: true,
     },
     slug: {
-      type: String,
-      required: true,
+      type: String, // LEH
+      required: [true, "Slug is required"],
       unique: true,
     },
     type: {

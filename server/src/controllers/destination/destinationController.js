@@ -2,12 +2,14 @@ import Destination from "../../models/destination/destinations.js";
 import { uploadFileToCloudinary } from "../../utils/cloudinary.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
+import { paginate } from "../../utils/pagination.js";
 
 export const createDestination = asyncHandler(async (req, res, next) => {
   const { name, slug, startingPrice, locations, type } = req.body;
   const { image, banner } = req.files;
   let uploadedImage = [];
   let uploadedBanner = [];
+
   if (image) {
     uploadedImage = await uploadFileToCloudinary(image);
   }
@@ -15,6 +17,7 @@ export const createDestination = asyncHandler(async (req, res, next) => {
   if (banner) {
     uploadedBanner = await uploadFileToCloudinary(banner);
   }
+
   const newDestination = new Destination({
     name,
     startingPrice,
@@ -24,6 +27,7 @@ export const createDestination = asyncHandler(async (req, res, next) => {
     type,
     locations,
   });
+
   await newDestination.save();
 
   res.status(201).json({
@@ -33,19 +37,34 @@ export const createDestination = asyncHandler(async (req, res, next) => {
   });
 });
 
-export const getDestination = asyncHandler(async (req, res, next) => {
-  const findDestionations = await Destination.find();
-  // .populate("packages")
-  // .populate("hotels");
+export const getAllDestination = asyncHandler(async (req, res, next) => {
+  const page = parseInt(req.query.page || "1");
+  const limit = parseInt(req.query.limit || "10");
 
-  if (findDestionations.length === 0) {
+  // Get fields to include from query parameters
+  const fields = req.query.fields || ""; // Defaults to an empty string if not provided, undefined when "" not provided, fields=name,banner,startingPrice etc
+  const filter = {};
+  if (req.query.type) {
+    filter.type = { $regex: new RegExp(req.query.type, "i") };
+  }
+  const { data: destinations, pagination } = await paginate(
+    Destination,
+    page,
+    limit,
+    [], // No populate options for now
+    filter, // Filter by type if provided
+    fields // Pass the fields dynamically
+  );
+
+  if (!destinations || destinations.length === 0) {
     return res.status(404).json({ message: "No Destinations Found" });
   }
 
   res.status(200).json({
     success: true,
     message: "Destinations fetched successfully",
-    data: findDestionations,
+    pagination,
+    data: destinations,
   });
 });
 
@@ -53,8 +72,6 @@ export const getSingleDestination = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
 
   const findDestionation = await Destination.findById(id);
-  // .populate("packages")
-  // .populate("hotels");
 
   if (findDestionation == null) {
     return res.status(404).json({ message: "No Destination ith ID found" });
@@ -165,10 +182,15 @@ export const searchDestinations = asyncHandler(async (req, res, next) => {
     .select("name")
     .limit(limit);
 
-  // If no destinations are found in either collection
+  // Return an empty array with a 200 OK status when no results are found for searching
   if (!destinations.length) {
-    return next(new ApiErrorResponse("No destinations found", 404));
+    return res.status(200).json({
+      success: true,
+      message: "No destinations found",
+      data: [],
+    });
   }
+
   const totalDestinations = await Destination.countDocuments(filter);
 
   // Return the results with the fixed limit applied

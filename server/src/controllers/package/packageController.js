@@ -204,8 +204,7 @@ export const getPackagesByDestination = asyncHandler(async (req, res, next) => {
     [{ path: "packageDestination", select: " name banner" }],
     { packageDestination: req.params.destinationId }
   );
-  const { destinationId } = req.params;
-  // const packages = await Package.find({ packageDestination: destinationId });
+
   if (!packages || packages.length === 0) {
     return next(new ApiErrorResponse("No packages found for destination", 404));
   }
