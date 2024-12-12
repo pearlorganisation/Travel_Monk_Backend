@@ -24,7 +24,6 @@ app.use(
         : ["https://travel-monk-mern.vercel.app"],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"], // Specify allowed methods
     credentials: true,
-    allowedHeaders: "Content-Type,Authorization",
   })
 );
 app.use(express.urlencoded({ extended: true }));
