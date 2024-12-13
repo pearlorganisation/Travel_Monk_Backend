@@ -5,6 +5,7 @@ import { nanoid } from "nanoid";
 import PreBuiltPackageBooking from "../../models/booking/preBuiltPackageBooking.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import { sendBookingConfirmationMail } from "../../utils/Mail/emailTemplates.js";
+import { paginate } from "../../utils/pagination.js";
 
 export const createBooking = asyncHandler(async (req, res, next) => {
   const { totalPrice, user, packageId, numberOfTravellers } = req.body;
@@ -105,6 +106,29 @@ export const preBuiltPackages = asyncHandler(async (req, res, next) => {
   return res.status(200).json({
     success: true,
     message: "Pre built packages bookings found successfully",
+    data: preBuiltPackageBookings,
+  });
+});
+
+export const myBookings = asyncHandler(async (req, res, next) => {
+  const page = parseInt(req.query.page || "1");
+  const limit = parseInt(req.query.limit || "10");
+
+  const { data: preBuiltPackageBookings, pagination } = await paginate(
+    PreBuiltPackageBooking,
+    page,
+    limit,
+    { user: req.user._id }
+  );
+  if (!preBuiltPackageBookings || preBuiltPackageBookings.length === 0) {
+    return next(
+      new ApiErrorResponse("No pre buil package bookings found", 400)
+    );
+  }
+  return res.status(200).json({
+    success: true,
+    message: "Pre built packages bookings found successfully",
+    pagination,
     data: preBuiltPackageBookings,
   });
 });
