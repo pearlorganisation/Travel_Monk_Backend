@@ -36,8 +36,8 @@ export const createDestination = asyncHandler(async (req, res, next) => {
 
 export const getDestination = asyncHandler(async (req, res, next) => {
   const findDestionations = await Destination.find()
-    .populate("packages")
-    .populate("hotels");
+    // .populate("packages")
+    // .populate("hotels");
 
   if (findDestionations.length === 0) {
     return res.status(404).json({ message: "No Destinations Found" });
