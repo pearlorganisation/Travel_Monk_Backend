@@ -8,7 +8,7 @@ import { sendBookingConfirmationMail } from "../../utils/Mail/emailTemplates.js"
 import { paginate } from "../../utils/pagination.js";
 
 export const createBooking = asyncHandler(async (req, res, next) => {
-  const { totalPrice, user, packageId, numberOfTravellers } = req.body;
+  const { totalPrice, packageId, numberOfTravellers } = req.body;
   const options = {
     amount: totalPrice * 100, // Convert amount to smallest unit (paise for INR)
     currency: "INR",
@@ -20,7 +20,7 @@ export const createBooking = asyncHandler(async (req, res, next) => {
     const order = await razorpayInstance.orders.create(options);
     const preBuiltPackageBooking = await PreBuiltPackageBooking.create({
       bookingId: `BID_${nanoid(8)}${Date.now()}`,
-      user,
+      user: req.user._id,
       packageId,
       numberOfTravellers,
       totalPrice,
@@ -118,6 +118,10 @@ export const myBookings = asyncHandler(async (req, res, next) => {
     PreBuiltPackageBooking,
     page,
     limit,
+    [
+      { path: "user", select: "-password -refreshToken -role" },
+      { path: "packageId" }, // Can choose what to select
+    ],
     { user: req.user._id }
   );
   if (!preBuiltPackageBookings || preBuiltPackageBookings.length === 0) {
