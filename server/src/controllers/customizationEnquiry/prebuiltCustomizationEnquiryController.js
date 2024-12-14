@@ -65,7 +65,7 @@ export const getAllPreBuiltPackageCustomizationEnquiries = asyncHandler(
       limit,
       [
         { path: "user", select: "name email" },
-        { path: "package.packageId" },
+        { path: "package.packageId" }, // Can choose what to select for all
         { path: "selectedVehicle.vehicle" },
         { path: "itinerary.selectedHotel.hotel" },
         { path: "itinerary.selectedActivities.value" },
