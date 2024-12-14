@@ -9,12 +9,12 @@ const locationsSchema = new mongoose.Schema({
 const destinationSchema = new mongoose.Schema(
   {
     name: {
-      type: String, // LEH
+      type: String,
       required: [true, "Destination name required"],
       unique: true,
     },
     slug: {
-      type: String, // LEH
+      type: String,
       required: [true, "Slug is required"],
       unique: true,
     },
