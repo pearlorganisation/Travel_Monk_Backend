@@ -4,11 +4,11 @@ export const paginate = async (
   limit = 10,
   populateOptions = [],
   filter = {}, // Optional filter parameter
-  select = "", // Optional select parameter to include or exclude fields
+  select = "", // Optional select parameter to include or exclude [fields]
   sortField = { createdAt: -1 } // By default Newest will come first
 ) => {
   const skip = (page - 1) * limit;
-
+  console.log(populateOptions);
   // Count total documents based on the filter
   const totalDocuments = await model.countDocuments(filter);
 
@@ -17,7 +17,9 @@ export const paginate = async (
 
   // Apply field selection if provided
   if (select) {
-    query = query.select(select);
+    //[fields]
+    const selectFields = select.split(",").join(" "); // Convert comma-separated to space-separated
+    query = query.select(selectFields);
   }
 
   // Apply population if options are provided

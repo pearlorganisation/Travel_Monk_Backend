@@ -5,9 +5,10 @@ import { nanoid } from "nanoid";
 import PreBuiltPackageBooking from "../../models/booking/preBuiltPackageBooking.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import { sendBookingConfirmationMail } from "../../utils/Mail/emailTemplates.js";
+import { paginate } from "../../utils/pagination.js";
 
 export const createBooking = asyncHandler(async (req, res, next) => {
-  const { totalPrice, user, packageId, numberOfTravellers } = req.body;
+  const { totalPrice, packageId, numberOfTravellers } = req.body;
   const options = {
     amount: totalPrice * 100, // Convert amount to smallest unit (paise for INR)
     currency: "INR",
@@ -19,7 +20,7 @@ export const createBooking = asyncHandler(async (req, res, next) => {
     const order = await razorpayInstance.orders.create(options);
     const preBuiltPackageBooking = await PreBuiltPackageBooking.create({
       bookingId: `BID_${nanoid(8)}${Date.now()}`,
-      user,
+      user: req.user._id,
       packageId,
       numberOfTravellers,
       totalPrice,
@@ -105,6 +106,33 @@ export const preBuiltPackages = asyncHandler(async (req, res, next) => {
   return res.status(200).json({
     success: true,
     message: "Pre built packages bookings found successfully",
+    data: preBuiltPackageBookings,
+  });
+});
+
+export const myBookings = asyncHandler(async (req, res, next) => {
+  const page = parseInt(req.query.page || "1");
+  const limit = parseInt(req.query.limit || "10");
+
+  const { data: preBuiltPackageBookings, pagination } = await paginate(
+    PreBuiltPackageBooking,
+    page,
+    limit,
+    [
+      { path: "user", select: "-password -refreshToken -role" },
+      { path: "packageId" }, // Can choose what to select
+    ],
+    { user: req.user._id }
+  );
+  if (!preBuiltPackageBookings || preBuiltPackageBookings.length === 0) {
+    return next(
+      new ApiErrorResponse("No pre buil package bookings found", 400)
+    );
+  }
+  return res.status(200).json({
+    success: true,
+    message: "Pre built packages bookings found successfully",
+    pagination,
     data: preBuiltPackageBookings,
   });
 });

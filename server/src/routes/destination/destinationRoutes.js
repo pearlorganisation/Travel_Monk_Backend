@@ -2,7 +2,7 @@ import express from "express";
 import {
   createDestination,
   deleteDestination,
-  getDestination,
+  getAllDestination,
   getPopularDestinations,
   getSingleDestination,
   searchDestinations,
@@ -17,7 +17,7 @@ import fileParser from "../../middlewares/fileParser.js";
 
 const router = express.Router();
 
-router.route("/").post(fileParser, createDestination).get(getDestination); // Getting all destinations
+router.route("/").post(fileParser, createDestination).get(getAllDestination); // query and fields
 router.route("/search").get(searchDestinations); // For separate searching of destinations when customizing
 router.route("/popular").get(getPopularDestinations); // For getting popular destinations in home page
 router
