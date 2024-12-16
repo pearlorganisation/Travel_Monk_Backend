@@ -6,31 +6,90 @@ import {
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 import { paginate } from "../../utils/pagination.js";
+import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
 
-export const createVehicle = asyncHandler(async (req, res, next) => {
-  const { images } = req.files; // If no files the we wil get {], and images will be undefined
-  const vehicleData = req.body;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+// export const createVehicle = asyncHandler(async (req, res, next) => {
+//   const { image } = req.files; // If no files the we wil get {], and images will be undefined
+//   const vehicleData = req.body;
 
-  // Upload vehicle images
-  const uploadedImages = images ? await uploadFileToCloudinary(images) : [];
+//   // Prepare vehicle data
+//   const newVehicleData = {
+//     ...vehicleData,
+//     images: uploadedImages,
+//   };
 
-  // Prepare vehicle data
-  const newVehicleData = {
-    ...vehicleData,
-    images: uploadedImages,
-  };
+//   // Save vehicle to database
+//   const newVehicle = await Vehicle.create(newVehicleData);
+//   if (!newVehicle) {
+//     return next(new ApiErrorResponse("Vehicle creation failed", 400));
+//   }
 
-  // Save vehicle to database
-  const newVehicle = await Vehicle.create(newVehicleData);
-  if (!newVehicle) {
-    return next(new ApiErrorResponse("Vehicle creation failed", 400));
+//   res.status(201).json({
+//     success: true,
+//     message: "Vehicle created successfully",
+//     data: newVehicle,
+//   });
+// });
+
+// Controller to create a vehicle
+export const createVehicle = asyncHandler(async (req, res) => {
+  try {
+    const {
+      vehicleName,
+      passengerCapacity,
+      luggageCapacity,
+      pricePerDay,
+      destinations,
+    } = req.body;
+
+    const files = req.files?.image;
+
+    if (!files || files.length === 0) {
+      res.status(400);
+      throw new Error("Image file is required.");
+    }
+
+    // Process the first uploaded file
+    const file = files[0];
+    const publicPath = path.join("uploads", file.newFilename); // Relative path for saving
+    const targetPath = path.join(__dirname, "../../../public", publicPath); // Full path in server directory
+    console.log("Public path: ", publicPath);
+    console.log("Target path: ", targetPath); // D:\Travel Monk Backend\server\public\uploads\41939a5f1ce07d50d7bed5e00.jpg
+
+    // Move the file to the uploads directory if not already there
+    if (!fs.existsSync(targetPath)) {
+      console.log("File moved successfully.");
+      fs.renameSync(file.filepath, targetPath);
+    }
+
+    // Create the vehicle entry in the database
+    const vehicle = await Vehicle.create({
+      vehicleName,
+      passengerCapacity: Number(passengerCapacity),
+      luggageCapacity: Number(luggageCapacity),
+      pricePerDay: Number(pricePerDay),
+      destinations: Array.isArray(destinations) ? destinations : [destinations],
+      image: {
+        filename: file.newFilename,
+        path: publicPath, // Save relative path to the database
+      },
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Vehicle created successfully!",
+      data: vehicle,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
   }
-
-  res.status(201).json({
-    success: true,
-    message: "Vehicle created successfully",
-    data: newVehicle,
-  });
 });
 
 export const getAllVehicles = asyncHandler(async (req, res, next) => {
@@ -106,35 +165,31 @@ export const updateVehicleById = asyncHandler(async (req, res, next) => {
 
 export const deleteVehicleById = asyncHandler(async (req, res, next) => {
   const deletedVehicle = await Vehicle.findByIdAndDelete(req.params.id);
+
   if (!deletedVehicle) {
     return next(new ApiErrorResponse("Vehicle not found", 404));
   }
 
-  // Delete images from Cloudinary
-  if (
-    Array.isArray(deletedVehicle.images) &&
-    deletedVehicle.images.length > 0
-  ) {
+  // Delete the single image file from the local filesystem
+  if (deletedVehicle.image) {
     try {
-      const deleteResponse = await deleteFileFromCloudinary(
-        deletedVehicle.images
-      );
-      console.log(deleteResponse);
-      if (!deleteResponse.success) {
-        console.error(
-          "Failed to delete some images:",
-          deleteResponse.failedDeletes
-        );
-        // Optionally, include partial failure information in the API response
-        return res.status(200).json({
-          success: true,
-          message: "Vehicle deleted, but some images failed to delete",
-          failedImages: deleteResponse.failedDeletes,
-        });
+      const filePath = path.join(
+        __dirname,
+        "../../../public",
+        deletedVehicle.image.path
+      ); // Absolute path
+
+      console.log(filePath);
+
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath); // Unlink (delete) the file
+        console.log(`Deleted image: ${filePath}`);
       }
     } catch (error) {
-      console.error("Error deleting images from Cloudinary:", error);
-      return next(new ApiErrorResponse("Error deleting vehicle images", 500));
+      console.error("Error deleting image file:", error);
+      return next(
+        new ApiErrorResponse("Error deleting vehicle image from server", 500)
+      );
     }
   }
 

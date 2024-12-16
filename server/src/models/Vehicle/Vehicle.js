@@ -5,7 +5,7 @@ const vehicleSchema = new mongoose.Schema(
     vehicleName: {
       type: String,
       required: true,
-      unique: true,
+      // unique: true,
     },
     passengerCapacity: {
       type: Number,
@@ -20,12 +20,16 @@ const vehicleSchema = new mongoose.Schema(
       required: true,
       min: [0, "Price per day must be positive"], // Ensures price is positive
     },
-    images: [
-      {
-        secure_url: { type: String, required: true },
-        public_id: { type: String, required: true },
+    image: {
+      filename: {
+        type: String,
+        required: true,
       },
-    ],
+      path: {
+        type: String,
+        required: true,
+      },
+    },
     isAvailable: {
       type: Boolean,
       default: true, // Vehicles are available by default
@@ -34,7 +38,7 @@ const vehicleSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId, // Reference to Destination model
         ref: "Destinations",
-        required: true,
+        // required: true,
       },
     ],
   },

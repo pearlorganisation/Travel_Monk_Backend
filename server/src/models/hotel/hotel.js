@@ -9,6 +9,7 @@ const hotelSchema = new mongoose.Schema(
     country: { type: String, required: true },
     startingPrice: { type: Number },
     amenities: [
+      // max 5
       {
         name: { type: String },
         icon: {
@@ -17,7 +18,7 @@ const hotelSchema = new mongoose.Schema(
         },
       },
     ],
-    banner: { secure_url: { type: String }, public_id: { type: String } },
+    banner: { secure_url: { type: String }, public_id: { type: String } }, //change name to image | 1 image
     discount: { type: Number, default: 0 },
   },
   { timestamps: true }
