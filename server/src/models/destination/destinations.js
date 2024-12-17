@@ -3,7 +3,15 @@ const locationsSchema = new mongoose.Schema({
   day: {
     type: Number,
   },
-  location: [String],
+  location: [
+    {
+      name: String,
+      coordinates: {
+        type: { type: String, enum: ["Point"], required: true },
+        coordinates: { type: [Number], required: true },
+      },
+    },
+  ],
 });
 
 const destinationSchema = new mongoose.Schema(

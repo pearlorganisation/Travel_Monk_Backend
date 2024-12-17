@@ -21,6 +21,7 @@ const vehicleSchema = new mongoose.Schema(
       min: [0, "Price per day must be positive"], // Ensures price is positive
     },
     image: {
+      // can just put path here
       filename: {
         type: String,
         required: true,

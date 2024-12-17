@@ -12,28 +12,6 @@ import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-// export const createVehicle = asyncHandler(async (req, res, next) => {
-//   const { image } = req.files; // If no files the we wil get {], and images will be undefined
-//   const vehicleData = req.body;
-
-//   // Prepare vehicle data
-//   const newVehicleData = {
-//     ...vehicleData,
-//     images: uploadedImages,
-//   };
-
-//   // Save vehicle to database
-//   const newVehicle = await Vehicle.create(newVehicleData);
-//   if (!newVehicle) {
-//     return next(new ApiErrorResponse("Vehicle creation failed", 400));
-//   }
-
-//   res.status(201).json({
-//     success: true,
-//     message: "Vehicle created successfully",
-//     data: newVehicle,
-//   });
-// });
 
 // Controller to create a vehicle
 export const createVehicle = asyncHandler(async (req, res) => {
@@ -90,7 +68,7 @@ export const createVehicle = asyncHandler(async (req, res) => {
       message: error.message,
     });
   }
-});
+}); 
 
 export const getAllVehicles = asyncHandler(async (req, res, next) => {
   const page = parseInt(req.query.page || "1"); // Default to page 1

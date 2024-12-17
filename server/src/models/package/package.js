@@ -5,23 +5,15 @@ const packageSchema = new mongoose.Schema(
     name: { type: String, required: true },
     slug: { type: String },
     banner: {
-      secure_url: { type: String },
-      public_id: { type: String },
-      asset_id: { type: String },
+      filename: { type: String, required: true },
+      path: { type: String, required: true },
     },
     image: {
-      secure_url: { type: String },
-      public_id: { type: String },
-      asset_id: { type: String },
+      filename: { type: String, required: true },
+      path: { type: String, required: true },
     },
-    duration: {
-      days: { type: Number },
-      nights: { type: Number },
-    },
-    pickDropPoint: {
-      pickup: { type: String },
-      drop: { type: String },
-    },
+    duration: { days: { type: Number }, nights: { type: Number } },
+    pickDropPoint: { pickup: { type: String }, drop: { type: String } },
     itinerary: [
       {
         day: { type: Number, required: true },
@@ -32,10 +24,7 @@ const packageSchema = new mongoose.Schema(
         activities: [{ type: mongoose.Schema.Types.ObjectId, ref: "Activity" }],
       },
     ],
-    startingPrice: {
-      type: Number,
-      required: true,
-    },
+    startingPrice: { type: Number, required: true },
     inclusions: [String],
     exclusions: [String],
     packageDestination: {

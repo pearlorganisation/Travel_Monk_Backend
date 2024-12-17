@@ -3,6 +3,13 @@ import { uploadFileToCloudinary } from "../../utils/cloudinary.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 import { paginate } from "../../utils/pagination.js";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+// Define __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const getAllPackages = asyncHandler(async (req, res, next) => {
   const { destination } = req.query;
@@ -30,24 +37,74 @@ export const getAllPackages = asyncHandler(async (req, res, next) => {
 });
 
 //Create Package
+// export const createPackage = asyncHandler(async (req, res, next) => {
+//   const { image, banner } = req.files;
+//   let uploadedImage = [];
+//   let uploadedBanner = [];
+//   if (image) {
+//     uploadedImage = await uploadFileToCloudinary(image); // [{}]
+//   }
+//   if (banner) {
+//     uploadedBanner = await uploadFileToCloudinary(banner); // [{}]
+//   }
+//   const newPackage = await Package.create({
+//     ...req?.body,
+//     image: uploadedImage[0],
+//     banner: uploadedBanner[0],
+//   });
+//   if (!newPackage) {
+//     return next(new ApiErrorResponse("Package is not created", 400));
+//   }
+//   return res
+//     .status(201)
+//     .json({ success: true, message: "Package is created", data: newPackage });
+// });
 export const createPackage = asyncHandler(async (req, res, next) => {
   const { image, banner } = req.files;
-  let uploadedImage = [];
-  let uploadedBanner = [];
+  let uploadedImage = null;
+  let uploadedBanner = null;
+
+  // Save image locally
   if (image) {
-    uploadedImage = await uploadFileToCloudinary(image); // [{}]
+    uploadedImage = {
+      filename: image[0].newFilename,
+      path: `uploads/images/${image[0].newFilename}`,
+    };
+    // Move image to local storage
+    const targetPath = path.join(
+      __dirname,
+      "../../../public/uploads/images",
+      image[0].newFilename
+    );
+    if (!fs.existsSync(path.dirname(targetPath))) {
+      fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+    }
+    fs.renameSync(image[0].filepath, targetPath);
   }
+
+  // Save banner locally
   if (banner) {
-    uploadedBanner = await uploadFileToCloudinary(banner); // [{}]
+    uploadedBanner = {
+      filename: banner[0].newFilename,
+      path: `uploads/banners/${banner[0].newFilename}`,
+    };
+    const targetPath = path.join(
+      __dirname,
+      "../../../public/uploads/banners",
+      banner[0].newFilename
+    );
+    if (!fs.existsSync(path.dirname(targetPath))) {
+      fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+    }
+    fs.renameSync(banner[0].filepath, targetPath);
   }
+
   const newPackage = await Package.create({
     ...req?.body,
-    image: uploadedImage[0],
-    banner: uploadedBanner[0],
+    image: uploadedImage,
+    banner: uploadedBanner,
   });
-  if (!newPackage) {
-    return next(new ApiErrorResponse("Package is not created", 400));
-  }
+
   return res
     .status(201)
     .json({ success: true, message: "Package is created", data: newPackage });
