@@ -10,7 +10,6 @@ import { deleteFile } from "../../utils/fileUtils.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Need to update file uploading to server
 export const createPartner = asyncHandler(async (req, res, next) => {
   try {
     const { partnerName, partnerType } = req.body; // Example fields from the body
