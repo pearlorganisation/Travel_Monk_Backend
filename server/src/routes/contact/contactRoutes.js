@@ -11,6 +11,7 @@ import {
   updateBusCruiseContact,
   deleteBusCruiseContact,
 } from "../../controllers/busCruiseContact/busCruiseContactController.js";
+import { createHotelContact } from "../../controllers/hotelContact/hotelContactController.js";
 
 const router = express.Router();
 
@@ -25,5 +26,7 @@ router
   .get(getBusCruiseContactById)
   .put(updateBusCruiseContact)
   .delete(deleteBusCruiseContact);
+
+router.route("/hotel").post(createHotelContact);
 
 export default router;
