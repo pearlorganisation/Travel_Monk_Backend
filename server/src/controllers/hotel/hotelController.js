@@ -2,38 +2,38 @@ import Hotel from "../../models/hotel/hotel.js";
 import { uploadFileToCloudinary } from "../../utils/cloudinary.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import { deleteFile } from "../../utils/fileUtils.js";
 
-// Create Hotel
+// Define __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 export const createHotel = asyncHandler(async (req, res, next) => {
-  const { banner, amenities } = req.files || {};
-  const { amenitiesNames, ...hotelData } = req.body;
-
-  // Upload banner image
-  const uploadedBanner = banner ? await uploadFileToCloudinary(banner) : [];
-  console.log("---------------", uploadedBanner);
-  // Handle amenities upload
-  const uploadedAmenities = [];
-  if (amenities) {
-    const amenitiesArray = Array.isArray(amenities) ? amenities : [amenities];
-    const uploadedIcons = await Promise.all(
-      amenitiesArray.map(async (file, index) => {
-        const name = amenitiesNames[index] || `Amenity ${index + 1}`;
-        const uploaded = await uploadFileToCloudinary(file);
-        return { name, icon: uploaded[0] }; // Assuming uploadFileToCloudinary returns an array
-      })
+  const { image } = req.files;
+  let uploadedImage = null;
+  // Save image locally
+  if (image) {
+    uploadedImage = {
+      filename: image[0].newFilename,
+      path: `uploads/${image[0].newFilename}`,
+    };
+    const targetPath = path.join(
+      __dirname,
+      "../../../public/" + uploadedImage.path
     );
-    uploadedAmenities.push(...uploadedIcons);
+    if (!fs.existsSync(path.dirname(targetPath))) {
+      fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+    }
+    fs.renameSync(image[0].filepath, targetPath);
   }
-  console.log(uploadedAmenities);
-  // Prepare hotel data
-  const newHotelData = {
-    ...hotelData,
-    amenities: uploadedAmenities,
-    banner: uploadedBanner ? uploadedBanner[0] : undefined, // undefiend will ignore the banner
-  };
+  const newHotel = await Hotel.create({
+    ...req?.body,
+    image: uploadedImage,
+  });
 
-  // Save hotel to database
-  const newHotel = await Hotel.create(newHotelData);
   if (!newHotel) {
     return next(new ApiErrorResponse("Hotel creation failed", 400));
   }
@@ -73,10 +73,27 @@ export const getHotelById = asyncHandler(async (req, res, next) => {
 
 //Delete Hotel By Id
 export const deleteHotelById = asyncHandler(async (req, res, next) => {
-  let hotel = await Hotel.findByIdAndDelete(req.params?.hotelId);
-  if (!hotel) {
+  let deletedHotel = await Hotel.findByIdAndDelete(req.params?.hotelId);
+  if (!deletedHotel) {
     return next(new ApiErrorResponse("Hotel not found", 404));
   }
+  // Delete the image file from the server
+  if (deletedHotel.image) {
+    const imagePath = path.join(
+      __dirname,
+      "../../../public",
+      deletedHotel.image.path
+    );
+    try {
+      await deleteFile(imagePath); // Use the utility to delete the file
+    } catch (error) {
+      console.error("Error deleting hotel image:", error);
+      return next(
+        new ApiErrorResponse("Error deleting hotel image from server", 500)
+      );
+    }
+  }
+
   return res.status(200).json({
     success: true,
     message: "Hotel deleted successfully",

@@ -9,6 +9,7 @@ const hotelSchema = new mongoose.Schema(
     country: { type: String, required: true },
     startingPrice: { type: Number },
     amenities: [String], // Chips or multiselect
+    googleMapsUrl: { type: String, required: true }, // Embeded link of google map location
     image: {
       filename: { type: String, required: true },
       path: { type: String, required: true },
