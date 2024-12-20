@@ -13,6 +13,8 @@ const locationsSchema = new mongoose.Schema({
     },
   ],
 });
+// Add geospatial index to the `coordinates` field
+locationsSchema.index({ "location.coordinates": "2dsphere" });
 
 const destinationSchema = new mongoose.Schema(
   {
