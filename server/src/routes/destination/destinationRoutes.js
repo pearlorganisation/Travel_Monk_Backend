@@ -14,6 +14,10 @@ import { getHotelsByDestination } from "../../controllers/hotel/hotelController.
 import { getActivitiesByDestination } from "../../controllers/activity/activityController.js";
 import { getPackagesByDestination } from "../../controllers/package/packageController.js";
 import fileParser from "../../middlewares/fileParser.js";
+import {
+  createLocations,
+  getAllLocationsForDestination,
+} from "../../controllers/location/locationController.js";
 
 const router = express.Router();
 
@@ -33,5 +37,10 @@ router.route("/:destinationId/packages").get(getPackagesByDestination); // Explo
 router
   .route("/:destinationId/toggle-popularity")
   .patch(toggleDestinationPopularity);
+
+router
+  .route("/:destinationId/locations")
+  .post(createLocations)
+  .get(getAllLocationsForDestination); // when fully customizing
 
 export default router;

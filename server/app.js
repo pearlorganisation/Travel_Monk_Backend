@@ -58,10 +58,6 @@ app.get("/", (req, res) => {
   res.status(200).send("API Works!");
   console.log("This is Home route");
 });
-// app.get("/favicon.ico", (req, res) => {
-//   //Browsers automatically request /favicon.ico when visiting any URL
-//   res.status(204).end();
-// });
 
 // Routes declaration
 app.use("/api/v1/auth", authRouter);

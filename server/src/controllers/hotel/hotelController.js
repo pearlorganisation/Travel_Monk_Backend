@@ -29,6 +29,7 @@ export const createHotel = asyncHandler(async (req, res, next) => {
     }
     fs.renameSync(image[0].filepath, targetPath);
   }
+
   const newHotel = await Hotel.create({
     ...req?.body,
     image: uploadedImage,

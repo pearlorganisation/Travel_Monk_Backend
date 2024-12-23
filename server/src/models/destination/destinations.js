@@ -1,20 +1,4 @@
 import mongoose from "mongoose";
-const locationsSchema = new mongoose.Schema({
-  day: {
-    type: Number,
-  },
-  location: [
-    {
-      name: String,
-      coordinates: {
-        type: { type: String, enum: ["Point"], required: true },
-        coordinates: { type: [Number], required: true },
-      },
-    },
-  ],
-});
-// Add geospatial index to the `coordinates` field
-locationsSchema.index({ "location.coordinates": "2dsphere" });
 
 const destinationSchema = new mongoose.Schema(
   {
@@ -33,20 +17,16 @@ const destinationSchema = new mongoose.Schema(
       required: true,
     },
     banner: {
-      secure_url: { type: String },
-      public_id: { type: String },
+      filename: { type: String, required: true },
+      path: { type: String, required: true },
     },
     image: {
-      secure_url: { type: String },
-      public_id: { type: String },
+      filename: { type: String, required: true },
+      path: { type: String, required: true },
     },
     startingPrice: {
       type: Number,
       required: [true, "Starting price is required"],
-    },
-    locations: {
-      type: [locationsSchema],
-      // required: [true, "Locations are required"],
     },
     isPopular: { type: Boolean, default: false },
   },
