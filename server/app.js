@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import cors from "cors";
 import dontenv from "dotenv";
+import { fileURLToPath } from "url";
 
 // Create an Express application
 const app = express();
@@ -26,8 +27,14 @@ app.use(
     credentials: true,
   })
 );
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static("public"));
+
+// app.use(express.static("public")); This serves all files in the public directory at the root of your server.
+app.use("/uploads", express.static(path.join(__dirname, "public/uploads"))); //This serves only files in the public/uploads directory under the /uploads route.
+
 app.use(cookieParser());
 app.use(morgan("dev"));
 

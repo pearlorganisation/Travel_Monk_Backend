@@ -1,10 +1,4 @@
 import mongoose from "mongoose";
-const locationsSchema = new mongoose.Schema({
-  day: {
-    type: Number,
-  },
-  location: [String],
-});
 
 const destinationSchema = new mongoose.Schema(
   {
@@ -23,20 +17,16 @@ const destinationSchema = new mongoose.Schema(
       required: true,
     },
     banner: {
-      secure_url: { type: String },
-      public_id: { type: String },
+      filename: { type: String, required: true },
+      path: { type: String, required: true },
     },
     image: {
-      secure_url: { type: String },
-      public_id: { type: String },
+      filename: { type: String, required: true },
+      path: { type: String, required: true },
     },
     startingPrice: {
       type: Number,
       required: [true, "Starting price is required"],
-    },
-    locations: {
-      type: [locationsSchema],
-      // required: [true, "Locations are required"],
     },
     isPopular: { type: Boolean, default: false },
   },

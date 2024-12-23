@@ -13,8 +13,14 @@ const partnerSchema = new mongoose.Schema(
       required: [true, "Partner type is required"],
     },
     partnerLogo: {
-      secure_url: { type: String, required: true },
-      public_id: { type: String, required: true },
+      filename: {
+        type: String,
+        required: true,
+      },
+      path: {
+        type: String,
+        required: true,
+      },
     },
   },
   { timestamps: true }
