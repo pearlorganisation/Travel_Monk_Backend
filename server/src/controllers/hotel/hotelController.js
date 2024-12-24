@@ -108,40 +108,31 @@ export const getHotelsByDestination = asyncHandler(async (req, res, next) => {
   const page = parseInt(req.query.page || "1");
   const limit = parseInt(req.query.limit || "10");
 
-  const filter = { destination: destinationId }; // Initialize filter with destinationId
+  const filter = { destination: destinationId }; // Initialize filter with destinationId so we get only data which belongs to this destination
 
-  const { search, priceRange, minPrice, maxPrice } = req.query;
+  const { search, priceRange, minPrice, maxPrice } = req.query; // can select only one at a time priceRange or minPrice and maxPrice
 
   // Handle priceRange filter (if any priceRange is selected)
   if (priceRange) {
     const ranges = Array.isArray(priceRange) ? priceRange : [priceRange];
     const allPrices = ranges.flatMap((range) => range.split(",").map(Number));
-
-    // Ensure filter.$or is an array before pushing new conditions
-    if (!Array.isArray(filter.$or)) {
-      filter.$or = [];
-    }
-
-    filter.$or.push({
-      estimatedPrice: {
-        $gte: Math.min(...allPrices),
-        $lte: Math.max(...allPrices),
-      },
-    });
+    filter.estimatedPrice = {
+      $gte: Math.min(...allPrices),
+      $lte: Math.max(...allPrices),
+    };
   }
 
   // Handle custom minPrice and maxPrice
   if (minPrice && maxPrice) {
-    if (!Array.isArray(filter.$or)) {
-      filter.$or = [];
-    }
-    filter.$or.push({
-      estimatedPrice: { $gte: Number(minPrice), $lte: Number(maxPrice) },
-    });
+    filter.estimatedPrice = {
+      $gte: Number(minPrice),
+      $lte: Number(maxPrice),
+    };
   }
-
+  // console.log(JSON.stringify(filter, null, 2));
   // Handle search filter (if present)
   if (search) {
+    // Price and search query can be slected together
     filter.$or = [
       { name: { $regex: search, $options: "i" } },
       { country: { $regex: search, $options: "i" } },
@@ -192,8 +183,6 @@ export const getHotelsByDestination = asyncHandler(async (req, res, next) => {
     success: true,
     message: "Hotels found",
     pagination,
-    minPrice: Math.min(...allPrices), // Use only custom min and max or calculate from all price ranges
-    maxPrice: Math.max(...allPrices), // Use only custom min and max or calculate from all price ranges
     data: hotels,
   });
 });
