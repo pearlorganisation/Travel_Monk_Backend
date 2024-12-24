@@ -6,6 +6,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { deleteFile } from "../../utils/fileUtils.js";
+import { paginate } from "../../utils/pagination.js";
 
 // Define __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -101,6 +102,102 @@ export const deleteHotelById = asyncHandler(async (req, res, next) => {
   });
 });
 
+// Need to update this to handle filtering and searching
+export const getHotelsByDestination = asyncHandler(async (req, res, next) => {
+  const { destinationId } = req.params;
+  const page = parseInt(req.query.page || "1");
+  const limit = parseInt(req.query.limit || "10");
+
+  const filter = { destination: destinationId }; // Initialize filter with destinationId
+
+  const { search, priceRange, minPrice, maxPrice } = req.query;
+
+  // Handle priceRange filter (if any priceRange is selected)
+  if (priceRange) {
+    const ranges = Array.isArray(priceRange) ? priceRange : [priceRange];
+    const allPrices = ranges.flatMap((range) => range.split(",").map(Number));
+
+    // Ensure filter.$or is an array before pushing new conditions
+    if (!Array.isArray(filter.$or)) {
+      filter.$or = [];
+    }
+
+    filter.$or.push({
+      estimatedPrice: {
+        $gte: Math.min(...allPrices),
+        $lte: Math.max(...allPrices),
+      },
+    });
+  }
+
+  // Handle custom minPrice and maxPrice
+  if (minPrice && maxPrice) {
+    if (!Array.isArray(filter.$or)) {
+      filter.$or = [];
+    }
+    filter.$or.push({
+      estimatedPrice: { $gte: Number(minPrice), $lte: Number(maxPrice) },
+    });
+  }
+
+  // Handle search filter (if present)
+  if (search) {
+    filter.$or = [
+      { name: { $regex: search, $options: "i" } },
+      { country: { $regex: search, $options: "i" } },
+      { state: { $regex: search, $options: "i" } },
+      { city: { $regex: search, $options: "i" } },
+    ];
+  }
+
+  // Sorting
+  const sortField = {};
+  switch (req.query.sortBy) {
+    case "price-asc":
+      sortField.estimatedPrice = 1;
+      break;
+    case "price-desc":
+      sortField.estimatedPrice = -1;
+      break;
+  }
+  console.log(JSON.stringify(filter, null, 2));
+  // Use the pagination utility function
+  const { data: hotels, pagination } = await paginate(
+    Hotel,
+    page,
+    limit,
+    [{ path: "destination", select: "name" }],
+    filter,
+    "",
+    sortField
+  );
+
+  if (!hotels.length) {
+    return next(
+      new ApiErrorResponse("No hotels found for this destination.", 404)
+    );
+  }
+
+  const allPrices = [];
+  if (priceRange) {
+    const ranges = Array.isArray(priceRange) ? priceRange : [priceRange];
+    ranges.forEach((range) => {
+      const [min, max] = range.split(",").map(Number);
+      if (!isNaN(min)) allPrices.push(min);
+      if (!isNaN(max)) allPrices.push(max);
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Hotels found",
+    pagination,
+    minPrice: Math.min(...allPrices), // Use only custom min and max or calculate from all price ranges
+    maxPrice: Math.max(...allPrices), // Use only custom min and max or calculate from all price ranges
+    data: hotels,
+  });
+});
+
 const constructSearchQuery = (query) => {
   let constructedQuery = {};
   if (query.location) {
@@ -133,26 +230,4 @@ const constructSearchQuery = (query) => {
   }
 
   return constructedQuery;
-};
-
-export const getHotelsByDestination = async (req, res) => {
-  const { destinationId } = req.params;
-  try {
-    const hotels = await Hotel.find({
-      destination: destinationId,
-    });
-
-    if (hotels.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No hotels found for this destination." });
-    }
-
-    res
-      .status(200)
-      .json({ success: true, message: "Hotels found", data: hotels });
-  } catch (error) {
-    console.error("Error fetching activities:", error);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
-  }
 };

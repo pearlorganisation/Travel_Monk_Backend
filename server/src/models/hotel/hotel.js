@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const hotelSchema = new mongoose.Schema(
   {
     name: { type: String, unique: true },
-    destination: { type: mongoose.Schema.Types.ObjectId, ref: "Destinations" },
+    destination: { type: mongoose.Schema.Types.ObjectId, ref: "Destination" },
     city: { type: String, required: true },
     state: { type: String, required: true },
     country: { type: String, required: true },
