@@ -102,7 +102,7 @@ export const deleteHotelById = asyncHandler(async (req, res, next) => {
   });
 });
 
-// Need to update this to handle filtering and searching
+// Searching, filtering and sorting hotels
 export const getHotelsByDestination = asyncHandler(async (req, res, next) => {
   const { destinationId } = req.params;
   const page = parseInt(req.query.page || "1");
@@ -114,6 +114,7 @@ export const getHotelsByDestination = asyncHandler(async (req, res, next) => {
 
   // Handle priceRange filter (if any priceRange is selected)
   if (priceRange) {
+    //?priceRange=1000,2000&priceRange=3000
     const ranges = Array.isArray(priceRange) ? priceRange : [priceRange];
     const allPrices = ranges.flatMap((range) => range.split(",").map(Number));
     filter.estimatedPrice = {
@@ -132,7 +133,7 @@ export const getHotelsByDestination = asyncHandler(async (req, res, next) => {
   // console.log(JSON.stringify(filter, null, 2));
   // Handle search filter (if present)
   if (search) {
-    // Price and search query can be slected together
+    // Price and search query can be slected together, if search query is present, and data is filtered by search query, if pirce filter also present, then data is filtered by both search query and price filter
     filter.$or = [
       { name: { $regex: search, $options: "i" } },
       { country: { $regex: search, $options: "i" } },

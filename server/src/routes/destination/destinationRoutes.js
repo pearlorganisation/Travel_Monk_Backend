@@ -16,7 +16,9 @@ import { getPackagesByDestination } from "../../controllers/package/packageContr
 import fileParser from "../../middlewares/fileParser.js";
 import {
   createLocations,
+  deleteLocationById,
   getAllLocationsForDestination,
+  updateLocationById,
 } from "../../controllers/location/locationController.js";
 
 const router = express.Router();
@@ -42,5 +44,10 @@ router
   .route("/:destinationId/locations")
   .post(createLocations)
   .get(getAllLocationsForDestination); // when fully customizing
+
+router
+  .route("/locations/:locationId")
+  .patch(updateLocationById)
+  .delete(deleteLocationById);
 
 export default router;
