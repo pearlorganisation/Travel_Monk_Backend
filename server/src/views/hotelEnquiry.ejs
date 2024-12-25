@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hotel Contact Details</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", Arial, sans-serif;
+        background-color: #f8fafc;
+        margin: 0;
+        padding: 0;
+        color: #2c3e50;
+        line-height: 1.6;
+      }
+      .container {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e9ecef;
+      }
+      .header {
+        background: linear-gradient(135deg, #007e8f 0%, #00b4d8 100%);
+        color: #ffffff;
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .header h2 {
+        font-size: 20px;
+        font-weight: 700;
+        margin: 0;
+      }
+      .detail {
+        margin-bottom: 15px;
+      }
+      .detail-label {
+        font-weight: 600;
+        color: #007e8f;
+      }
+      .detail-value {
+        margin-left: 10px;
+        color: #2c3e50;
+      }
+      .message-section {
+        font-weight: bold;
+        font-style: italic;
+        color: #000000;
+        padding: 10px;
+        background-color: #f4f7fc;
+        border-radius: 8px;
+        margin: 10px 0;
+        border-left: 4px solid #007e8f;
+      }
+      .footer {
+        margin-top: 20px;
+        text-align: center;
+        font-size: 12px;
+        color: #6c757d;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h2>Hotel Contact Enquiry</h2>
+      </div>
+
+      <div class="detail">
+        <span class="detail-label">Name:</span>
+        <span class="detail-value"><%= name %></span>
+      </div>
+
+      <div class="detail">
+        <span class="detail-label">Email:</span>
+        <span class="detail-value"><%= email %></span>
+      </div>
+
+      <div class="detail">
+        <span class="detail-label">Phone Number:</span>
+        <span class="detail-value"><%= phoneNumber %></span>
+      </div>
+
+      <div class="detail">
+        <span class="detail-label">Location:</span>
+        <span class="detail-value"><%= location %></span>
+      </div>
+
+      <div class="detail">
+        <span class="detail-label">Check-In:</span>
+        <span class="detail-value"
+          ><%= new Date(checkIn).toLocaleDateString() %></span
+        >
+      </div>
+
+      <div class="detail">
+        <span class="detail-label">Check-Out:</span>
+        <span class="detail-value"
+          ><%= new Date(checkOut).toLocaleDateString() %></span
+        >
+      </div>
+
+      <div class="detail">
+        <span class="detail-label">Number of Persons:</span>
+        <span class="detail-value"><%= numberOfPersons %></span>
+      </div>
+
+      <div class="detail">
+        <span class="detail-label">Hotel:</span>
+        <span class="detail-value"><%= hotel%></span>
+      </div>
+
+      <div class="message-section"><%= message %></div>
+ 
+      <div class="footer">
+        <p>This email was automatically generated. Please do not reply.</p>
+        <p>© <%= new Date().getFullYear() %> Travel Monk</p>
+      </div>
+    </div>
+  </body>
+</html>

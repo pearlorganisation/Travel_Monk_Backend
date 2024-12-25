@@ -46,3 +46,9 @@ export const sendFullyCustomizeEnquiryMail = async (email, data) => {
   const templateName = "fullyCustomizationEnquiry";
   return sendMail(email, subject, templateName, data);
 };
+
+export const sendHotelEnquiryMail = async (email, data) => {
+  const subject = "Hotel Enquiry";
+  const templateName = "hotelEnquiry";
+  return sendMail(email, subject, templateName, data);
+};
