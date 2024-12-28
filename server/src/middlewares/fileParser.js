@@ -69,7 +69,7 @@ const fileParser = (req, res, next) => {
     multiples: true, // Allow multiple file uploads
   });
 
-  console.log("uploadDir: ", form); // D:\Travel Monk Backend\server\public\uploads
+  // console.log("uploadDir: ", form); // D:\Travel Monk Backend\server\public\uploads
 
   // Ensure the upload directory exists
   if (!fs.existsSync(form.uploadDir)) {
