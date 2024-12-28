@@ -14,10 +14,16 @@ import { getHotelsByDestination } from "../../controllers/hotel/hotelController.
 import { getActivitiesByDestination } from "../../controllers/activity/activityController.js";
 import { getPackagesByDestination } from "../../controllers/package/packageController.js";
 import fileParser from "../../middlewares/fileParser.js";
+import {
+  createLocations,
+  deleteLocationById,
+  getAllLocationsForDestination,
+  updateLocationById,
+} from "../../controllers/location/locationController.js";
 
 const router = express.Router();
 
-router.route("/").post(fileParser, createDestination).get(getAllDestination); // query and fields
+router.route("/").post(fileParser, createDestination).get(getAllDestination); // query and fields,
 router.route("/search").get(searchDestinations); // For separate searching of destinations when customizing
 router.route("/popular").get(getPopularDestinations); // For getting popular destinations in home page
 router
@@ -33,5 +39,15 @@ router.route("/:destinationId/packages").get(getPackagesByDestination); // Explo
 router
   .route("/:destinationId/toggle-popularity")
   .patch(toggleDestinationPopularity);
+
+router
+  .route("/:destinationId/locations")
+  .post(createLocations)
+  .get(getAllLocationsForDestination); // when fully customizing
+
+router
+  .route("/locations/:locationId")
+  .patch(updateLocationById)
+  .delete(deleteLocationById);
 
 export default router;

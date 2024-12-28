@@ -12,23 +12,6 @@ const preBuiltPackageBookingSchema = new mongoose.Schema(
     },
     numberOfTravellers: { type: Number, required: true },
     totalPrice: { type: Number, required: true },
-    // customizations: [
-    //   {
-    //     // day: { type: Number, required: true },
-    //     customizedHotel: {
-    //       type: mongoose.Schema.Types.ObjectId,
-    //       ref: "Hotel",
-    //       required: true,
-    //     },
-    //     customizedActivities: [
-    //       {
-    //         type: mongoose.Schema.Types.ObjectId,
-    //         ref: "Activity",
-    //         required: true,
-    //       },
-    //     ],
-    //   },
-    // ],
     bookingStatus: {
       type: String,
       enum: ["Pending", "Completed", "Failed"],

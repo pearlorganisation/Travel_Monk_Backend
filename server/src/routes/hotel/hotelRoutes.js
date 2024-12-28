@@ -24,13 +24,6 @@ router
   )
   .get(getAllHotels);
 
-router
-  .route("/:hotelId")
-  .get(getHotelById)
-  .delete(
-    authenticateToken,
-    verifyPermission([UserRolesEnum.ADMIN]),
-    deleteHotelById // Only(admin)
-  );
+router.route("/:hotelId").get(getHotelById).delete(deleteHotelById);
 
 export default router;

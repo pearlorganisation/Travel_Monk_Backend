@@ -3,36 +3,73 @@ import { uploadFileToCloudinary } from "../../utils/cloudinary.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 import { paginate } from "../../utils/pagination.js";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import { deleteFile } from "../../utils/fileUtils.js";
+
+// Define __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const createDestination = asyncHandler(async (req, res, next) => {
-  const { name, slug, startingPrice, locations, type } = req.body;
   const { image, banner } = req.files;
-  let uploadedImage = [];
-  let uploadedBanner = [];
 
+  let uploadedImage = null;
+  let uploadedBanner = null;
+
+  // Save image locally
   if (image) {
-    uploadedImage = await uploadFileToCloudinary(image);
+    uploadedImage = {
+      filename: image[0].newFilename,
+      path: `uploads/${image[0].newFilename}`,
+    };
+    const targetPath = path.join(
+      __dirname,
+      "../../../public/",
+      uploadedImage.path
+    );
+
+    // Create directory if it doesn't exist
+    if (!fs.existsSync(path.dirname(targetPath))) {
+      fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+    }
+
+    // Move the file to the target path
+    fs.renameSync(image[0].filepath, targetPath);
   }
 
+  // Save banner locally
   if (banner) {
-    uploadedBanner = await uploadFileToCloudinary(banner);
+    uploadedBanner = {
+      filename: banner[0].newFilename,
+      path: `uploads/${banner[0].newFilename}`,
+    };
+    const targetPath = path.join(
+      __dirname,
+      "../../../public/",
+      uploadedBanner.path
+    );
+
+    // Create directory if it doesn't exist
+    if (!fs.existsSync(path.dirname(targetPath))) {
+      fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+    }
+
+    // Move the file to the target path
+    fs.renameSync(banner[0].filepath, targetPath);
   }
 
-  const newDestination = new Destination({
-    name,
-    startingPrice,
-    image: uploadedImage[0],
-    banner: uploadedBanner[0],
-    slug,
-    type,
-    locations,
+  // Create destination with uploaded files
+  const newDestination = await Destination.create({
+    ...req.body,
+    image: uploadedImage,
+    banner: uploadedBanner,
   });
 
-  await newDestination.save();
-
-  res.status(201).json({
+  return res.status(201).json({
     success: true,
-    message: "Destination created successfully!",
+    message: "Destination is created",
     data: newDestination,
   });
 });
@@ -158,10 +195,49 @@ export const deleteDestination = asyncHandler(async (req, res, next) => {
     return res.status(404).json({ message: "No Destination with ID found" });
   }
 
+  // Delete the banner file from the server
+  if (deleteDestination.banner) {
+    const bannerPath = path.join(
+      __dirname,
+      "../../../public",
+      deleteDestination.banner.path
+    );
+    try {
+      await deleteFile(bannerPath); // Use the utility to delete the file
+    } catch (error) {
+      console.error("Error deleting destination banner:", error);
+      return next(
+        new ApiErrorResponse(
+          "Error deleting destination banner from server",
+          500
+        )
+      );
+    }
+  }
+
+  // Delete the image file from the server
+  if (deleteDestination.image) {
+    const imagePath = path.join(
+      __dirname,
+      "../../../public",
+      deleteDestination.image.path
+    );
+    try {
+      await deleteFile(imagePath); // Use the utility to delete the file
+    } catch (error) {
+      console.error("Error deleting destination image:", error);
+      return next(
+        new ApiErrorResponse(
+          "Error deleting destination image from server",
+          500
+        )
+      );
+    }
+  }
+
   res.status(200).json({
     success: true,
     message: "Destionation deleted successfully",
-    data: deleteDestination,
   });
 });
 
