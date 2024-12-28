@@ -49,16 +49,20 @@ export const createHotel = asyncHandler(async (req, res, next) => {
 
 // Get All Hotels
 export const getAllHotels = asyncHandler(async (req, res, next) => {
-  const findHotels = await Hotel.find();
+  const page = parseInt(req.query.page || "1");
+  const limit = parseInt(req.query.limit || "10");
 
-  if (findHotels.length == 0) {
+  const { data: hotels, pagination } = await paginate(Hotel, page, limit);
+
+  if (hotels.length === 0) {
     return next(new ApiErrorResponse("No Hotels Found", 404));
   }
 
   return res.status(200).json({
     success: true,
     message: "Hotels Found Successfully",
-    data: findHotels,
+    pagination,
+    data: hotels,
   });
 });
 

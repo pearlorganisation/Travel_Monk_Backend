@@ -17,13 +17,24 @@ const router = express.Router();
 router
   .route("/")
   .post(
-    // authenticateToken,
-    // verifyPermission([UserRolesEnum.ADMIN]),
+    authenticateToken,
+    verifyPermission([UserRolesEnum.ADMIN]),
     fileParser,
     createHotel // Only(admin)
   )
-  .get(getAllHotels);
+  .get(
+    authenticateToken,
+    verifyPermission([UserRolesEnum.ADMIN]),
+    getAllHotels
+  ); // pagination, For Admin
 
-router.route("/:hotelId").get(getHotelById).delete(deleteHotelById);
+router
+  .route("/:hotelId")
+  .get(authenticateToken, verifyPermission([UserRolesEnum.ADMIN]), getHotelById)
+  .delete(
+    authenticateToken,
+    verifyPermission([UserRolesEnum.ADMIN]),
+    deleteHotelById
+  );
 
 export default router;

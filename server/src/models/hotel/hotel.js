@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const hotelSchema = new mongoose.Schema(
   {
-    name: { type: String, unique: true },
+    name: { type: String, unique: true }, // Add slug too
     destination: { type: mongoose.Schema.Types.ObjectId, ref: "Destination" },
     city: { type: String, required: true },
     state: { type: String, required: true },
