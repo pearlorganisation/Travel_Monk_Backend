@@ -77,6 +77,71 @@ export const getHotelById = asyncHandler(async (req, res, next) => {
     .json({ success: true, message: "Hotel found successfully", data: hotel });
 });
 
+export const updateHotelById = asyncHandler(async (req, res, next) => {
+  const { image } = req.files;
+
+  // Fetch the hotel to check for existing images
+  const existingHotel = await Hotel.findById(req.params.hotelId);
+  if (!existingHotel) {
+    return next(new ApiErrorResponse("Hotel not found", 404));
+  }
+
+  let uploadedImage;
+
+  // Only upload images if they are provided
+  if (image) {
+    uploadedImage = {
+      filename: image[0].newFilename,
+      path: `uploads/${image[0].newFilename}`,
+    };
+    const targetPath = path.join(
+      __dirname,
+      "../../../public/" + uploadedImage.path
+    );
+
+    // Create the directory if it doesn't exist
+    if (!fs.existsSync(path.dirname(targetPath))) {
+      fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+    }
+
+    // Move the new file to the target location
+    fs.renameSync(image[0].filepath, targetPath);
+
+    if (existingHotel.image) {
+      // Delete the existing image from the server
+      const filePath = path.join(
+        __dirname,
+        "../../../public",
+        existingHotel.image.path
+      );
+      await deleteFile(filePath);
+    }
+  }
+
+  // Update the hotel document
+  const updatedHotel = await Hotel.findByIdAndUpdate(
+    req.params.hotelId,
+    {
+      ...req.body,
+      image: uploadedImage || existingHotel.image, // Retain the old image if no new image is provided
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
+  if (!updatedHotel) {
+    return next(new ApiErrorResponse("Hotel not found or not updated", 404));
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: "Hotel updated successfully",
+    data: updatedHotel,
+  });
+});
+
 //Delete Hotel By Id
 export const deleteHotelById = asyncHandler(async (req, res, next) => {
   let deletedHotel = await Hotel.findByIdAndDelete(req.params?.hotelId);

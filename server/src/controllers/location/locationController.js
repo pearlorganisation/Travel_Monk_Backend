@@ -2,6 +2,7 @@ import Destination from "../../models/destination/destinations.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import Location from "../../models/location/location.js";
+import { paginate } from "../../utils/pagination.js";
 
 // Can create multiple locations for a single destination
 export const createLocations = asyncHandler(async (req, res, next) => {
@@ -146,5 +147,24 @@ export const deleteLocationById = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: "Location is deleted",
+  });
+});
+
+// add filter or more
+export const getAllLocations = asyncHandler(async (req, res, next) => {
+  const page = parseInt(req.query.page || "1");
+  const limit = parseInt(req.query.limit || "10");
+
+  const { data: locations, pagination } = await paginate(Location, page, limit);
+
+  if (locations.length === 0) {
+    return next(new ApiErrorResponse("No Locations Found", 404));
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: "Locations Found Successfully",
+    pagination,
+    data: locations,
   });
 });

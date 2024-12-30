@@ -4,6 +4,7 @@ import {
   deleteHotelById,
   getAllHotels,
   getHotelById,
+  updateHotelById,
 } from "../../controllers/hotel/hotelController.js";
 import {
   authenticateToken,
@@ -31,6 +32,12 @@ router
 router
   .route("/:hotelId")
   .get(authenticateToken, verifyPermission([UserRolesEnum.ADMIN]), getHotelById)
+  .patch(
+    authenticateToken,
+    verifyPermission([UserRolesEnum.ADMIN]),
+    fileParser,
+    updateHotelById
+  )
   .delete(
     authenticateToken,
     verifyPermission([UserRolesEnum.ADMIN]),

@@ -17,23 +17,75 @@ import {
   getAllHotelContacts,
   getHotelContactById,
 } from "../../controllers/hotelContact/hotelContactController.js";
+import {
+  authenticateToken,
+  verifyPermission,
+} from "../../middlewares/authMiddleware.js";
+import { UserRolesEnum } from "../../../constants.js";
 
 const router = express.Router();
 
-router.route("/").post(submitContactForm).get(getAllContacts);
-router.route("/:id").delete(deleteContactById);
+router
+  .route("/")
+  .post(submitContactForm)
+  .get(
+    authenticateToken,
+    verifyPermission([UserRolesEnum.ADMIN]),
+    getAllContacts
+  );
+router
+  .route("/:id")
+  .delete(
+    authenticateToken,
+    verifyPermission([UserRolesEnum.ADMIN]),
+    deleteContactById
+  );
 
 router
   .route("/bus-cruise")
   .post(createBusCruiseContact)
-  .get(getAllBusCruiseContacts);
+  .get(
+    authenticateToken,
+    verifyPermission([UserRolesEnum.ADMIN]),
+    getAllBusCruiseContacts
+  );
 router
   .route("/bus-cruise/:id")
-  .get(getBusCruiseContactById)
-  .put(updateBusCruiseContact)
-  .delete(deleteBusCruiseContact);
+  .get(
+    authenticateToken,
+    verifyPermission([UserRolesEnum.ADMIN]),
+    getBusCruiseContactById
+  )
+  .put(
+    authenticateToken,
+    verifyPermission([UserRolesEnum.ADMIN]),
+    updateBusCruiseContact
+  )
+  .delete(
+    authenticateToken,
+    verifyPermission([UserRolesEnum.ADMIN]),
+    deleteBusCruiseContact
+  );
 
-router.route("/hotel").post(createHotelContact).get(getAllHotelContacts);
-router.route("/hotel/:id").get(getHotelContactById).delete(deleteHotelContact);
+router
+  .route("/hotel")
+  .post(createHotelContact)
+  .get(
+    authenticateToken,
+    verifyPermission([UserRolesEnum.ADMIN]),
+    getAllHotelContacts
+  );
+router
+  .route("/hotel/:id")
+  .get(
+    authenticateToken,
+    verifyPermission([UserRolesEnum.ADMIN]),
+    getHotelContactById
+  )
+  .delete(
+    authenticateToken,
+    verifyPermission([UserRolesEnum.ADMIN]),
+    deleteHotelContact
+  );
 
 export default router;
