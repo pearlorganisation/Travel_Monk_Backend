@@ -49,16 +49,20 @@ export const createHotel = asyncHandler(async (req, res, next) => {
 
 // Get All Hotels
 export const getAllHotels = asyncHandler(async (req, res, next) => {
-  const findHotels = await Hotel.find();
+  const page = parseInt(req.query.page || "1");
+  const limit = parseInt(req.query.limit || "10");
 
-  if (findHotels.length == 0) {
+  const { data: hotels, pagination } = await paginate(Hotel, page, limit);
+
+  if (hotels.length === 0) {
     return next(new ApiErrorResponse("No Hotels Found", 404));
   }
 
   return res.status(200).json({
     success: true,
     message: "Hotels Found Successfully",
-    data: findHotels,
+    pagination,
+    data: hotels,
   });
 });
 
@@ -71,6 +75,71 @@ export const getHotelById = asyncHandler(async (req, res, next) => {
   return res
     .status(200)
     .json({ success: true, message: "Hotel found successfully", data: hotel });
+});
+
+export const updateHotelById = asyncHandler(async (req, res, next) => {
+  const { image } = req.files;
+
+  // Fetch the hotel to check for existing images
+  const existingHotel = await Hotel.findById(req.params.hotelId);
+  if (!existingHotel) {
+    return next(new ApiErrorResponse("Hotel not found", 404));
+  }
+
+  let uploadedImage;
+
+  // Only upload images if they are provided
+  if (image) {
+    uploadedImage = {
+      filename: image[0].newFilename,
+      path: `uploads/${image[0].newFilename}`,
+    };
+    const targetPath = path.join(
+      __dirname,
+      "../../../public/" + uploadedImage.path
+    );
+
+    // Create the directory if it doesn't exist
+    if (!fs.existsSync(path.dirname(targetPath))) {
+      fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+    }
+
+    // Move the new file to the target location
+    fs.renameSync(image[0].filepath, targetPath);
+
+    if (existingHotel.image) {
+      // Delete the existing image from the server
+      const filePath = path.join(
+        __dirname,
+        "../../../public",
+        existingHotel.image.path
+      );
+      await deleteFile(filePath);
+    }
+  }
+
+  // Update the hotel document
+  const updatedHotel = await Hotel.findByIdAndUpdate(
+    req.params.hotelId,
+    {
+      ...req.body,
+      image: uploadedImage || existingHotel.image, // Retain the old image if no new image is provided
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
+  if (!updatedHotel) {
+    return next(new ApiErrorResponse("Hotel not found or not updated", 404));
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: "Hotel updated successfully",
+    data: updatedHotel,
+  });
 });
 
 //Delete Hotel By Id
@@ -102,7 +171,7 @@ export const deleteHotelById = asyncHandler(async (req, res, next) => {
   });
 });
 
-// Need to update this to handle filtering and searching
+// Searching, filtering and sorting hotels
 export const getHotelsByDestination = asyncHandler(async (req, res, next) => {
   const { destinationId } = req.params;
   const page = parseInt(req.query.page || "1");
@@ -114,6 +183,7 @@ export const getHotelsByDestination = asyncHandler(async (req, res, next) => {
 
   // Handle priceRange filter (if any priceRange is selected)
   if (priceRange) {
+    //?priceRange=1000,2000&priceRange=3000
     const ranges = Array.isArray(priceRange) ? priceRange : [priceRange];
     const allPrices = ranges.flatMap((range) => range.split(",").map(Number));
     filter.estimatedPrice = {
@@ -132,7 +202,7 @@ export const getHotelsByDestination = asyncHandler(async (req, res, next) => {
   // console.log(JSON.stringify(filter, null, 2));
   // Handle search filter (if present)
   if (search) {
-    // Price and search query can be slected together
+    // Price and search query can be slected together, if search query is present, and data is filtered by search query, if pirce filter also present, then data is filtered by both search query and price filter
     filter.$or = [
       { name: { $regex: search, $options: "i" } },
       { country: { $regex: search, $options: "i" } },

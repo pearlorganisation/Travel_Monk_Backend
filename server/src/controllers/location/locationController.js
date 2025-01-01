@@ -2,6 +2,7 @@ import Destination from "../../models/destination/destinations.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import Location from "../../models/location/location.js";
+import { paginate } from "../../utils/pagination.js";
 
 // Can create multiple locations for a single destination
 export const createLocations = asyncHandler(async (req, res, next) => {
@@ -84,3 +85,86 @@ export const getAllLocationsForDestination = asyncHandler(
     });
   }
 );
+
+export const updateLocationById = asyncHandler(async (req, res, next) => {
+  const { locationId } = req.params;
+  const { day, location } = req.body;
+
+  if (!day || !location) {
+    return next(
+      new ApiErrorResponse(
+        "Invalid location data. Ensure 'day' and 'location' is provided",
+        400
+      )
+    );
+  }
+
+  const transformedLocations = location.map((loc) => {
+    if (!loc.name || !loc.latitude || !loc.longitude) {
+      return next(
+        new ApiErrorResponse(
+          "Invalid location data. Ensure 'name', 'latitude', and 'longitude' are provided for each location.",
+          400
+        )
+      );
+    }
+
+    return {
+      name: loc.name,
+      coordinates: {
+        type: "Point",
+        coordinates: [loc.longitude, loc.latitude],
+      },
+    };
+  });
+
+  const updatedLocation = await Location.findByIdAndUpdate(
+    locationId,
+    { day, location: transformedLocations },
+    { new: true, runValidators: true }
+  );
+
+  if (!updatedLocation) {
+    return next(new ApiErrorResponse("Location not found", 404));
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Location is updated",
+    data: updatedLocation,
+  });
+});
+
+export const deleteLocationById = asyncHandler(async (req, res, next) => {
+  const { locationId } = req.params;
+
+  const deletedLocation = await Location.findByIdAndDelete(locationId);
+
+  if (!deletedLocation) {
+    return next(new ApiErrorResponse("Location not found", 404));
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Location is deleted",
+  });
+});
+
+// add filter or more
+export const getAllLocations = asyncHandler(async (req, res, next) => {
+  const page = parseInt(req.query.page || "1");
+  const limit = parseInt(req.query.limit || "10");
+
+  const { data: locations, pagination } = await paginate(Location, page, limit);
+
+  if (locations.length === 0) {
+    return next(new ApiErrorResponse("No Locations Found", 404));
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: "Locations Found Successfully",
+    pagination,
+    data: locations,
+  });
+});

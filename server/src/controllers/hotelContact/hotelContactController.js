@@ -1,18 +1,29 @@
 import HotelContact from "../../models/hotelContact/hotelContact.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
+import { sendHotelEnquiryMail } from "../../utils/Mail/emailTemplates.js";
 import { paginate } from "../../utils/pagination.js";
 
+//change it enquiry to contact
 export const createHotelContact = asyncHandler(async (req, res, next) => {
   const newHotelContact = await HotelContact.create(req.body);
   if (!newHotelContact) {
     return next(new ApiErrorResponse("Contact is not created", 400));
   }
-  return res.status(201).json({
-    success: true,
-    message: "Contact is created",
-    data: newHotelContact,
-  });
+  await sendHotelEnquiryMail(process.env.NODEMAILER_EMAIL_USER, req.body) // send hotel name to data
+    .then(() => {
+      return res.status(201).json({
+        success: true,
+        message:
+          "Your enquiry has been successfully created. A notification email has been sent to our team, and we will get back to you shortly.",
+      });
+    })
+    .catch((error) => {
+      res.status(400).json({
+        success: false,
+        message: `Your enquiry has been created, but we encountered an issue while sending a notification email to our team. Please rest assured, we will still review your enquiry. Error: ${error.message}`,
+      });
+    });
 });
 
 export const getAllHotelContacts = asyncHandler(async (req, res, next) => {
