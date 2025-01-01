@@ -96,7 +96,7 @@ export const verifyPayment = asyncHandler(async (req, res, next) => {
   }
 });
 
-export const preBuiltPackages = asyncHandler(async (req, res, next) => {
+export const getAllBookings = asyncHandler(async (req, res, next) => {
   const page = parseInt(req.query.page || "1");
   const limit = parseInt(req.query.limit || "10");
 
@@ -148,5 +148,25 @@ export const myBookings = asyncHandler(async (req, res, next) => {
     message: "Pre built packages bookings found successfully",
     pagination,
     data: preBuiltPackageBookings,
+  });
+});
+
+export const getBookingById = asyncHandler(async (req, res, next) => {
+  const booking = await PreBuiltPackageBooking.findOne({
+    bookingId: req.params.bookingId,
+  })
+    .populate("user", "email name")
+    .populate("packageId");
+
+  if (!booking) {
+    return next(
+      new ApiErrorResponse("No pre built package booking found", 404)
+    );
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: "Pre built package booking found successfully",
+    data: booking,
   });
 });
