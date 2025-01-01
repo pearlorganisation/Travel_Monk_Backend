@@ -6,9 +6,10 @@ import { paginate } from "../../utils/pagination.js";
 
 export const createPreBuiltPackageCustomizationEnquiry = asyncHandler(
   async (req, res, next) => {
-    const newEnquiry = await PreBuiltPackageCustomizationEnquiry.create(
-      req.body
-    );
+    const newEnquiry = await PreBuiltPackageCustomizationEnquiry.create({
+      ...req.body,
+      user: req.user._id,
+    });
     if (!newEnquiry) {
       return next(new ApiErrorResponse("Enquiry not created", 400));
     }

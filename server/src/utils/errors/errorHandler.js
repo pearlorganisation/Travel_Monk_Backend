@@ -42,15 +42,21 @@ export const errorHandler = (err, req, res, next) => {
   // Log the error for debugging (use a logging library in production)
   console.error(err);
 
-  res.status(err.statusCode).json({
-    success: false,
-    message: err.message,
-    stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
-  });
+  if (err.statusCode === 404) {
+    res.status(err.statusCode).json({
+      success: false,
+      message: err.message,
+    });
+  } else {
+    res.status(err.statusCode).json({
+      success: false,
+      message: err.message,
+      stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
+    });
+  }
 };
 
 export const notFound = (req, res, next) => {
   const error = new Error(`Not Found : ${req.originalUrl}`);
-  res.status(404);
-  next(error);
+  res.status(404).json({ success: false, message: error.message });
 };

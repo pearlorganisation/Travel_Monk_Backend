@@ -118,7 +118,6 @@ export const updateActivityById = asyncHandler(async (req, res, next) => {
 
 export const getActivitiesByDestination = async (req, res) => {
   const { destinationId } = req.params;
-  console.log("");
   try {
     const activities = await Activity.find({
       destination: destinationId,

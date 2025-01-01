@@ -7,7 +7,10 @@ import { paginate } from "../../utils/pagination.js";
 export const createFullyCustomizeEnquiry = asyncHandler(
   async (req, res, next) => {
     // Create a new enquiry
-    const newEnquiry = await FullyCustomizeEnquiry.create(req.body);
+    const newEnquiry = await FullyCustomizeEnquiry.create({
+      ...req.body,
+      user: req.user._id,
+    });
 
     // If the enquiry is not created, return an error response
     if (!newEnquiry) {

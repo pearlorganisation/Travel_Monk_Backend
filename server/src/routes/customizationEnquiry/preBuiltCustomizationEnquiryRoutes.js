@@ -15,7 +15,7 @@ const router = express.Router();
 
 router
   .route("/")
-  .post(createPreBuiltPackageCustomizationEnquiry)
+  .post(authenticateToken, createPreBuiltPackageCustomizationEnquiry)
   .get(
     authenticateToken,
     verifyPermission([UserRolesEnum.ADMIN]),

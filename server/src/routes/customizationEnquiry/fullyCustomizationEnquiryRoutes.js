@@ -15,7 +15,7 @@ const router = express.Router();
 
 router
   .route("/")
-  .post(createFullyCustomizeEnquiry)
+  .post(authenticateToken, createFullyCustomizeEnquiry)
   .get(
     authenticateToken,
     verifyPermission([UserRolesEnum.ADMIN]),
