@@ -136,3 +136,32 @@ export const deletePreBuiltPackageCustomizationEnquiryById = asyncHandler(
     });
   }
 );
+
+export const getMyPreBuiltPackageCustomizationEnquiries = asyncHandler(
+  async (req, res, next) => {
+    const page = parseInt(req.query.page || "1");
+    const limit = parseInt(req.query.limit || "10");
+
+    const { data: enquiries, pagination } = await paginate(
+      PreBuiltPackageCustomizationEnquiry,
+      page,
+      limit,
+      [],
+      { user: req.user._id }
+    );
+
+    if (!enquiries || enquiries.length === 0) {
+      return next(
+        new ApiErrorResponse("No pre buil package bookings found", 404)
+      );
+    }
+
+    return res.status(200).json({
+      success: true,
+      message:
+        "Your pre-built package customization enquiries were found successfully.",
+      pagination,
+      data: enquiries,
+    });
+  }
+);

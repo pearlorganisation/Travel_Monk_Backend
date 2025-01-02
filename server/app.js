@@ -6,7 +6,6 @@ import cors from "cors";
 import dontenv from "dotenv";
 import { fileURLToPath } from "url";
 
-// Create an Express application
 const app = express();
 
 // Set view engine and views directory
@@ -23,7 +22,7 @@ app.use(
       process.env.NODE_ENV === "development"
         ? ["http://localhost:5173", "http://localhost:5174"]
         : ["https://travel-monk-mern.vercel.app"],
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"], // Specify allowed methods
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"], 
     credentials: true,
   })
 );

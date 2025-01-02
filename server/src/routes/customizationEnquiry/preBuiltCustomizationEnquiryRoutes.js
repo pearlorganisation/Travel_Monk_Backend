@@ -3,6 +3,7 @@ import {
   createPreBuiltPackageCustomizationEnquiry,
   deletePreBuiltPackageCustomizationEnquiryById,
   getAllPreBuiltPackageCustomizationEnquiries,
+  getMyPreBuiltPackageCustomizationEnquiries,
   getPreBuiltPackageCustomizationEnquiryById,
 } from "../../controllers/customizationEnquiry/prebuiltCustomizationEnquiryController.js";
 import {
@@ -21,6 +22,10 @@ router
     verifyPermission([UserRolesEnum.ADMIN]),
     getAllPreBuiltPackageCustomizationEnquiries
   );
+
+router
+  .route("/my-enquiries")
+  .get(authenticateToken, getMyPreBuiltPackageCustomizationEnquiries);
 
 router
   .route("/:id")

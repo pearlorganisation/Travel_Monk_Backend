@@ -4,6 +4,7 @@ import {
   deleteFullyCustomizeEnquiryById,
   getAllFullyCustomizeEnquiries,
   getFullyCustomizeEnquiryById,
+  getMyFullyCustomizeEnquiries,
 } from "../../controllers/customizationEnquiry/fullyCustomizationEnquiryController.js";
 import {
   authenticateToken,
@@ -21,6 +22,10 @@ router
     verifyPermission([UserRolesEnum.ADMIN]),
     getAllFullyCustomizeEnquiries
   );
+
+router
+  .route("/my-enquiries")
+  .get(authenticateToken, getMyFullyCustomizeEnquiries);
 
 router
   .route("/:id")
