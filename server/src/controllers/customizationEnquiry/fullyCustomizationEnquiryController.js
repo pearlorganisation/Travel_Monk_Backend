@@ -7,7 +7,10 @@ import { paginate } from "../../utils/pagination.js";
 export const createFullyCustomizeEnquiry = asyncHandler(
   async (req, res, next) => {
     // Create a new enquiry
-    const newEnquiry = await FullyCustomizeEnquiry.create(req.body);
+    const newEnquiry = await FullyCustomizeEnquiry.create({
+      ...req.body,
+      user: req.user._id,
+    });
 
     // If the enquiry is not created, return an error response
     if (!newEnquiry) {
@@ -143,6 +146,33 @@ export const deleteFullyCustomizeEnquiryById = asyncHandler(
     res.status(200).json({
       success: true,
       message: "Enquiry deleted successfully",
+    });
+  }
+);
+
+export const getMyFullyCustomizeEnquiries = asyncHandler(
+  async (req, res, next) => {
+    const page = parseInt(req.query.page || "1"); // Default to page 1
+    const limit = parseInt(req.query.limit || "10"); // Default to 10 items per page
+
+    const { data: enquiries, pagination } = await paginate(
+      FullyCustomizeEnquiry,
+      page,
+      limit,
+      [],
+      { user: req.user._id }
+    );
+
+    if (!enquiries || enquiries.length === 0) {
+      return next(new ApiErrorResponse("No enquiries found", 404));
+    }
+
+    return res.status(200).json({
+      success: true,
+      message:
+        "Your fully customized package enquiries were found successfully.",
+      pagination,
+      data: enquiries,
     });
   }
 );

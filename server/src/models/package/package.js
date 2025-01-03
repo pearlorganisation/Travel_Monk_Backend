@@ -2,8 +2,8 @@ import mongoose from "mongoose";
 
 const packageSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true },
-    slug: { type: String },
+    name: { type: String, required: true, unique: true },
+    slug: { type: String, required: true, unique: true },
     banner: {
       filename: { type: String, required: true },
       path: { type: String, required: true },
@@ -30,6 +30,7 @@ const packageSchema = new mongoose.Schema(
     packageDestination: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Destination",
+      required: true,
     },
   },
   { timestamps: true }

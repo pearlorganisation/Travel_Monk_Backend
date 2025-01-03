@@ -59,7 +59,6 @@ import fs from "fs";
 
 // Middleware to parse files and fields from requests
 const fileParser = (req, res, next) => {
-  // Define __dirname
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
   const form = formidable({

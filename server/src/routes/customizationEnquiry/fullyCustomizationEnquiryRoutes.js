@@ -4,6 +4,7 @@ import {
   deleteFullyCustomizeEnquiryById,
   getAllFullyCustomizeEnquiries,
   getFullyCustomizeEnquiryById,
+  getMyFullyCustomizeEnquiries,
 } from "../../controllers/customizationEnquiry/fullyCustomizationEnquiryController.js";
 import {
   authenticateToken,
@@ -15,12 +16,16 @@ const router = express.Router();
 
 router
   .route("/")
-  .post(createFullyCustomizeEnquiry)
+  .post(authenticateToken, createFullyCustomizeEnquiry)
   .get(
     authenticateToken,
     verifyPermission([UserRolesEnum.ADMIN]),
     getAllFullyCustomizeEnquiries
   );
+
+router
+  .route("/my-enquiries")
+  .get(authenticateToken, getMyFullyCustomizeEnquiries);
 
 router
   .route("/:id")

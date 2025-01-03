@@ -105,7 +105,6 @@ export const getPackageById = asyncHandler(async (req, res, next) => {
 
 export const updatePackageById = asyncHandler(async (req, res, next) => {
   const { packageId } = req.params;
-  // Find the package by ID
   const packageData = await Package.findById(packageId);
   if (!packageData) {
     return next(new ApiErrorResponse("Package not found", 404));
@@ -114,22 +113,37 @@ export const updatePackageById = asyncHandler(async (req, res, next) => {
     req.body;
 
   const { image, banner } = req.files;
-  let uploadedImage = [];
-  let uploadedBanner = [];
+  let uploadedImage;
+  let uploadedBanner;
   if (image) {
-    uploadedImage = await uploadFileToCloudinary(image); // [{}]
+    uploadedImage = {
+      filename: image[0].newFilename,
+      path: `uploads/${image[0].newFilename}`,
+    };
+    if (packageData.image) {
+      const filePath = path.join(
+        __dirname,
+        "../../../public",
+        packageData.image.path
+      );
+      await deleteFile(filePath);
+    }
+    packageData.image = uploadedImage;
   }
   if (banner) {
-    uploadedBanner = await uploadFileToCloudinary(banner); // [{}]
-  }
-
-  // if array is not empty then we will overwrite the image with new one
-  if (uploadedImage.length > 0) {
-    packageData.image = uploadedImage[0]; // Assign the first image (assuming single image upload)
-  }
-
-  if (uploadedBanner.length > 0) {
-    packageData.banner = uploadedBanner[0]; // Assign the first banner (assuming single banner upload)
+    uploadedBanner = {
+      filename: banner[0].newFilename,
+      path: `uploads/${banner[0].newFilename}`,
+    };
+    if (packageData.banner) {
+      const filePath = path.join(
+        __dirname,
+        "../../../public",
+        packageData.banner.path
+      );
+      await deleteFile(filePath);
+    }
+    packageData.banner = uploadedBanner;
   }
 
   // Update itinerary if provided
@@ -149,16 +163,6 @@ export const updatePackageById = asyncHandler(async (req, res, next) => {
     });
     await Promise.all(updatePromises);
   }
-
-  // // Update pricing fields without replacing existing subfields
-  // if (pricing) {
-  //   Object.keys(pricing).forEach((key) => {
-  //     packageData.pricing[key] = {
-  //       ...packageData.pricing[key],
-  //       ...pricing[key],
-  //     };
-  //   });
-  // }
 
   // Update duration fields without replacing existing subfields
   if (duration) {
@@ -181,23 +185,6 @@ export const updatePackageById = asyncHandler(async (req, res, next) => {
       { _id: packageId },
       { $addToSet: { exclusions: { $each: exclusions } } }
     );
-  }
-
-  // Handle updates for premiumAddons
-  if (premiumAddons && Array.isArray(premiumAddons)) {
-    premiumAddons.forEach(async (addon) => {
-      const { name, price, _id } = addon;
-      await Package.updateOne(
-        { _id: packageId, "premiumAddons._id": _id },
-        {
-          $set: {
-            "premiumAddons.$.price": price,
-            "premiumAddons.$.name": name,
-          },
-        },
-        { upsert: true } // Use upsert if you want to add the addon if it doesn't exist
-      );
-    });
   }
 
   Object.keys(otherUpdates).forEach((key) => {
