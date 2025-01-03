@@ -22,7 +22,7 @@ app.use(
       process.env.NODE_ENV === "development"
         ? ["http://localhost:5173", "http://localhost:5174"]
         : ["https://travel-monk-mern.vercel.app"],
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"], 
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     credentials: true,
   })
 );
