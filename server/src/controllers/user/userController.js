@@ -145,9 +145,6 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
 
 //Get user details Contoller
 export const getUserDetails = asyncHandler(async (req, res, next) => {
-  // const user = req.user;
-
-  // console.log(user, "user")
   const user = await User.findById(req.user?._id).select(
     "-password -refreshToken"
   );
@@ -170,7 +167,7 @@ export const getAllUsers = asyncHandler(async (req, res, next) => {
     page,
     limit,
     [], // No population needed
-    {}, // No filters
+    { _id: { $ne: req.user._id } }, // No filters
     "-password -refreshToken -role" // Fields to exclude
   );
 
@@ -180,5 +177,10 @@ export const getAllUsers = asyncHandler(async (req, res, next) => {
   }
 
   // Return paginated response
-  return res.status(200).json({ success: true, data: users, pagination });
+  return res.status(200).json({
+    success: true,
+    message: "Users found successfully",
+    pagination,
+    data: users,
+  });
 });

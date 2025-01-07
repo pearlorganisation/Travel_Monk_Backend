@@ -1,5 +1,4 @@
 import Hotel from "../../models/hotel/hotel.js";
-import { uploadFileToCloudinary } from "../../utils/cloudinary.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import fs from "fs";
