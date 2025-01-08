@@ -1,5 +1,4 @@
 import Partner from "../../models/partner/partner.js";
-import { uploadFileToCloudinary } from "../../utils/cloudinary.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 import path from "path";

@@ -1,8 +1,4 @@
 import Vehicle from "../../models/Vehicle/Vehicle.js";
-import {
-  deleteFileFromCloudinary,
-  uploadFileToCloudinary,
-} from "../../utils/cloudinary.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 import { paginate } from "../../utils/pagination.js";
