@@ -15,7 +15,7 @@ import { UserRolesEnum } from "../../../constants.js";
 
 const router = express.Router();
 
-router.route("/refresh-token").post(authenticateToken, refreshAccessToken);
+router.route("/refresh-token").post( refreshAccessToken);
 router.route("/change-password").post(authenticateToken, changePassword);
 router.route("/forgot-password").post(forgotPassword);
 router.route("/reset-password/:token").post(resetPassword);
