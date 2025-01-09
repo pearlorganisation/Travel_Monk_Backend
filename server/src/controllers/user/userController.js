@@ -2,7 +2,6 @@ import User from "../../models/user/user.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import jwt from "jsonwebtoken";
-import nodemailer from "nodemailer";
 import { COOKIE_OPTIONS } from "../../../constants.js";
 import { paginate } from "../../utils/pagination.js";
 import { generateForgotPasswordResetToken } from "../../utils/tokenHelper.js";
@@ -12,7 +11,7 @@ import { sendForgotPasswordMail } from "../../utils/Mail/emailTemplates.js";
 export const refreshAccessToken = asyncHandler(async (req, res, next) => {
   const clientRefreshToken = req.cookies.refresh_token;
   if (!clientRefreshToken) {
-    return next(new ApiErrorResponse("Unauthorized Request", 401));
+    return next(new ApiErrorResponse("Unauthorized Request", 401)); //Expired or Invalid Refresh Token. force the user to log out in front end and login again
   }
 
   const decoded = jwt.verify(
@@ -30,7 +29,7 @@ export const refreshAccessToken = asyncHandler(async (req, res, next) => {
   }
 
   const access_token = user.generateAccessToken();
-  const refresh_token = user.generateRefreshToken();
+  const refresh_token = user.generateRefreshToken(); // User will be logged in for longer time
 
   user.refreshToken = refresh_token;
   await user.save({ validateBeforeSave: false });
