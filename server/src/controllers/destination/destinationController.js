@@ -1,5 +1,4 @@
 import Destination from "../../models/destination/destinations.js";
-import { uploadFileToCloudinary } from "../../utils/cloudinary.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 import { paginate } from "../../utils/pagination.js";
@@ -125,7 +124,7 @@ export const updateDestination = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   const { name, startingPrice, packages, hotels, locations, type } = req.body;
   const { image, banner } = req.files;
-
+  console.log(req.files);
   // Find the Indian Destination by ID
   const destination = await Destination.findById(id);
   if (!destination) {
@@ -133,15 +132,37 @@ export const updateDestination = asyncHandler(async (req, res, next) => {
   }
 
   // Upload new image and banner files if provided
-  let uploadedImage = [];
-  let uploadedBanner = [];
+  let uploadedImage;
+  let uploadedBanner;
   if (image) {
-    uploadedImage = await uploadFileToCloudinary(image);
-    destination.image = uploadedImage[0];
+    uploadedImage = {
+      filename: image[0].newFilename,
+      path: `uploads/${image[0].newFilename}`,
+    };
+    if (destination.image) {
+      const filePath = path.join(
+        __dirname,
+        "../../../public",
+        destination.image.path
+      );
+      await deleteFile(filePath);
+    }
+    destination.image = uploadedImage;
   }
   if (banner) {
-    uploadedBanner = await uploadFileToCloudinary(banner);
-    destination.banner = uploadedBanner[0];
+    uploadedBanner = {
+      filename: banner[0].newFilename,
+      path: `uploads/${banner[0].newFilename}`,
+    };
+    if (destination.banner) {
+      const filePath = path.join(
+        __dirname,
+        "../../../public",
+        destination.banner.path
+      );
+      await deleteFile(filePath);
+    }
+    destination.banner = uploadedBanner;
   }
 
   // Update fields if provided in the request body

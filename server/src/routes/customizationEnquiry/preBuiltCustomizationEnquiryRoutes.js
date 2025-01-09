@@ -3,19 +3,41 @@ import {
   createPreBuiltPackageCustomizationEnquiry,
   deletePreBuiltPackageCustomizationEnquiryById,
   getAllPreBuiltPackageCustomizationEnquiries,
+  getMyPreBuiltPackageCustomizationEnquiries,
   getPreBuiltPackageCustomizationEnquiryById,
 } from "../../controllers/customizationEnquiry/prebuiltCustomizationEnquiryController.js";
+import {
+  authenticateToken,
+  verifyPermission,
+} from "../../middlewares/authMiddleware.js";
+import { UserRolesEnum } from "../../../constants.js";
 
 const router = express.Router();
 
 router
   .route("/")
-  .post(createPreBuiltPackageCustomizationEnquiry)
-  .get(getAllPreBuiltPackageCustomizationEnquiries);
+  .post(authenticateToken, createPreBuiltPackageCustomizationEnquiry)
+  .get(
+    authenticateToken,
+    verifyPermission([UserRolesEnum.ADMIN]),
+    getAllPreBuiltPackageCustomizationEnquiries
+  );
+
+router
+  .route("/my-enquiries")
+  .get(authenticateToken, getMyPreBuiltPackageCustomizationEnquiries);
 
 router
   .route("/:id")
-  .get(getPreBuiltPackageCustomizationEnquiryById)
-  .delete(deletePreBuiltPackageCustomizationEnquiryById);
+  .get(
+    authenticateToken,
+    verifyPermission([UserRolesEnum.ADMIN]),
+    getPreBuiltPackageCustomizationEnquiryById
+  )
+  .delete(
+    authenticateToken,
+    verifyPermission([UserRolesEnum.ADMIN]),
+    deletePreBuiltPackageCustomizationEnquiryById
+  );
 
 export default router;

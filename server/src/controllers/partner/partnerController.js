@@ -1,5 +1,4 @@
 import Partner from "../../models/partner/partner.js";
-import { uploadFileToCloudinary } from "../../utils/cloudinary.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 import path from "path";
@@ -27,8 +26,6 @@ export const createPartner = asyncHandler(async (req, res, next) => {
     const file = files[0];
     const publicPath = path.join("uploads", file.newFilename); // Relative path for saving
     const targetPath = path.join(__dirname, "../../../public", publicPath); // Full path on the server
-    console.log("Public path: ", publicPath);
-    console.log("Target path: ", targetPath);
 
     // Move the file to the uploads directory if not already there
     if (!fs.existsSync(targetPath)) {
@@ -94,26 +91,40 @@ export const getPartnerById = asyncHandler(async (req, res, next) => {
 
 export const updatePartnerById = asyncHandler(async (req, res, next) => {
   const { partnerLogo } = req.files; // Safely access req.files
+  const existingPartner = await Partner.findById(req.params.id);
+  if (!existingPartner) {
+    return next(new ApiErrorResponse("Partner not found", 404));
+  }
   let uploadedLogo;
 
   // Only upload logo if it's provided
   if (partnerLogo) {
-    uploadedLogo = await uploadFileToCloudinary(partnerLogo); // Assuming this function exists
-  }
-
-  // Prepare the update object
-  const updateData = {
-    ...req.body,
-  };
-
-  // If a new logo is uploaded, include it in the update
-  if (uploadedLogo) {
-    updateData.partnerLogo = uploadedLogo[0]; // Assuming uploadFileToCloudinary returns an array
+    uploadedLogo = {
+      filename: partnerLogo[0].newFilename,
+      path: `uploads/${partnerLogo[0].newFilename}`,
+    };
+    const targetPath = path.join(
+      __dirname,
+      "../../../public/" + uploadedLogo.path
+    );
+    if (!fs.existsSync(path.dirname(targetPath))) {
+      fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+    }
+    fs.renameSync(partnerLogo[0].filepath, targetPath);
+    if (existingPartner.partnerLogo) {
+      // Delete the existing image from the server
+      const filePath = path.join(
+        __dirname,
+        "../../../public",
+        existingPartner.partnerLogo.path
+      );
+      await deleteFile(filePath);
+    }
   }
 
   const updatedPartner = await Partner.findByIdAndUpdate(
     req.params.id,
-    updateData,
+    { ...req.body, partnerLogo: uploadedLogo },
     {
       new: true,
       runValidators: true,

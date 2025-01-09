@@ -1,14 +1,11 @@
 import Vehicle from "../../models/Vehicle/Vehicle.js";
-import {
-  deleteFileFromCloudinary,
-  uploadFileToCloudinary,
-} from "../../utils/cloudinary.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 import { paginate } from "../../utils/pagination.js";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
+import { deleteFile } from "../../utils/fileUtils.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,7 +22,7 @@ export const createVehicle = asyncHandler(async (req, res) => {
     } = req.body;
 
     const files = req.files?.image;
-
+    console.log("Files: ", files);
     if (!files || files.length === 0) {
       res.status(400);
       throw new Error("Image file is required.");
@@ -68,7 +65,7 @@ export const createVehicle = asyncHandler(async (req, res) => {
       message: error.message,
     });
   }
-}); 
+});
 
 export const getAllVehicles = asyncHandler(async (req, res, next) => {
   const page = parseInt(req.query.page || "1"); // Default to page 1
@@ -104,25 +101,45 @@ export const getVehicleById = asyncHandler(async (req, res, next) => {
 });
 
 export const updateVehicleById = asyncHandler(async (req, res, next) => {
-  const { images } = req.files;
+  const { image } = req.files;
 
   // Fetch the university to check for existing images
   const existingVehicle = await Vehicle.findById(req.params.id);
   if (!existingVehicle) {
     return next(new ApiError("Vehicle not found", 404));
   }
-  let uploadedImagesResponse;
+  let uploadedImage;
 
   // Only upload images if they are provided
-  if (images) {
-    uploadedImagesResponse = await uploadFileToCloudinary(images); // Assuming this function exists
+  if (image) {
+    uploadedImage = {
+      filename: image[0].newFilename,
+      path: `uploads/${image[0].newFilename}`,
+    };
+    const targetPath = path.join(
+      __dirname,
+      "../../../public/" + uploadedImage.path
+    );
+    if (!fs.existsSync(path.dirname(targetPath))) {
+      fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+    }
+    fs.renameSync(image[0].filepath, targetPath);
+    if (existingVehicle.image) {
+      // Delete the existing image from the server
+      const filePath = path.join(
+        __dirname,
+        "../../../public",
+        existingVehicle.image.path
+      );
+      await deleteFile(filePath);
+    }
   }
 
   const updatedVehicle = await Vehicle.findByIdAndUpdate(
     req.params.id,
     {
       ...req.body,
-      images: uploadedImagesResponse,
+      image: uploadedImage,
     },
     {
       new: true,

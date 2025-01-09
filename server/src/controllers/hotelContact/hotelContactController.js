@@ -4,6 +4,7 @@ import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 import { sendHotelEnquiryMail } from "../../utils/Mail/emailTemplates.js";
 import { paginate } from "../../utils/pagination.js";
 
+//change it enquiry to contact
 export const createHotelContact = asyncHandler(async (req, res, next) => {
   const newHotelContact = await HotelContact.create(req.body);
   if (!newHotelContact) {

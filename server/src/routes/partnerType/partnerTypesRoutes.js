@@ -6,14 +6,42 @@ import {
   getPartnerTypeById,
   updatePartnerType,
 } from "../../controllers/partnerTypes/partnerTypesController.js";
+import {
+  authenticateToken,
+  verifyPermission,
+} from "../../middlewares/authMiddleware.js";
+import { UserRolesEnum } from "../../../constants.js";
 
 const router = express.Router();
 
-router.route("/").post(createPartnerType).get(getAllPartnerTypes);
+router
+  .route("/")
+  .post(
+    authenticateToken,
+    verifyPermission([UserRolesEnum.ADMIN]),
+    createPartnerType
+  )
+  .get(
+    authenticateToken,
+    verifyPermission([UserRolesEnum.ADMIN]),
+    getAllPartnerTypes
+  );
 router
   .route("/:id")
-  .get(getPartnerTypeById)
-  .put(updatePartnerType)
-  .delete(deletePartnerType);
+  .get(
+    authenticateToken,
+    verifyPermission([UserRolesEnum.ADMIN]),
+    getPartnerTypeById
+  )
+  .put(
+    authenticateToken,
+    verifyPermission([UserRolesEnum.ADMIN]),
+    updatePartnerType
+  )
+  .delete(
+    authenticateToken,
+    verifyPermission([UserRolesEnum.ADMIN]),
+    deletePartnerType
+  );
 
 export default router;
