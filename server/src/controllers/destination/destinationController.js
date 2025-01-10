@@ -6,6 +6,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { deleteFile } from "../../utils/fileUtils.js";
+import Package from "../../models/package/package.js";
 
 // Define __dirname
 const __filename = fileURLToPath(import.meta.url);

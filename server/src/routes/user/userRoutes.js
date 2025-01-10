@@ -6,6 +6,7 @@ import {
   resetPassword,
   getUserDetails,
   getAllUsers,
+  updateUserDetails,
 } from "../../controllers/user/userController.js";
 import {
   authenticateToken,
@@ -19,7 +20,10 @@ router.route("/refresh-token").post(refreshAccessToken);
 router.route("/change-password").post(authenticateToken, changePassword);
 router.route("/forgot-password").post(forgotPassword);
 router.route("/reset-password/:token").post(resetPassword);
-router.route("/me").get(authenticateToken, getUserDetails);
+router
+  .route("/me")
+  .get(authenticateToken, getUserDetails)
+  .patch(authenticateToken, updateUserDetails);
 router
   .route("/")
   .get(authenticateToken, verifyPermission([UserRolesEnum.ADMIN]), getAllUsers);
