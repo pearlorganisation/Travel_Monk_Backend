@@ -22,7 +22,7 @@ export const getAllPackages = asyncHandler(async (req, res, next) => {
   if (destination) {
     filter.destination = { $regex: new RegExp(destination, "i") }; // Case-insensitive search
   }
-  const packages = await Package.find(filter).skip(skip).limit(limit);
+  const packages = await Package.find(filter).skip(skip).limit(limit).populate("itinerary.activities");
   const total = await Package.countDocuments(filter);
   if (!packages || packages.length === 0) {
     return next(new ApiErrorResponse("Packages not found", 404));
@@ -202,6 +202,7 @@ export const updatePackageById = asyncHandler(async (req, res, next) => {
 //Delete Package By Id
 export const deletePackageById = asyncHandler(async (req, res, next) => {
   const deletedPackage = await Package.findByIdAndDelete(req.params?.packageId); // Return null if no doc found
+  console.log("the deleted id is", req.params.packageId)
   if (!deletedPackage) {
     return next(new ApiErrorResponse("Package not found.", 404));
   }
