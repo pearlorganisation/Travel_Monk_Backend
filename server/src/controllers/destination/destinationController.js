@@ -6,6 +6,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { deleteFile } from "../../utils/fileUtils.js";
+import Package from "../../models/package/package.js";
 
 // Define __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -73,34 +74,111 @@ export const createDestination = asyncHandler(async (req, res, next) => {
   });
 });
 
+// export const getAllDestination = asyncHandler(async (req, res, next) => {
+//   const page = parseInt(req.query.page || "1");
+//   const limit = parseInt(req.query.limit || "10");
+
+//   // Get fields to include from query parameters
+//   const fields = req.query.fields || ""; // Defaults to an empty string if not provided, undefined when "" not provided, fields=name,banner,startingPrice etc
+//   const filter = {};
+//   if (req.query.type) {
+//     filter.type = { $regex: new RegExp(req.query.type, "i") };
+//   }
+//   const { data: destinations, pagination } = await paginate(
+//     Destination,
+//     page,
+//     limit,
+//     [], // No populate options for now
+//     filter, // Filter by type if provided
+//     fields // Pass the fields dynamically
+//   );
+
+//   if (!destinations || destinations.length === 0) {
+//     return res.status(404).json({ message: "No Destinations Found" });
+//   }
+
+//   res.status(200).json({
+//     success: true,
+//     message: "Destinations fetched successfully",
+//     pagination,
+//     data: destinations,
+//   });
+// });
+
 export const getAllDestination = asyncHandler(async (req, res, next) => {
   const page = parseInt(req.query.page || "1");
   const limit = parseInt(req.query.limit || "10");
 
-  // Get fields to include from query parameters
-  const fields = req.query.fields || ""; // Defaults to an empty string if not provided, undefined when "" not provided, fields=name,banner,startingPrice etc
+  const fields = req.query.fields || ""; // Fields to include
   const filter = {};
+
   if (req.query.type) {
     filter.type = { $regex: new RegExp(req.query.type, "i") };
   }
+
+  // Fetch destinations with pagination
   const { data: destinations, pagination } = await paginate(
     Destination,
     page,
     limit,
     [], // No populate options for now
-    filter, // Filter by type if provided
-    fields // Pass the fields dynamically
+    filter, // Filter by type
+    fields // Fields to include
   );
 
   if (!destinations || destinations.length === 0) {
     return res.status(404).json({ message: "No Destinations Found" });
   }
 
+  // Extract destination IDs to use for matching packages
+  const destinationIds = destinations.map((dest) => dest._id);
+
+  // Fetch best-seller packages linked to these destinations
+  const bestSellerPackages = await Package.aggregate([
+    {
+      $match: {
+        packageDestination: { $in: destinationIds },
+        isBestSeller: true, // Assuming a flag to mark best-seller packages
+      },
+    },
+    {
+      $lookup: {
+        from: "destinations", // Destination collection name (ensure it's correct)
+        localField: "packageDestination",
+        foreignField: "_id",
+        as: "destinationInfo",
+      },
+    },
+    {
+      $unwind: "$destinationInfo", // Unwind the destinationInfo array
+    },
+    {
+      $project: {
+        name: 1,
+        slug: 1,
+        banner: 1,
+        image: 1,
+        startingPrice: 1,
+        duration: 1,
+        pickDropPoint: 1,
+        itinerary: 1,
+        inclusions: 1,
+        exclusions: 1,
+        startDate: 1,
+        endDate: 1,
+        isBestseller: 1,
+        "destinationInfo.name": 1, // Include destination name for reference
+        "destinationInfo.type": 1,
+      },
+    },
+  ]);
+
   res.status(200).json({
     success: true,
     message: "Destinations fetched successfully",
     pagination,
     data: destinations,
+    bestSellerPackages,
   });
 });
 

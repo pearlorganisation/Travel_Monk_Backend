@@ -2,7 +2,6 @@ import User from "../../models/user/user.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import jwt from "jsonwebtoken";
-import nodemailer from "nodemailer";
 import { COOKIE_OPTIONS } from "../../../constants.js";
 import { paginate } from "../../utils/pagination.js";
 import { generateForgotPasswordResetToken } from "../../utils/tokenHelper.js";
@@ -11,41 +10,49 @@ import { sendForgotPasswordMail } from "../../utils/Mail/emailTemplates.js";
 //Controller for refreshing Access token
 export const refreshAccessToken = asyncHandler(async (req, res, next) => {
   const clientRefreshToken = req.cookies.refresh_token;
+  //console.log(clientRefreshToken);
   if (!clientRefreshToken) {
-    return next(new ApiErrorResponse("Unauthorized Request", 401));
+    // If there's no refresh token, unauthorized request.
+    return next(new ApiErrorResponse("Unauthorized Request", 401)); // Expired or Invalid Refresh Token. force the user to log out in front end and login again
   }
 
-  const decoded = jwt.verify(
-    clientRefreshToken,
-    process.env.REFRESH_TOKEN_SECRET
-  );
+  try {
+    const decoded = jwt.verify(
+      clientRefreshToken,
+      process.env.REFRESH_TOKEN_SECRET
+    );
 
-  if (!decoded) {
+    const user = await User.findById(decoded._id);
+    if (!user || clientRefreshToken !== user.refreshToken) {
+      // Token mismatch or user not found, clear the cookies
+      res.clearCookie("access_token");
+      res.clearCookie("refresh_token");
+      return next(new ApiErrorResponse("Refresh token is expired", 401));
+    }
+
+    const access_token = user.generateAccessToken();
+    const refresh_token = user.generateRefreshToken(); // User will be logged in for longer time
+
+    user.refreshToken = refresh_token;
+    await user.save({ validateBeforeSave: false });
+
+    return res
+      .status(200)
+      .cookie("access_token", access_token, {
+        ...COOKIE_OPTIONS,
+        expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 day
+      })
+      .cookie("refresh_token", refresh_token, {
+        ...COOKIE_OPTIONS,
+        expires: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000), // 15 days
+      })
+      .json({ success: true, message: "Tokens refreshed successfully" });
+  } catch (error) {
+    // Catch JWT verification error and clear cookies
+    res.clearCookie("access_token");
+    res.clearCookie("refresh_token");
     return next(new ApiErrorResponse("Invalid refresh token", 401));
   }
-
-  const user = await User.findById(decoded._id);
-  if (!user || clientRefreshToken !== user.refreshToken) {
-    return next(new ApiErrorResponse("Refresh token is expired", 401));
-  }
-
-  const access_token = user.generateAccessToken();
-  const refresh_token = user.generateRefreshToken();
-
-  user.refreshToken = refresh_token;
-  await user.save({ validateBeforeSave: false });
-
-  return res
-    .status(200)
-    .cookie("access_token", access_token, {
-      ...COOKIE_OPTIONS,
-      expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1day set to 15 min later
-    })
-    .cookie("refresh_token", refresh_token, {
-      ...COOKIE_OPTIONS,
-      expires: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000), // 15day
-    })
-    .json({ access_token, refresh_token });
 });
 
 // Change password controller
@@ -154,6 +161,24 @@ export const getUserDetails = asyncHandler(async (req, res, next) => {
   return res
     .status(200)
     .json({ success: true, message: "User found successfully", data: user });
+});
+
+export const updateUserDetails = asyncHandler(async (req, res, next) => {
+  const userId = req.user?._id;
+
+  // Fetch the existing user details: Can change name and mobile number only
+  let user = await User.findByIdAndUpdate(
+    userId,
+    { ...req.body },
+    { new: true }
+  );
+  if (!user) {
+    return next(new ApiError("User not found", 404));
+  }
+
+  return res
+    .status(200)
+    .json({ success: true, message: "User updated successfully" });
 });
 
 // Get all Users with pagination

@@ -10,7 +10,7 @@ const fileParser = (req, res, next) => {
   const form = formidable({
     uploadDir: path.join(__dirname, "../../public/uploads"), // Directory for file uploads
     keepExtensions: true,
-    maxFileSize: 5 * 1024 * 1024, // Limit file size to 5MB
+    maxFileSize: 10 * 1024 * 1024, // Limit file size to 10MB : can change as per requirement
     multiples: true, // Allow multiple file uploads
   });
 
