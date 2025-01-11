@@ -44,6 +44,7 @@ const packageSchema = new mongoose.Schema(
       ref: "Destination",
       required: true,
     },
+    isBestSeller: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
