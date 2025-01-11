@@ -14,7 +14,7 @@ const __dirname = path.dirname(__filename);
 export const getAllPackages = asyncHandler(async (req, res, next) => {
   const { destination } = req.query;
 
-  const limit = req.query?.limit || 10;
+  const limit = req.query?.limit || 50;
   const pageNumber = parseInt(req.query.page ? req.query.page.toString() : "1");
   const skip = (pageNumber - 1) * limit;
 
@@ -110,7 +110,7 @@ export const updatePackageById = asyncHandler(async (req, res, next) => {
   }
   const { itinerary, duration, inclusions, exclusions, ...otherUpdates } =
     req.body;
-
+console.log("request body", req.body)
   const { image, banner } = req.files;
   let uploadedImage;
   let uploadedBanner;

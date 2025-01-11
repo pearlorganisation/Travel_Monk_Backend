@@ -29,8 +29,8 @@ router
   .route("/:packageId")
   .get(getPackageById)
   .patch(
-    authenticateToken,
-    verifyPermission([UserRolesEnum.ADMIN]),
+    // authenticateToken,
+    // verifyPermission([UserRolesEnum.ADMIN]),
     fileParser,
     updatePackageById
   )
