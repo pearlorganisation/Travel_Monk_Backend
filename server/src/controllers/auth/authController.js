@@ -11,9 +11,9 @@ dotnev.config();
 
 //SignUp controller
 export const signup = asyncHandler(async (req, res, next) => {
-  const { name, email, password } = req?.body;
+  const { name, email, mobileNumber, password } = req?.body;
 
-  if (!name || !email || !password) {
+  if (!name || !email || !mobileNumber || !password) {
     return next(new ApiErrorResponse("All fields are required", 400));
   }
 
@@ -21,7 +21,12 @@ export const signup = asyncHandler(async (req, res, next) => {
   if (existingUser)
     return next(new ApiErrorResponse("User already exists!", 400));
 
-  const signUptoken = generateSignUpToken({ name, email, password });
+  const signUptoken = generateSignUpToken({
+    name,
+    email,
+    mobileNumber,
+    password,
+  });
 
   sendSignupMail(email, signUptoken)
     .then(() => {
