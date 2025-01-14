@@ -155,7 +155,12 @@ export const getAllLocations = asyncHandler(async (req, res, next) => {
   const page = parseInt(req.query.page || "1");
   const limit = parseInt(req.query.limit || "10");
 
-  const { data: locations, pagination } = await paginate(Location, page, limit);
+  const { data: locations, pagination } = await paginate(
+    Location,
+    page,
+    limit,
+    [{ path: "destination" }]
+  );
 
   if (locations.length === 0) {
     return next(new ApiErrorResponse("No Locations Found", 404));
