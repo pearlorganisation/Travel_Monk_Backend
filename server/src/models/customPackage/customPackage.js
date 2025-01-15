@@ -2,10 +2,21 @@ import mongoose from "mongoose";
 
 const customPackageSchema = new mongoose.Schema(
   {
-    name: {
-      type: String,
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    numberOfTravellers: { type: Number, required: true },
+    price: { type: Number, required: true },
+    selectedVehicle: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Vehicle",
       required: true,
     },
+    destination: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Destination",
+      required: true,
+    }, // Leh
+    startDate: { type: Date, required: true },
+    endDate: { type: Date, required: true },
     duration: {
       days: { type: Number, required: true },
       nights: { type: Number, required: true },
@@ -17,19 +28,25 @@ const customPackageSchema = new mongoose.Schema(
     itinerary: [
       {
         day: { type: Number, required: true },
-        location: { type: String, required: true },
-        title: { type: String, required: true },
-        description: { type: String, required: true },
-        // hotel: {},
-        activities: {
-          type: [String],
+        date: { type: Date, required: true },
+        selectedLocation: { type: String, required: true },
+        selectedHotel: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Hotel",
           required: true,
         },
+        selectedActivities: [
+          {
+            label: { type: String, required: true },
+            value: {
+              type: mongoose.Schema.Types.ObjectId,
+              ref: "Activity",
+              required: true,
+            },
+          },
+        ],
       },
     ],
-    price: { type: Number, required: true },
-    inclusions: { type: [String], required: true },
-    exclusions: { type: [String], required: true },
   },
   { timestamps: true }
 );

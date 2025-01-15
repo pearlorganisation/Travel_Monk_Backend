@@ -6,6 +6,7 @@ import { COOKIE_OPTIONS } from "../../../constants.js";
 import { paginate } from "../../utils/pagination.js";
 import { generateForgotPasswordResetToken } from "../../utils/tokenHelper.js";
 import { sendForgotPasswordMail } from "../../utils/Mail/emailTemplates.js";
+import CustomPackage from "../../models/customPackage/customPackage.js";
 
 //Controller for refreshing Access token
 export const refreshAccessToken = asyncHandler(async (req, res, next) => {
@@ -208,4 +209,34 @@ export const getAllUsers = asyncHandler(async (req, res, next) => {
     pagination,
     data: users,
   });
+});
+
+export const getUsersCustomPackage = asyncHandler(async (req, res, next) => {
+  let customPackage = await CustomPackage.find({ user: req.user._id });
+  if (!customPackage) {
+    return next(new ApiErrorResponse("Failded to get Custom Packages", 400));
+  }
+  res.status(200).json({
+    success: true,
+    message: customPackage.length
+      ? "All Custom Packages found"
+      : "No custom packages found",
+    data: customPackage,
+  });
+});
+
+export const createUser = asyncHandler(async (req, res, next) => {
+  const existingUser = await User.findOne({ email: req.body?.email });
+  if (existingUser) {
+    return next(new ApiErrorResponse("User already exists", 400));
+  }
+  const user = await User.create(req.body);
+  if (!user) {
+    return next(new ApiErrorResponse("User is not created", 400));
+  }
+  // Manually remove the password field
+  user.password = undefined;
+  res
+    .status(201)
+    .json({ success: true, message: "User is created", data: user });
 });
