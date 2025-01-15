@@ -50,8 +50,20 @@ export const createHotel = asyncHandler(async (req, res, next) => {
 export const getAllHotels = asyncHandler(async (req, res, next) => {
   const page = parseInt(req.query.page || "1");
   const limit = parseInt(req.query.limit || "10");
-
-  const { data: hotels, pagination } = await paginate(Hotel, page, limit);
+  const fields = req.query.fields || ""; // Fields to include
+  const filter = {};
+  console.log(req.query.isBest);
+  if (req.query.isBest) {
+    filter.isBest = req.query.isBest;
+  }
+  const { data: hotels, pagination } = await paginate(
+    Hotel,
+    page,
+    limit,
+    [],
+    filter,
+    fields
+  );
 
   if (hotels.length === 0) {
     return next(new ApiErrorResponse("No Hotels Found", 404));

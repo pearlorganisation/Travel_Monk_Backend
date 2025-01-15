@@ -25,6 +25,10 @@ const busCruiseContactSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    startDate: {
+      type: Date,
+      required: true,
+    },
     numberOfSeats: {
       type: Number,
       required: true,

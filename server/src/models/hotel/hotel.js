@@ -15,6 +15,7 @@ const hotelSchema = new mongoose.Schema(
       filename: { type: String, required: true },
       path: { type: String, required: true },
     },
+    isBest: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

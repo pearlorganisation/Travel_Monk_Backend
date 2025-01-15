@@ -20,7 +20,11 @@ app.use(
   cors({
     origin:
       process.env.NODE_ENV === "development"
-        ? ["http://localhost:5173", "http://localhost:5174","http://localhost:5175"]
+        ? [
+            "http://localhost:5173",
+            "http://localhost:5174",
+            "http://localhost:5175",
+          ]
         : ["https://travel-monk-mern.vercel.app"],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     credentials: true,
@@ -42,6 +46,7 @@ import authRouter from "./src/routes/auth/authRoutes.js";
 import userRouter from "./src/routes/user/userRoutes.js";
 import hotelRouter from "./src/routes/hotel/hotelRoutes.js";
 import packageRouter from "./src/routes/package/packageRoutes.js";
+import customPackageRouter from "./src/routes/customPackage/customPackageRoutes.js";
 import activityRouter from "./src/routes/activity/activityRoutes.js";
 import contactRouter from "./src/routes/contact/contactRoutes.js";
 import destinationRouter from "./src/routes/destination/destinationRoutes.js";
@@ -63,6 +68,7 @@ app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/hotels", hotelRouter);
 app.use("/api/v1/packages", packageRouter);
+app.use("/api/v1/custom-packages", customPackageRouter);
 app.use("/api/v1/activities", activityRouter);
 app.use("/api/v1/contacts", contactRouter);
 app.use("/api/v1/destinations", destinationRouter);
