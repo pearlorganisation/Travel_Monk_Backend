@@ -4,15 +4,18 @@ import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 import { paginate } from "../../utils/pagination.js";
 
 export const submitContactForm = asyncHandler(async (req, res, next) => {
-  
-  const contactInfo = await Contact.create(req.body);
-  if (!contactInfo) {
+  // Delete the old submission if it exists
+  await Contact.findOneAndDelete({
+    email: req.body?.email,
+  });
+  const contact = await Contact.create(req.body);
+  if (!contact) {
     return next(new ApiErrorResponse("Contact form submission failed", 400));
   }
   return res.status(201).json({
     success: true,
     message: "Contact form submitted successfully",
-    data: contactInfo,
+    data: contact,
   });
 });
 
