@@ -37,7 +37,7 @@ router
     fileParser,
     createDestination
   )
-  .get(getAllDestination); // query and fields,
+  .get(getAllDestination); // query => type and fields,
 router.route("/search").get(searchDestinations); // For separate searching of destinations when customizing
 router.route("/popular").get(getPopularDestinations); // For getting popular destinations in home page
 router

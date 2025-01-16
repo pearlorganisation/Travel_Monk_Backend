@@ -7,6 +7,8 @@ import {
   getUserDetails,
   getAllUsers,
   updateUserDetails,
+  getUsersCustomPackage,
+  createUser,
 } from "../../controllers/user/userController.js";
 import {
   authenticateToken,
@@ -27,5 +29,10 @@ router
 router
   .route("/")
   .get(authenticateToken, verifyPermission([UserRolesEnum.ADMIN]), getAllUsers);
+
+router.route("/custom-packages").get(authenticateToken, getUsersCustomPackage); // getting custom package for user created by admin
+router
+  .route("/")
+  .post(authenticateToken, verifyPermission([UserRolesEnum.ADMIN]), createUser); // For admin panel
 
 export default router;

@@ -90,7 +90,6 @@ export const getHotelById = asyncHandler(async (req, res, next) => {
 
 export const updateHotelById = asyncHandler(async (req, res, next) => {
   const { image } = req.files;
-
   // Fetch the hotel to check for existing images
   const existingHotel = await Hotel.findById(req.params.hotelId);
   if (!existingHotel) {

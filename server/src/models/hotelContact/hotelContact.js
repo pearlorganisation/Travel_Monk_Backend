@@ -10,6 +10,7 @@ const hotelContactSchema = new mongoose.Schema(
     checkIn: { type: Date, required: true },
     checkOut: { type: Date, required: true },
     numberOfPersons: { type: Number, required: true, min: 1 },
+    estimatedPrice: { type: Number, required: true },
     page: { type: String, required: true },
     hotel: {
       type: mongoose.Schema.Types.ObjectId,
