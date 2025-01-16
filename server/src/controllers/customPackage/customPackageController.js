@@ -2,6 +2,7 @@ import CustomPackage from "../../models/customPackage/customPackage.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 
 export const createCustomPackage = asyncHandler(async (req, res, next) => {
+  console.log("the requested body is", req.body)
   const customPackage = await CustomPackage.create(req.body);
   if (!customPackage) {
     return next(new ApiErrorResponse("Custom Package is not created", 400));

@@ -8,7 +8,7 @@ const customPackageSchema = new mongoose.Schema(
     selectedVehicle: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Vehicle",
-      required: true,
+      // required: true,
     },
     destination: {
       type: mongoose.Schema.Types.ObjectId,
@@ -24,7 +24,7 @@ const customPackageSchema = new mongoose.Schema(
     itinerary: [
       {
         day: { type: Number, required: true },
-        date: { type: Date, required: true },
+        // date: { type: Date, required: true },
         selectedLocation: { type: String, required: true },
         selectedHotel: {
           type: mongoose.Schema.Types.ObjectId,
