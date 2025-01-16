@@ -81,6 +81,8 @@ userSchema.methods.generateRefreshToken = function () {
   );
 };
 
+userSchema.index({ name: 1, email: 1 });
+
 const User = mongoose.model("User", userSchema);
 
 export default User;

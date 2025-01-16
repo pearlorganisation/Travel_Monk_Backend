@@ -103,15 +103,11 @@ export const getPackageById = asyncHandler(async (req, res, next) => {
 });
 
 export const updatePackageById = asyncHandler(async (req, res, next) => {
-  const { packageId } = req.params;
-  const packageData = await Package.findById(packageId);
-  if (!packageData) {
+  const { image, banner } = req.files;
+  const existingPackage = await Package.findById(req.params.packageId);
+  if (!existingPackage) {
     return next(new ApiErrorResponse("Package not found", 404));
   }
-  const { itinerary, duration, inclusions, exclusions, ...otherUpdates } =
-    req.body;
-  console.log(req.body);
-  const { image, banner } = req.files;
   let uploadedImage;
   let uploadedBanner;
   if (image) {
@@ -119,82 +115,49 @@ export const updatePackageById = asyncHandler(async (req, res, next) => {
       filename: image[0].newFilename,
       path: `uploads/${image[0].newFilename}`,
     };
-    if (packageData.image) {
+    if (existingPackage.image) {
       const filePath = path.join(
         __dirname,
         "../../../public",
-        packageData.image.path
+        existingPackage.image.path
       );
       await deleteFile(filePath);
     }
-    packageData.image = uploadedImage;
   }
   if (banner) {
     uploadedBanner = {
       filename: banner[0].newFilename,
       path: `uploads/${banner[0].newFilename}`,
     };
-    if (packageData.banner) {
+    if (existingPackage.banner) {
       const filePath = path.join(
         __dirname,
         "../../../public",
-        packageData.banner.path
+        existingPackage.banner.path
       );
       await deleteFile(filePath);
     }
-    packageData.banner = uploadedBanner;
   }
 
-  // Update itinerary if provided
-  if (itinerary && Array.isArray(itinerary)) {
-    // Handle updates for existing itinerary items
-    const updatePromises = itinerary.map((item) => {
-      const { _id, day, description } = item;
-      return Package.updateOne(
-        { _id: packageId, "itinerary._id": _id },
-        {
-          $set: {
-            "itinerary.$.day": day,
-            "itinerary.$.description": description,
-          },
-        }
-      );
-    });
-    await Promise.all(updatePromises);
+  const updatedPackage = await Package.findByIdAndUpdate(
+    req.params.packageId,
+    {
+      ...req.body,
+      image: uploadedImage || existingPackage.image, // Retain the old image if no new image is provided
+      banner: uploadedBanner || existingPackage.banner,
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
+  if (!updatedPackage) {
+    return next(new ApiErrorResponse("Package not found or not updated", 404));
   }
-
-  // Update duration fields without replacing existing subfields
-  if (duration) {
-    packageData.duration = {
-      ...packageData.duration,
-      ...duration,
-    };
-  }
-
-  // Push new items to inclusions and exclusions arrays
-  if (inclusions && Array.isArray(inclusions)) {
-    await Package.updateOne(
-      { _id: packageId },
-      { $addToSet: { inclusions: { $each: inclusions } } }
-    );
-  }
-
-  if (exclusions && Array.isArray(exclusions)) {
-    await Package.updateOne(
-      { _id: packageId },
-      { $addToSet: { exclusions: { $each: exclusions } } }
-    );
-  }
-
-  Object.keys(otherUpdates).forEach((key) => {
-    packageData[key] = otherUpdates[key];
-  });
-  await packageData.save();
-
-  const updatedPackage = await Package.findById(packageId); // Get the latest update
   return res.status(200).json({
     success: true,
-    message: "Package is updated",
+    message: "Package updated successfully",
     data: updatedPackage,
   });
 });
