@@ -110,7 +110,7 @@ export const updatePackageById = asyncHandler(async (req, res, next) => {
   }
   const { itinerary, duration, inclusions, exclusions, ...otherUpdates } =
     req.body;
-console.log("request body", req.body)
+  console.log(req.body);
   const { image, banner } = req.files;
   let uploadedImage;
   let uploadedBanner;

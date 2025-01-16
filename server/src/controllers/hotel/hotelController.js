@@ -90,7 +90,6 @@ export const getHotelById = asyncHandler(async (req, res, next) => {
 
 export const updateHotelById = asyncHandler(async (req, res, next) => {
   const { image } = req.files;
-
   // Fetch the hotel to check for existing images
   const existingHotel = await Hotel.findById(req.params.hotelId);
   if (!existingHotel) {
@@ -267,37 +266,3 @@ export const getHotelsByDestination = asyncHandler(async (req, res, next) => {
     data: hotels,
   });
 });
-
-const constructSearchQuery = (query) => {
-  let constructedQuery = {};
-  if (query.location) {
-    constructedQuery.$or = [
-      { "address.city": new RegExp(query.location, "i") }, //case-insensitive search
-      { "address.country": new RegExp(query.location, "i") },
-      { "address.state": new RegExp(query.location, "i") },
-    ];
-  }
-  if (query.adultCount) {
-    constructedQuery.adultCount = {
-      $gte: parseInt(query.adultCount),
-    };
-  }
-
-  if (query.childCount) {
-    constructedQuery.childCount = {
-      $gte: parseInt(query.childCount),
-    };
-  }
-  if (query.numberOfRooms) {
-    constructedQuery.numberOfRooms = {
-      $gte: parseInt(query.numberOfRooms),
-    };
-  }
-  if (query.pricePerNight) {
-    constructedQuery.pricePerNight = {
-      $lte: parseInt(query.pricePerNight),
-    };
-  }
-
-  return constructedQuery;
-};

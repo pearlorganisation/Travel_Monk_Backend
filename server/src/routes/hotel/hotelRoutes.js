@@ -23,11 +23,7 @@ router
     fileParser,
     createHotel // Only(admin)
   )
-  .get(
-    authenticateToken,
-    verifyPermission([UserRolesEnum.ADMIN]),
-    getAllHotels
-  ); // pagination, For Admin
+  .get(getAllHotels); // pagination, For Admin // authetcation is not required as this api also being used in web home page
 
 router
   .route("/:hotelId")
