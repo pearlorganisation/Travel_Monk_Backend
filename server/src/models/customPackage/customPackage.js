@@ -14,16 +14,12 @@ const customPackageSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Destination",
       required: true,
-    }, // Leh
+    },
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
     duration: {
       days: { type: Number, required: true },
       nights: { type: Number, required: true },
-    },
-    pickDropPoint: {
-      pickup: { type: String, required: true },
-      drop: { type: String, required: true },
     },
     itinerary: [
       {

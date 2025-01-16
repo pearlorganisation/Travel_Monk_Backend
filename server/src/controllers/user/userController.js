@@ -186,6 +186,16 @@ export const updateUserDetails = asyncHandler(async (req, res, next) => {
 export const getAllUsers = asyncHandler(async (req, res, next) => {
   const page = parseInt(req.query.page || "1");
   const limit = parseInt(req.query.limit || "10");
+  const { search } = req.query;
+  let filter = {
+    _id: { $ne: req.user._id }, // Exclude the current user.
+  };
+  if (search) {
+    filter.$or = [
+      { name: { $regex: search, $options: "i" } },
+      { email: { $regex: search, $options: "i" } },
+    ];
+  }
 
   // Use the pagination utility function
   const { data: users, pagination } = await paginate(
@@ -193,8 +203,8 @@ export const getAllUsers = asyncHandler(async (req, res, next) => {
     page,
     limit,
     [], // No population needed
-    { _id: { $ne: req.user._id } }, // No filters
-    "-password -refreshToken -role" // Fields to exclude
+    filter, // No filters
+    "-password -refreshToken" // Fields to exclude
   );
 
   // Check if no users found
