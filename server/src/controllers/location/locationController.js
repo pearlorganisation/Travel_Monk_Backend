@@ -90,16 +90,19 @@ export const updateLocationById = asyncHandler(async (req, res, next) => {
   const { locationId } = req.params;
   const { day, location } = req.body;
 
+  // Validate day and location fields
   if (!day || !location) {
     return next(
       new ApiErrorResponse(
-        "Invalid location data. Ensure 'day' and 'location' is provided",
+        "Invalid location data. Ensure 'day' and 'location' are provided.",
         400
       )
     );
   }
 
-  const transformedLocations = location.map((loc) => {
+  const transformedLocations = [];
+  //This ensures that if a validation error occurs, it immediately exits the loop and prevents further processing. Do not use map() here
+  for (const loc of location) {
     if (!loc.name || !loc.latitude || !loc.longitude) {
       return next(
         new ApiErrorResponse(
@@ -109,15 +112,16 @@ export const updateLocationById = asyncHandler(async (req, res, next) => {
       );
     }
 
-    return {
+    transformedLocations.push({
       name: loc.name,
       coordinates: {
         type: "Point",
         coordinates: [loc.longitude, loc.latitude],
       },
-    };
-  });
+    });
+  }
 
+  // Update the location in the database
   const updatedLocation = await Location.findByIdAndUpdate(
     locationId,
     { day, location: transformedLocations },
