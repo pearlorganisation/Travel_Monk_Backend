@@ -201,7 +201,100 @@ export const updatePackageById = asyncHandler(async (req, res, next) => {
   });
 });
 
-//Delete Package By Id
+ 
+
+// export const updatePackageById = asyncHandler(async (req, res, next) => {
+//   const { packageId } = req.params;
+//   const packageData = await Package.findById(packageId);
+//   if (!packageData) {
+//     return next(new ApiErrorResponse("Package not found", 404));
+//   }
+
+//   const { itinerary, duration, inclusions, exclusions, ...otherUpdates } = req.body;
+//   const { image, banner } = req.files || {}; // Handle cases where req.files might be undefined
+//   let uploadedImage = packageData.image; // Default to existing image
+//   let uploadedBanner = packageData.banner; // Default to existing banner
+
+//   if (image) {
+//     uploadedImage = {
+//       filename: image[0].newFilename,
+//       path: `uploads/${image[0].newFilename}`,
+//     };
+//     if (packageData.image) {
+//       const filePath = path.join(__dirname, "../../../public", packageData.image.path);
+//       await deleteFile(filePath);
+//     }
+//   }
+
+//   if (banner) {
+//     uploadedBanner = {
+//       filename: banner[0].newFilename,
+//       path: `uploads/${banner[0].newFilename}`,
+//     };
+//     if (packageData.banner) {
+//       const filePath = path.join(__dirname, "../../../public", packageData.banner.path);
+//       await deleteFile(filePath);
+//     }
+//   }
+
+//   // Update itinerary if provided
+//   if (itinerary && Array.isArray(itinerary)) {
+//     const updatePromises = itinerary.map((item) => {
+//       const { _id, day, description } = item;
+//       return Package.updateOne(
+//         { _id: packageId, "itinerary._id": _id },
+//         {
+//           $set: {
+//             "itinerary.$.day": day,
+//             "itinerary.$.description": description,
+//           },
+//         }
+//       );
+//     });
+//     await Promise.all(updatePromises);
+//   }
+
+//   // Update duration fields without replacing existing subfields
+//   if (duration) {
+//     packageData.duration = {
+//       ...packageData.duration,
+//       ...duration,
+//     };
+//   }
+
+//   // Push new items to inclusions and exclusions arrays
+//   if (inclusions && Array.isArray(inclusions)) {
+//     await Package.updateOne(
+//       { _id: packageId },
+//       { $addToSet: { inclusions: { $each: inclusions } } }
+//     );
+//   }
+
+//   if (exclusions && Array.isArray(exclusions)) {
+//     await Package.updateOne(
+//       { _id: packageId },
+//       { $addToSet: { exclusions: { $each: exclusions } } }
+//     );
+//   }
+
+//   Object.keys(otherUpdates).forEach((key) => {
+//     packageData[key] = otherUpdates[key];
+//   });
+
+//   // Save updated image and banner to packageData
+//   packageData.image = uploadedImage;
+//   packageData.banner = uploadedBanner;
+
+//   await packageData.save();
+
+//   const updatedPackage = await Package.findById(packageId); // Get the latest update
+//   return res.status(200).json({
+//     success: true,
+//     message: "Package is updated",
+//     data: updatedPackage,
+//   });
+// });
+
 export const deletePackageById = asyncHandler(async (req, res, next) => {
   const deletedPackage = await Package.findByIdAndDelete(req.params?.packageId); // Return null if no doc found
   console.log("the deleted id is", req.params.packageId)
