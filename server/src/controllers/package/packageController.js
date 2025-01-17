@@ -12,18 +12,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export const getAllPackages = asyncHandler(async (req, res, next) => {
-  const { destination } = req.query;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
 
-  const limit = req.query?.limit || 10;
-  const pageNumber = parseInt(req.query.page ? req.query.page.toString() : "1");
-  const skip = (pageNumber - 1) * limit;
-
-  let filter = {};
-  if (destination) {
-    filter.destination = { $regex: new RegExp(destination, "i") }; // Case-insensitive search
-  }
-  const packages = await Package.find(filter).skip(skip).limit(limit);
-  const total = await Package.countDocuments(filter);
+  const { data: packages, pagination } = await paginate(Package, page, limit, [
+    { path: "packageDestination" },
+  ]);
   if (!packages || packages.length === 0) {
     return next(new ApiErrorResponse("Packages not found", 404));
   }
@@ -31,8 +25,8 @@ export const getAllPackages = asyncHandler(async (req, res, next) => {
   return res.status(200).json({
     success: true,
     message: "Packages retrieved successfully",
+    pagination,
     data: packages,
-    pagination: { total, page: pageNumber, pages: Math.ceil(total / limit) },
   });
 });
 

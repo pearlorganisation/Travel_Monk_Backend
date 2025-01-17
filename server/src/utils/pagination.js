@@ -8,7 +8,6 @@ export const paginate = async (
   sortField = { createdAt: -1 } // By default Newest will come first
 ) => {
   const skip = (page - 1) * limit;
-  console.log(populateOptions);
   // Count total documents based on the filter
   const totalDocuments = await model.countDocuments(filter);
 
