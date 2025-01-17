@@ -15,9 +15,21 @@ export const createCustomPackage = asyncHandler(async (req, res, next) => {
 
 /** to get the packages */
 export const getCustomPackages = asyncHandler(async(req,res,next)=>{
-  const packages = await CustomPackage.find().populate('user')
+  const packages = await CustomPackage.find().populate({path:'user',
+    select:"-password"
+  })
   if(!packages){
     return next(new ApiErrorResponse("Unable to get any custom packages",400));
   }
   res.status(201).json({success:true, message:"Packages recieved", data:packages})
+})
+
+
+/**delete the custom package by id */
+export const deleteCustomPackage = asyncHandler(async(req,res,next)=>{
+  const packageDelete = await CustomPackage.findByIdAndDelete(req?.params?.id)
+  if(!packageDelete){
+    return next(new ApiErrorResponse("Failed to Delete the Package", 400))
+  }
+  res.status(201).json({success:true, message:"Deleted Successfully"})
 })
