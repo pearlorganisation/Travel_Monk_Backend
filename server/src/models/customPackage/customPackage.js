@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const customPackageSchema = new mongoose.Schema(
   {
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    packageName:{ type: String, required: true},
     numberOfTravellers: { type: Number, required: true },
     price: { type: Number, required: true },
     selectedVehicle: {

@@ -115,6 +115,7 @@ export const updatePackageById = asyncHandler(async (req, res, next) => {
   let uploadedImage;
   let uploadedBanner;
   if (image) {
+    console.log("jkhkjhkjhjkh")
     uploadedImage = {
       filename: image[0].newFilename,
       path: `uploads/${image[0].newFilename}`,
@@ -130,6 +131,7 @@ export const updatePackageById = asyncHandler(async (req, res, next) => {
     packageData.image = uploadedImage;
   }
   if (banner) {
+    console.log("kjkhklhklkgjh")
     uploadedBanner = {
       filename: banner[0].newFilename,
       path: `uploads/${banner[0].newFilename}`,
