@@ -32,7 +32,6 @@ export const getAllPackages = asyncHandler(async (req, res, next) => {
 
 export const createPackage = asyncHandler(async (req, res, next) => {
   const { image, banner } = req.files;
-  console.log("REQ File: ", req.files);
   let uploadedImage = null;
   let uploadedBanner = null;
 
@@ -99,6 +98,7 @@ export const getPackageById = asyncHandler(async (req, res, next) => {
 export const updatePackageById = asyncHandler(async (req, res, next) => {
   const { image, banner } = req.files;
   const existingPackage = await Package.findById(req.params.packageId);
+
   if (!existingPackage) {
     return next(new ApiErrorResponse("Package not found", 404));
   }
