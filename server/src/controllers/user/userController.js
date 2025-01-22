@@ -109,7 +109,7 @@ export const forgotPassword = asyncHandler(async (req, res, next) => {
   });
   await sendForgotPasswordMail(
     email,
-    forgotPasswordResetToken,
+    { forgotPasswordResetToken, existingUser },
     existingUser.role
   )
     .then(() => {

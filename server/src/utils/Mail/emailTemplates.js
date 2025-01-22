@@ -14,14 +14,14 @@ export const sendSignupMail = async (email, signUptoken) => {
   return sendMail(email, subject, templateName, data);
 };
 
-export const sendForgotPasswordMail = async (email, resetToken, role) => {
+export const sendForgotPasswordMail = async (email, payload, role) => {
   const subject = "Password reset request";
   const forgotPasswordResetLink =
     role === "ADMIN"
-      ? `${process.env.ADMIN_RESET_PASSWORD_PAGE_URL}/${resetToken}`
-      : `${process.env.FRONTEND_RESET_PASSWORD_PAGE_URL}/${resetToken}`;
+      ? `${process.env.ADMIN_RESET_PASSWORD_PAGE_URL}/${payload.forgotPasswordResetToken}`
+      : `${process.env.FRONTEND_RESET_PASSWORD_PAGE_URL}/${payload.forgotPasswordResetToken}`;
   const templateName = "forgotPasswordEmail";
-  const data = { forgotPasswordResetLink };
+  const data = { forgotPasswordResetLink, user: payload.existingUser };
 
   return sendMail(email, subject, templateName, data);
 };

@@ -30,7 +30,6 @@ const packageSchema = new mongoose.Schema(
           {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Activity",
-            required: true,
           },
         ],
       },

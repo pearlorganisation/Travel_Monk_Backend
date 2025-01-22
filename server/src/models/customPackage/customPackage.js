@@ -44,6 +44,22 @@ const customPackageSchema = new mongoose.Schema(
         ],
       },
     ],
+    inclusions: {
+      type: [String],
+      required: true,
+      validate: {
+        validator: (array) => array.length > 0,
+        message: "Inclusions cannot be empty",
+      },
+    },
+    exclusions: {
+      type: [String],
+      required: true,
+      validate: {
+        validator: (array) => array.length > 0,
+        message: "Exclusions cannot be empty",
+      },
+    },
   },
   { timestamps: true }
 );
