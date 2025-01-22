@@ -6,6 +6,7 @@ import PreBuiltPackageBooking from "../../models/booking/preBuiltPackageBooking.
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import { sendBookingConfirmationMail } from "../../utils/Mail/emailTemplates.js";
 import { paginate } from "../../utils/pagination.js";
+import User from "../../models/user/user.js";
 
 export const createBooking = asyncHandler(async (req, res, next) => {
   const { totalPrice, packageId, numberOfTravellers } = req.body;
@@ -97,8 +98,32 @@ export const verifyPayment = asyncHandler(async (req, res, next) => {
 });
 
 export const getAllBookings = asyncHandler(async (req, res, next) => {
-  const page = parseInt(req.query.page || "1");
-  const limit = parseInt(req.query.limit || "10");
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+
+  const filter = {};
+  const { name, paymentStatus } = req.query;
+  if (name) {
+    const user = await User.find({ $text: { $search: name } });
+    if (!user || user.length === 0) {
+      return next(ApiErrorResponse("No user found", 404));
+    }
+    const userId = user.map((user) => user._id);
+    filter.user = { $in: userId };
+  }
+
+  if (paymentStatus) {
+    filter["$text"] = { $search: paymentStatus }; //case-insensitive by default
+  }
+  const sortOptions = {};
+  switch (req.query.sortBy) {
+    case "price-asc":
+      sortOptions.totalPrice = 1;
+      break;
+    case "price-desc":
+      sortOptions.totalPrice = -1;
+      break;
+  }
 
   const { data: preBuiltPackageBookings, pagination } = await paginate(
     PreBuiltPackageBooking,
@@ -107,7 +132,10 @@ export const getAllBookings = asyncHandler(async (req, res, next) => {
     [
       { path: "user", select: "-password -refreshToken -role" },
       { path: "packageId" }, // Can choose what to select
-    ]
+    ],
+    filter,
+    "",
+    sortOptions
   );
 
   if (!preBuiltPackageBookings || preBuiltPackageBookings.length === 0) {
