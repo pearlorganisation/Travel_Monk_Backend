@@ -52,7 +52,7 @@ export const getAllHotels = asyncHandler(async (req, res, next) => {
   const limit = parseInt(req.query.limit || "10");
   const fields = req.query.fields || ""; // Fields to include
   const filter = {};
-  console.log(req.query.isBest);
+
   if (req.query.isBest) {
     filter.isBest = req.query.isBest;
   }

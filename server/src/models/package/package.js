@@ -26,7 +26,6 @@ const packageSchema = new mongoose.Schema(
         location: { type: String, required: true },
         title: { type: String, required: true },
         description: { type: String, required: true },
-        // hotels: [{ type: mongoose.Schema.Types.ObjectId, ref: "Hotel" }], // No need to be required as no use of this for now
         activities: [
           {
             type: mongoose.Schema.Types.ObjectId,
