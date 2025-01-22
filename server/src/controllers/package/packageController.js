@@ -15,9 +15,33 @@ export const getAllPackages = asyncHandler(async (req, res, next) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
 
-  const { data: packages, pagination } = await paginate(Package, page, limit, [
-    { path: "packageDestination" },
-  ]);
+  const sortOption = {}; // Sorting options - can make helper
+  switch (req.query.sortBy) {
+    case "price-asc":
+      sortOption.startingPrice = 1;
+      break;
+    case "price-desc":
+      sortOption.startingPrice = -1;
+      break;
+  }
+  const filter = {};
+  const { search } = req.query;
+  if (search) {
+    // Case-insensitive search on name and city fields
+    filter.$or = [
+      { name: { $regex: search, $options: "i" } },
+      { slug: { $regex: search, $options: "i" } },
+    ];
+  }
+  const { data: packages, pagination } = await paginate(
+    Package,
+    page,
+    limit,
+    [{ path: "packageDestination" }],
+    filter,
+    "",
+    sortOption
+  );
   if (!packages || packages.length === 0) {
     return next(new ApiErrorResponse("Packages not found", 404));
   }

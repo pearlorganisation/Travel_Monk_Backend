@@ -53,7 +53,7 @@ export const verifyPayment = asyncHandler(async (req, res, next) => {
   if (generated_signature === razorpay_signature) {
     const booking = await PreBuiltPackageBooking.findOneAndUpdate(
       { razorpay_order_id },
-      { paymentStatus: "Paid", bookingStatus: "Completed" },
+      { paymentStatus: "Advanced_Paid", bookingStatus: "Completed" },
       { new: true }
     )
       .populate("user", "email name")
