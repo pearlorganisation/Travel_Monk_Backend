@@ -15,9 +15,15 @@ export const createCustomPackage = asyncHandler(async (req, res, next) => {
 
 /** to get the packages */
 export const getCustomPackages = asyncHandler(async(req,res,next)=>{
-  const packages = await CustomPackage.find().populate({path:'user',
-    select:"-password"
-  })
+  const packages = await CustomPackage.find().populate([
+    { path: 'user', select: '-password' },
+    {
+      path: 'itinerary.selectedHotel'
+    },
+    {
+      path: "selectedVehicle"
+    }
+  ]);
   if(!packages){
     return next(new ApiErrorResponse("Unable to get any custom packages",400));
   }

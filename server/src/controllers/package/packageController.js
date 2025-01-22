@@ -97,6 +97,7 @@ export const getPackageById = asyncHandler(async (req, res, next) => {
 
 export const updatePackageById = asyncHandler(async (req, res, next) => {
   const { image, banner } = req.files;
+  console.log(req.params.packageId)
   const existingPackage = await Package.findById(req.params.packageId);
 
   if (!existingPackage) {

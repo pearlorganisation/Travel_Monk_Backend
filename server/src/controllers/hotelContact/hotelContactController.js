@@ -7,6 +7,7 @@ import { paginate } from "../../utils/pagination.js";
 //change it enquiry to contact
 export const createHotelContact = asyncHandler(async (req, res, next) => {
   const newHotelContact = await HotelContact.create(req.body);
+  console.log("the requested body is", req.body);
   if (!newHotelContact) {
     return next(new ApiErrorResponse("Contact is not created", 400));
   }
