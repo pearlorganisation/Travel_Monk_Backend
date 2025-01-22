@@ -20,7 +20,7 @@ const preBuiltPackageBookingSchema = new mongoose.Schema(
     paymentStatus: {
       // Can also do boolean
       type: String,
-      enum: ["Paid", "Unpaid"],
+      enum: ["Advanced_Paid", "Unpaid"],
       default: "Unpaid",
       required: true,
     },
