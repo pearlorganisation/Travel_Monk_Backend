@@ -34,6 +34,12 @@ const preBuiltPackageBookingSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Create a text index on bookingId, bookingStatus, and paymentStatus
+preBuiltPackageBookingSchema.index({
+  // bookingId: "text",
+  // bookingStatus: "text",
+  paymentStatus: "text",
+});
 // Create Model
 const PreBuiltPackageBooking = mongoose.model(
   "PreBuiltPackageBooking",

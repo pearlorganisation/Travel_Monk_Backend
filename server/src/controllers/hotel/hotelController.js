@@ -231,7 +231,6 @@ export const getHotelsByDestination = asyncHandler(async (req, res, next) => {
       sortField.estimatedPrice = -1;
       break;
   }
-  console.log(JSON.stringify(filter, null, 2));
   // Use the pagination utility function
   const { data: hotels, pagination } = await paginate(
     Hotel,
