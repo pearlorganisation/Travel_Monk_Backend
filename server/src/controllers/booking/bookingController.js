@@ -104,12 +104,7 @@ export const getAllBookings = asyncHandler(async (req, res, next) => {
   const filter = {};
   const { name, paymentStatus } = req.query;
   if (name) {
-    const user = await User.find({
-      name: {
-        $regex: name,
-        $options: "i"
-      }
-    });
+    const user = await User.find({ name: { $regex: name, $options: "i" } });
     if (!user || user.length === 0) {
       return next(new ApiErrorResponse("No user found", 404));
     }
@@ -118,7 +113,7 @@ export const getAllBookings = asyncHandler(async (req, res, next) => {
   }
 
   if (paymentStatus) {
-    filter["$text"] = { $search: paymentStatus }; //case-insensitive by default
+    filter["$text"] = { $search: paymentStatus };
   }
   const sortOptions = {};
   switch (req.query.sortBy) {
@@ -145,7 +140,7 @@ export const getAllBookings = asyncHandler(async (req, res, next) => {
 
   if (!preBuiltPackageBookings || preBuiltPackageBookings.length === 0) {
     return next(
-      new ApiErrorResponse("No pre built package bookings found", 400)
+      new ApiErrorResponse("No pre built package bookings found", 404)
     );
   }
 
