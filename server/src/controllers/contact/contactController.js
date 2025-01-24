@@ -6,6 +6,7 @@ import { z } from "zod";
 
 export const submitContactForm = asyncHandler(async (req, res, next) => {
   // Delete the old submission if it exists
+  console.log("request body", req.body)
   await Contact.findOneAndDelete({
     email: req.body?.email,
   });

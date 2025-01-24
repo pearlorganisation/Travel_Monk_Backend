@@ -56,7 +56,7 @@ export const refreshAccessToken = asyncHandler(async (req, res, next) => {
   }
 });
 
-// Change password controller
+// Change password controller for logged in user //
 export const changePassword = asyncHandler(async (req, res, next) => {
   const { currentPassword, newPassword, confirmNewPassword } = req.body;
   const { email } = req.user;
@@ -237,6 +237,7 @@ export const getUsersCustomPackage = asyncHandler(async (req, res, next) => {
 
 export const createUser = asyncHandler(async (req, res, next) => {
   const existingUser = await User.findOne({ email: req.body?.email });
+  console.log("request body is", req.body)
   if (existingUser) {
     return next(new ApiErrorResponse("User already exists", 400));
   }

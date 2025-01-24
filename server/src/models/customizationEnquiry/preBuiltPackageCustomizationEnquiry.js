@@ -21,8 +21,8 @@ const preBuiltPackageCustomizationEnquirySchema = new mongoose.Schema(
     },
     itinerary: [
       {
-        day: { type: Number, required: true },
-        location: { type: String, required: true },
+        day: { type: Number },
+        location: { type: String },
         selectedHotel: {
           name: String,
           hotel: {

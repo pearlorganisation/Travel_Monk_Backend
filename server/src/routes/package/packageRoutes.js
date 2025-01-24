@@ -18,8 +18,8 @@ const router = express.Router();
 router
   .route("/")
   .post(
-    authenticateToken,
-    verifyPermission([UserRolesEnum.ADMIN]),
+    // authenticateToken,
+    // verifyPermission([UserRolesEnum.ADMIN]),
     fileParser,
     createPackage
   )
@@ -29,8 +29,8 @@ router
   .route("/:packageId")
   .get(getPackageById)
   .patch(
-    authenticateToken,
-    verifyPermission([UserRolesEnum.ADMIN]),
+    // authenticateToken,
+    // verifyPermission([UserRolesEnum.ADMIN]),
     fileParser,
     updatePackageById
   )

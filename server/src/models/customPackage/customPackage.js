@@ -3,12 +3,13 @@ import mongoose from "mongoose";
 const customPackageSchema = new mongoose.Schema(
   {
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    packageName:{ type: String, required: true},
     numberOfTravellers: { type: Number, required: true },
     price: { type: Number, required: true },
     selectedVehicle: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Vehicle",
-      required: true,
+      // required: true,
     },
     destination: {
       type: mongoose.Schema.Types.ObjectId,
@@ -24,7 +25,7 @@ const customPackageSchema = new mongoose.Schema(
     itinerary: [
       {
         day: { type: Number, required: true },
-        date: { type: Date, required: true },
+        // date: { type: Date, required: true },
         selectedLocation: { type: String, required: true },
         selectedHotel: {
           type: mongoose.Schema.Types.ObjectId,
