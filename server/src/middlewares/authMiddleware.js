@@ -5,9 +5,9 @@ import jwt from "jsonwebtoken";
 
 export const authenticateToken = asyncHandler(async (req, res, next) => {
   const token =
-    req.cookies?.access_token ||
+    req?.cookies?.access_token ||
     req.header("Authorization")?.replace("Bearer ", "");
-
+console.log("the acces toke", token);
   if (!token) {
     return next(new ApiErrorResponse("Unauthorized user", 401));
   }

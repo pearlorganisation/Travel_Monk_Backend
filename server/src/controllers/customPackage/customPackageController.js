@@ -14,21 +14,34 @@ export const createCustomPackage = asyncHandler(async (req, res, next) => {
 
 
 /** to get the packages */
-export const getCustomPackages = asyncHandler(async(req,res,next)=>{
-  const packages = await CustomPackage.find().populate([
-    { path: 'user', select: '-password' },
-    {
-      path: 'itinerary.selectedHotel'
-    },
-    {
-      path: "selectedVehicle"
-    }
-  ]);
-  if(!packages){
-    return next(new ApiErrorResponse("Unable to get any custom packages",400));
+export const getCustomPackages = asyncHandler(async (req, res, next) => {
+  const packages = await CustomPackage.find()
+    .populate([{
+        path: 'user',
+        select: '-password'
+      },
+      {
+        path: 'itinerary.selectedHotel'
+      },
+      {
+        path: 'selectedVehicle'
+      }
+    ])
+    .sort({
+      createdAt: -1
+    }); // Sort by most recently created
+
+  if (!packages) {
+    return next(new ApiErrorResponse("Unable to get any custom packages", 400));
   }
-  res.status(201).json({success:true, message:"Packages recieved", data:packages})
-})
+
+  res.status(201).json({
+    success: true,
+    message: "Packages received",
+    data: packages,
+  });
+});
+
 
 
 /**delete the custom package by id */

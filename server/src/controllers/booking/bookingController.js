@@ -9,9 +9,17 @@ import { paginate } from "../../utils/pagination.js";
 import User from "../../models/user/user.js";
 
 export const createBooking = asyncHandler(async (req, res, next) => {
-  const { totalPrice, packageId, numberOfTravellers } = req.body;
+  const {
+    totalPrice,
+    packageId,
+    numberOfTravellers,
+    advancePayment,
+    remainingPayment
+  } = req.body;
+
+  console.log("the payment is", advancePayment, remainingPayment)
   const options = {
-    amount: totalPrice * 100, // Convert amount to smallest unit (paise for INR)
+    amount: advancePayment * 100, // Convert amount to smallest unit (paise for INR)
     currency: "INR",
     receipt: `order_rcptid_${nanoid(8)}${Date.now()}`, // Generate unique receipt id
   };
@@ -25,6 +33,8 @@ export const createBooking = asyncHandler(async (req, res, next) => {
       packageId,
       numberOfTravellers,
       totalPrice,
+      advancePayment,
+      remainingPayment,
       bookingStatus: "Pending",
       paymentStatus: "Unpaid",
       razorpay_order_id: order.id,
