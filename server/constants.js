@@ -6,7 +6,7 @@ export const DB_NAME = "Travel_Monk";
 
 export const COOKIE_OPTIONS = {
   httpOnly: true,
-  sameSite: "strict",
+  sameSite: "none",
   secure: process.env.NODE_ENV !== "development",
 };
 
