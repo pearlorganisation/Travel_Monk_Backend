@@ -7,6 +7,7 @@ import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import { sendBookingConfirmationMail } from "../../utils/Mail/emailTemplates.js";
 import { paginate } from "../../utils/pagination.js";
 import User from "../../models/user/user.js";
+import { populate } from "dotenv";
 
 export const createBooking = asyncHandler(async (req, res, next) => {
   const {
@@ -172,7 +173,12 @@ export const myBookings = asyncHandler(async (req, res, next) => {
     limit,
     [
       { path: "user", select: "-password -refreshToken -role" },
-      { path: "packageId" }, // Can choose what to select
+      {
+        path: "packageId",
+        populate:{ // nested population
+          path:"itinerary.activities"
+        } 
+      }, // Can choose what to select
     ],
     { user: req.user._id }
   );
