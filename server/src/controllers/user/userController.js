@@ -14,7 +14,9 @@ export const refreshAccessToken = asyncHandler(async (req, res, next) => {
   //console.log(clientRefreshToken);
   if (!clientRefreshToken) {
     // If there's no refresh token, unauthorized request.
-    return next(new ApiErrorResponse("Unauthorized Request", 401)); // Expired or Invalid Refresh Token. force the user to log out in front end and login again
+    return next(
+      new ApiErrorResponse("Session expired. Please log in again", 403)
+    ); // Expired or Invalid Refresh Token. force the user to log out in front end and login again
   }
 
   try {
@@ -237,7 +239,7 @@ export const getUsersCustomPackage = asyncHandler(async (req, res, next) => {
 
 export const createUser = asyncHandler(async (req, res, next) => {
   const existingUser = await User.findOne({ email: req.body?.email });
-  console.log("request body is", req.body)
+  console.log("request body is", req.body);
   if (existingUser) {
     return next(new ApiErrorResponse("User already exists", 400));
   }
