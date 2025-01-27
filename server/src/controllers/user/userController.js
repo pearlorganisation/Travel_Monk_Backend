@@ -11,9 +11,7 @@ import CustomPackage from "../../models/customPackage/customPackage.js";
 //Controller for refreshing Access token
 export const refreshAccessToken = asyncHandler(async (req, res, next) => {
   const clientRefreshToken = req.cookies.refresh_token;
-  //console.log(clientRefreshToken);
   if (!clientRefreshToken) {
-    // If there's no refresh token, unauthorized request.
     return next(
       new ApiErrorResponse("Session expired. Please log in again", 403)
     ); // Expired or Invalid Refresh Token. force the user to log out in front end and login again
