@@ -25,7 +25,7 @@ app.use(
             "http://localhost:5174",
             "http://localhost:5175",
           ]
-        : ["https://travel-monk-mern.vercel.app"],
+        : ["https://travel-monk-mern.vercel.app","https://travel-monk-admin.vercel.app"],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     credentials: true,
   })
