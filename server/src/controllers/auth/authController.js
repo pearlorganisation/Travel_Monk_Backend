@@ -83,7 +83,7 @@ export const login = asyncHandler(async (req, res, next) => {
   res
     .cookie("access_token", access_token, {
       ...COOKIE_OPTIONS,
-      expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
+      expires: new Date(Date.now() + 1 * 60 * 1000), // 1 minute
     })
     .cookie("refresh_token", refresh_token, {
       ...COOKIE_OPTIONS,
