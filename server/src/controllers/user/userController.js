@@ -11,9 +11,7 @@ import CustomPackage from "../../models/customPackage/customPackage.js";
 //Controller for refreshing Access token
 export const refreshAccessToken = asyncHandler(async (req, res, next) => {
   const clientRefreshToken = req.cookies.refresh_token;
-  //console.log(clientRefreshToken);
   if (!clientRefreshToken) {
-    // If there's no refresh token, unauthorized request.
     return next(
       new ApiErrorResponse("Session expired. Please log in again", 403)
     ); // Expired or Invalid Refresh Token. force the user to log out in front end and login again
@@ -169,16 +167,16 @@ export const getUserDetails = asyncHandler(async (req, res, next) => {
 export const updateUserDetails = asyncHandler(async (req, res, next) => {
   const userId = req.user?._id;
 
-  // Fetch the existing user details: Can change name and mobile number only
-  let user = await User.findByIdAndUpdate(
-    userId,
-    { ...req.body },
-    { new: true }
-  );
+  const user = await User.findById(userId);
   if (!user) {
     return next(new ApiError("User not found", 404));
   }
-
+  if (req.body.email && req.body.email !== user.email) {
+    return next(new ApiErrorResponse("Email cannot be updated", 400));
+  }
+  user.name = req.body.name || user.name;
+  user.mobileNumber = req.body.mobileNumber || user.mobileNumber;
+  await user.save();
   return res
     .status(200)
     .json({ success: true, message: "User updated successfully" });
