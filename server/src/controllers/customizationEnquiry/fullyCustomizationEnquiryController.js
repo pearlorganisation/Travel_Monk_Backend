@@ -176,3 +176,28 @@ export const getMyFullyCustomizeEnquiries = asyncHandler(
     });
   }
 );
+
+export const updateFullyCustomizeEnquiryById = asyncHandler(
+  async (req, res, next) => {
+    const { id } = req.params;
+
+    // Find and update the enquiry
+    const updatedEnquiry = await FullyCustomizeEnquiry.findByIdAndUpdate(
+      id,
+      { ...req.body },
+      { new: true, runValidators: true }
+    );
+
+    // If the enquiry is not found, return an error response
+    if (!updatedEnquiry) {
+      return next(new ApiErrorResponse("Enquiry not found", 404));
+    }
+
+    // Respond with the updated enquiry
+    res.status(200).json({
+      success: true,
+      message: "Enquiry updated successfully",
+      data: updatedEnquiry,
+    });
+  }
+);
