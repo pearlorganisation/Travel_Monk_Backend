@@ -5,6 +5,7 @@ import {
   getAllFullyCustomizeEnquiries,
   getFullyCustomizeEnquiryById,
   getMyFullyCustomizeEnquiries,
+  updateFullyCustomizeEnquiryById,
 } from "../../controllers/customizationEnquiry/fullyCustomizationEnquiryController.js";
 import {
   authenticateToken,
@@ -33,6 +34,11 @@ router
     authenticateToken,
     verifyPermission([UserRolesEnum.ADMIN]),
     getFullyCustomizeEnquiryById
+  )
+  .patch(
+    authenticateToken,
+    verifyPermission([UserRolesEnum.ADMIN]),
+    updateFullyCustomizeEnquiryById
   )
   .delete(
     authenticateToken,

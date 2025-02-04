@@ -5,6 +5,7 @@ import {
   getAllPreBuiltPackageCustomizationEnquiries,
   getMyPreBuiltPackageCustomizationEnquiries,
   getPreBuiltPackageCustomizationEnquiryById,
+  updatePreBuiltPackageCustomizationEnquiryById,
 } from "../../controllers/customizationEnquiry/prebuiltCustomizationEnquiryController.js";
 import {
   authenticateToken,
@@ -33,6 +34,11 @@ router
     authenticateToken,
     verifyPermission([UserRolesEnum.ADMIN]),
     getPreBuiltPackageCustomizationEnquiryById
+  )
+  .patch(
+    authenticateToken,
+    verifyPermission([UserRolesEnum.ADMIN]),
+    updatePreBuiltPackageCustomizationEnquiryById
   )
   .delete(
     authenticateToken,

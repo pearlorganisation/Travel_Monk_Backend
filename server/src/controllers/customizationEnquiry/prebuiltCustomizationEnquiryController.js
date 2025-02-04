@@ -165,3 +165,29 @@ export const getMyPreBuiltPackageCustomizationEnquiries = asyncHandler(
     });
   }
 );
+
+export const updatePreBuiltPackageCustomizationEnquiryById = asyncHandler(
+  async (req, res, next) => {
+    const { id } = req.params;
+
+    // Attempt to find and update the enquiry by ID
+    const updatedEnquiry =
+      await PreBuiltPackageCustomizationEnquiry.findByIdAndUpdate(
+        id,
+        { $set: req.body },
+        { new: true, runValidators: true }
+      );
+
+    // If the enquiry is not found, return an error response
+    if (!updatedEnquiry) {
+      return next(new ApiErrorResponse("Enquiry not found", 404));
+    }
+
+    // Respond with the updated enquiry
+    res.status(200).json({
+      success: true,
+      message: "Enquiry updated successfully",
+      data: updatedEnquiry,
+    });
+  }
+);
