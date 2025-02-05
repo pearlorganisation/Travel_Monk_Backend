@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import cors from "cors";
 import dontenv from "dotenv";
+import compression from "compression";
 import { fileURLToPath } from "url";
 
 const app = express();
@@ -25,7 +26,10 @@ app.use(
             "http://localhost:5174",
             "http://localhost:5175",
           ]
-        : ["https://travel-monk-mern.vercel.app","https://travel-monk-admin.vercel.app"],
+        : [
+            "https://travel-monk-mern.vercel.app",
+            "https://travel-monk-admin.vercel.app",
+          ],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     credentials: true,
   })
@@ -40,6 +44,7 @@ app.use("/uploads", express.static(path.join(__dirname, "public/uploads"))); //T
 
 app.use(cookieParser());
 app.use(morgan("dev"));
+app.use(compression()); // Enable compression for all routes
 
 //Routes imports
 import authRouter from "./src/routes/auth/authRoutes.js";
