@@ -29,6 +29,25 @@ export const getCustomPackages = asyncHandler(async (req, res, next) => {
     .json({ success: true, message: "Packages recieved", data: packages });
 });
 
+export const updateCustomPackageById = asyncHandler(async (req, res, next) => {
+  const packageUpdate = await CustomPackage.findByIdAndUpdate(
+    req?.params?.id,
+    req?.body,
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+  if (!packageUpdate) {
+    return next(new ApiErrorResponse("Failed to Update the Package", 400));
+  }
+  res.status(200).json({
+    success: true,
+    message: "Updated Successfully",
+    data: packageUpdate,
+  });
+});
+
 /**delete the custom package by id */
 export const deleteCustomPackage = asyncHandler(async (req, res, next) => {
   const packageDelete = await CustomPackage.findByIdAndDelete(req?.params?.id);
