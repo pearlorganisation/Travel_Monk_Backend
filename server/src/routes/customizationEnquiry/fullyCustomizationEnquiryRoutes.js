@@ -31,8 +31,8 @@ router
 router
   .route("/:id")
   .get(
-    authenticateToken,
-    verifyPermission([UserRolesEnum.ADMIN]),
+    // authenticateToken,
+    // verifyPermission([UserRolesEnum.ADMIN]),
     getFullyCustomizeEnquiryById
   )
   .patch(

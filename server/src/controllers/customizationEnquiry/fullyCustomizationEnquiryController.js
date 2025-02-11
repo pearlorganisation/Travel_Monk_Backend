@@ -109,12 +109,12 @@ export const getFullyCustomizeEnquiryById = asyncHandler(
       .populate({ path: "user", select: "name email" })
       .populate({ path: "destination" }) // Can select other required fields
       .populate({ path: "selectedVehicle" })
-      .populate({
-        path: "itinerary.selectedHotel",
-      })
-      .populate({
-        path: "itinerary.selectedActivities.value",
-      });
+      // .populate({
+      //   path: "itinerary.selectedHotel",
+      // })
+      // .populate({
+      //   path: "itinerary.selectedActivities.value",
+      // });
 
     // If the enquiry is not found, return an error response
     if (!enquiry) {
@@ -177,27 +177,44 @@ export const getMyFullyCustomizeEnquiries = asyncHandler(
   }
 );
 
-export const updateFullyCustomizeEnquiryById = asyncHandler(
-  async (req, res, next) => {
-    const { id } = req.params;
+export const updateFullyCustomizeEnquiryById = asyncHandler(async (req, res, next) => {
+  const {
+    id
+  } = req.params;
 
-    // Find and update the enquiry
-    const updatedEnquiry = await FullyCustomizeEnquiry.findByIdAndUpdate(
-      id,
-      { ...req.body },
-      { new: true, runValidators: true }
-    );
+  // Ensure duration exists before modifying it
+  let updateData = {
+    ...req.body
+  };
 
-    // If the enquiry is not found, return an error response
-    if (!updatedEnquiry) {
-      return next(new ApiErrorResponse("Enquiry not found", 404));
-    }
-
-    // Respond with the updated enquiry
-    res.status(200).json({
-      success: true,
-      message: "Enquiry updated successfully",
-      data: updatedEnquiry,
-    });
+  if (req.body.duration) {
+    updateData["duration.days"] = req.body.duration.days;
+    updateData["duration.nights"] = req.body.duration.nights;
+    delete updateData.duration; // Remove the entire duration object to avoid conflicts
   }
-);
+
+  console.log("Final update data:", updateData);
+
+  // Find and update the enquiry
+  const updatedEnquiry = await FullyCustomizeEnquiry.findByIdAndUpdate(
+    id, {
+      $set: updateData
+    }, // Ensure `duration` isn't updated as a whole while also updating its fields
+    {
+      new: true,
+      runValidators: true
+    }
+  );
+
+  // If the enquiry is not found, return an error response
+  if (!updatedEnquiry) {
+    return next(new ApiErrorResponse("Enquiry not found", 404));
+  }
+
+  // Respond with the updated enquiry
+  res.status(200).json({
+    success: true,
+    message: "Enquiry updated successfully",
+    data: updatedEnquiry,
+  });
+});
