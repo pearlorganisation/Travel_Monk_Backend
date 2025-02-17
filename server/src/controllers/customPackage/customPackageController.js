@@ -30,9 +30,21 @@ export const getCustomPackages = asyncHandler(async (req, res, next) => {
 });
 
 export const updateCustomPackageById = asyncHandler(async (req, res, next) => {
+ const {id } = req.params;
+   let updateData = {
+     ...req.body
+   };
+
+    if (req.body.duration) {
+      updateData["duration.days"] = req.body.duration.days;
+      updateData["duration.nights"] = req.body.duration.nights;
+      delete updateData.duration; // Remove the entire duration object to avoid conflicts
+    }
+
   const packageUpdate = await CustomPackage.findByIdAndUpdate(
-    req?.params?.id,
-    req?.body,
+    id,{
+    $set: updateData
+    },
     {
       new: true,
       runValidators: true,
