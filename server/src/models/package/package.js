@@ -43,9 +43,13 @@ const packageSchema = new mongoose.Schema(
       required: true,
     },
     isBestSeller: { type: Boolean, default: false },
+    isGroupPackage: { type: Boolean, default: false },
+    month: { type: String },
   },
   { timestamps: true }
 );
+
+packageSchema.index({ month: "text" });
 
 const Package = mongoose.model("Package", packageSchema);
 

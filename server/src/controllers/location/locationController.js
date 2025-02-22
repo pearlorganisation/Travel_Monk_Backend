@@ -72,7 +72,9 @@ export const createLocations = asyncHandler(async (req, res, next) => {
 export const getAllLocationsForDestination = asyncHandler(
   async (req, res, next) => {
     const { destinationId } = req.params;
-    const locations = await Location.find({ destination: destinationId });
+    const locations = await Location.find({
+      destination: destinationId,
+    }).sort({ day: 1 });
 
     if (!locations || locations.length === 0) {
       return next(new ApiErrorResponse("No locations found", 404));

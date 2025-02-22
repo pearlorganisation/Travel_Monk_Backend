@@ -12,6 +12,26 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export const getAllPackages = asyncHandler(async (req, res, next) => {
+  const { month, paging } = req.query;
+  const filter = {};
+
+  // Check if pagination is disabled
+  if (paging === "false") {
+    if (month) {
+      filter.$text = { $search: month };
+    }
+    filter.isGroupPackage = true;
+    const packages = await Package.find(filter);
+    if (!packages || packages.length === 0) {
+      return next(new ApiErrorResponse("Packages not found", 404));
+    }
+    return res.status(200).json({
+      success: true,
+      message: `Packages retrieved successfully for ${month}`,
+      data: packages,
+    });
+  }
+
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
 
@@ -24,7 +44,7 @@ export const getAllPackages = asyncHandler(async (req, res, next) => {
       sortOption.startingPrice = -1;
       break;
   }
-  const filter = {};
+
   const { search } = req.query;
   if (search) {
     // Case-insensitive search on name and city fields
@@ -121,7 +141,7 @@ export const getPackageById = asyncHandler(async (req, res, next) => {
 
 export const updatePackageById = asyncHandler(async (req, res, next) => {
   const { image, banner } = req.files;
-  console.log(req.params.packageId)
+  console.log(req.params.packageId);
   const existingPackage = await Package.findById(req.params.packageId);
 
   if (!existingPackage) {
@@ -130,7 +150,7 @@ export const updatePackageById = asyncHandler(async (req, res, next) => {
   let uploadedImage;
   let uploadedBanner;
   if (image) {
-    console.log("jkhkjhkjhjkh")
+    console.log("jkhkjhkjhjkh");
     uploadedImage = {
       filename: image[0].newFilename,
       path: `uploads/${image[0].newFilename}`,
@@ -145,7 +165,7 @@ export const updatePackageById = asyncHandler(async (req, res, next) => {
     }
   }
   if (banner) {
-    console.log("kjkhklhklkgjh")
+    console.log("kjkhklhklkgjh");
     uploadedBanner = {
       filename: banner[0].newFilename,
       path: `uploads/${banner[0].newFilename}`,
@@ -182,8 +202,6 @@ export const updatePackageById = asyncHandler(async (req, res, next) => {
     data: updatedPackage,
   });
 });
-
- 
 
 // export const updatePackageById = asyncHandler(async (req, res, next) => {
 //   const { packageId } = req.params;
@@ -279,7 +297,7 @@ export const updatePackageById = asyncHandler(async (req, res, next) => {
 
 export const deletePackageById = asyncHandler(async (req, res, next) => {
   const deletedPackage = await Package.findByIdAndDelete(req.params?.packageId); // Return null if no doc found
-  console.log("the deleted id is", req.params.packageId)
+  console.log("the deleted id is", req.params.packageId);
   if (!deletedPackage) {
     return next(new ApiErrorResponse("Package not found.", 404));
   }
