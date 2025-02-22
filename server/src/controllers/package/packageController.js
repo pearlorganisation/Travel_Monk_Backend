@@ -142,6 +142,17 @@ export const getPackageById = asyncHandler(async (req, res, next) => {
 export const updatePackageById = asyncHandler(async (req, res, next) => {
   const { image, banner } = req.files;
   console.log(req.params.packageId);
+
+  const { isGroupPackage, month}= req.body
+  let monthModification =""
+  if(isGroupPackage == 0){
+    monthModification = ""
+  }else{
+    monthModification= month
+  }
+  console.log("the is group package value is", isGroupPackage, month)
+
+
   const existingPackage = await Package.findById(req.params.packageId);
 
   if (!existingPackage) {
@@ -184,6 +195,7 @@ export const updatePackageById = asyncHandler(async (req, res, next) => {
     req.params.packageId,
     {
       ...req.body,
+      month: monthModification,
       image: uploadedImage || existingPackage.image, // Retain the old image if no new image is provided
       banner: uploadedBanner || existingPackage.banner,
     },
