@@ -19,6 +19,8 @@ export const sendMail = async (to, subject, templateName, data) => {
   // Configure the email transport
   const transporter = nodemailer.createTransport({
     service: "gmail", // Or use another email service (e.g., Outlook, AWS SES)
+    port: 587,
+    secure: false,
     auth: {
       user: process.env.NODEMAILER_EMAIL_USER,
       pass: process.env.NODEMAILER_EMAIL_PASS,
