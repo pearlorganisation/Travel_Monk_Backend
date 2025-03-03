@@ -28,7 +28,7 @@ app.use(
           ]
         : [
             "https://travel-monk-mern.vercel.app",
-            "http://thetravelmonk.com",
+            "https://www.thetravelmonk.com",
             "https://thetravelmonk.com",
             "https://admin.thetravelmonk.com",
             "https://travel-monk-admin.vercel.app",
