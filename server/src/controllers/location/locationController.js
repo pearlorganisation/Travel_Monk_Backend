@@ -118,7 +118,7 @@ export const updateLocationById = asyncHandler(async (req, res, next) => {
       name: loc.name,
       coordinates: {
         type: "Point",
-        coordinates: [loc.longitude, loc.latitude],
+        coordinates: [loc.latitude, loc.longitude],
       },
     });
   }
