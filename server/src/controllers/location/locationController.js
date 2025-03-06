@@ -91,7 +91,7 @@ export const getAllLocationsForDestination = asyncHandler(
 export const updateLocationById = asyncHandler(async (req, res, next) => {
   const { locationId } = req.params;
   const { day, location } = req.body;
-
+  console.log("the body is",req.body)
   // Validate day and location fields
   if (!day || !location) {
     return next(
@@ -118,7 +118,7 @@ export const updateLocationById = asyncHandler(async (req, res, next) => {
       name: loc.name,
       coordinates: {
         type: "Point",
-        coordinates: [loc.longitude, loc.latitude],
+        coordinates: [loc.latitude, loc.longitude],
       },
     });
   }

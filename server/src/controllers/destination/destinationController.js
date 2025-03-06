@@ -360,7 +360,7 @@ export const searchDestinations = asyncHandler(async (req, res, next) => {
   // Return an empty array with a 200 OK status when no results are found for searching
   if (!destinations.length) {
     return res.status(200).json({
-      success: true,
+      success: false,
       message: "No destinations found",
       data: [],
     });
