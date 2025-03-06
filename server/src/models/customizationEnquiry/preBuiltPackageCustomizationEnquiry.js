@@ -53,8 +53,8 @@ const preBuiltPackageCustomizationEnquirySchema = new mongoose.Schema(
     },
     mobileNumber: { type: String, required: true },
     message: { type: String, required: true },
-    inclusions: [String],
-    exclusions: [String],
+    // inclusions: [String], // no need for this these are attached with package
+    // exclusions: [String],
   },
   { timestamps: true }
 );
