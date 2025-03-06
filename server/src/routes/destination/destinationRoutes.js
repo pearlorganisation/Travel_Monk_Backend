@@ -52,7 +52,7 @@ router
   .route("/:id")
   .get(
     authenticateToken,
-    verifyPermission([UserRolesEnum.ADMIN]),
+    verifyPermission([UserRolesEnum.ADMIN, UserRolesEnum.USER]),
     getSingleDestination
   )
   .patch(
