@@ -17,6 +17,7 @@ const fullyCustomizeEnquirySchema = new mongoose.Schema(
       {
         day: { type: Number, required: true },
         date: { type: Date, required: true },
+        description: { type: String },
         selectedLocation: { type: String, required: true },
         selectedHotel: {
           type: mongoose.Schema.Types.ObjectId,
