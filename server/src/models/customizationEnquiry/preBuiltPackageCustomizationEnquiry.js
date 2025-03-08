@@ -23,7 +23,7 @@ const preBuiltPackageCustomizationEnquirySchema = new mongoose.Schema(
       {
         day: { type: Number },
         location: { type: String },
-        date: { type: Date },
+        date: { type: String },
         selectedHotel: {
           name: String,
           hotel: {
