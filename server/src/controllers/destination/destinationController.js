@@ -96,7 +96,9 @@ export const getAllDestination = asyncHandler(async (req, res, next) => {
   );
 
   if (!destinations || destinations.length === 0) {
-    return res.status(404).json({ message: "No Destinations Found" });
+    return res
+      .status(200)
+      .json({ success: true, message: "No Destinations Found", data: [] });
   }
 
   // Extract destination IDs to use for matching packages
