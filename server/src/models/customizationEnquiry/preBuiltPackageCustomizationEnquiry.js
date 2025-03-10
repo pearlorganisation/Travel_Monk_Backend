@@ -23,6 +23,7 @@ const preBuiltPackageCustomizationEnquirySchema = new mongoose.Schema(
       {
         day: { type: Number },
         location: { type: String },
+        date:{type: String},
         selectedHotel: {
           name: String,
           hotel: {
@@ -53,8 +54,8 @@ const preBuiltPackageCustomizationEnquirySchema = new mongoose.Schema(
     },
     mobileNumber: { type: String, required: true },
     message: { type: String, required: true },
-    // inclusions: [String], // no need for this these are attached with package
-    // exclusions: [String],
+    inclusions: [String], // no need for this these are attached with package
+    exclusions: [String],
   },
   { timestamps: true }
 );

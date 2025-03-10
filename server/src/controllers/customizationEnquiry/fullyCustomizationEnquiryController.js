@@ -188,7 +188,10 @@ export const getMyFullyCustomizeEnquiries = asyncHandler(
       FullyCustomizeEnquiry,
       page,
       limit,
-      [],
+      [
+        {path:"selectedVehicle"},
+        {path:"itinerary.selectedHotel", select:"name"}
+      ],
       { user: req.user._id }
     );
 
