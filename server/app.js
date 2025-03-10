@@ -28,6 +28,9 @@ app.use(
           ]
         : [
             "https://travel-monk-mern.vercel.app",
+            "https://www.thetravelmonk.com",
+            "https://thetravelmonk.com",
+            "https://admin.thetravelmonk.com",
             "https://travel-monk-admin.vercel.app",
           ],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],

@@ -74,37 +74,6 @@ export const createDestination = asyncHandler(async (req, res, next) => {
   });
 });
 
-// export const getAllDestination = asyncHandler(async (req, res, next) => {
-//   const page = parseInt(req.query.page || "1");
-//   const limit = parseInt(req.query.limit || "10");
-
-//   // Get fields to include from query parameters
-//   const fields = req.query.fields || ""; // Defaults to an empty string if not provided, undefined when "" not provided, fields=name,banner,startingPrice etc
-//   const filter = {};
-//   if (req.query.type) {
-//     filter.type = { $regex: new RegExp(req.query.type, "i") };
-//   }
-//   const { data: destinations, pagination } = await paginate(
-//     Destination,
-//     page,
-//     limit,
-//     [], // No populate options for now
-//     filter, // Filter by type if provided
-//     fields // Pass the fields dynamically
-//   );
-
-//   if (!destinations || destinations.length === 0) {
-//     return res.status(404).json({ message: "No Destinations Found" });
-//   }
-
-//   res.status(200).json({
-//     success: true,
-//     message: "Destinations fetched successfully",
-//     pagination,
-//     data: destinations,
-//   });
-// });
-
 export const getAllDestination = asyncHandler(async (req, res, next) => {
   const page = parseInt(req.query.page || "1");
   const limit = parseInt(req.query.limit || "10");
