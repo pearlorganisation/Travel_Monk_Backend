@@ -213,17 +213,17 @@ export const getHotelsByDestination = asyncHandler(async (req, res, next) => {
   // Handle search filter (if present)
   // Price and search query can be slected together, if search query is present, and data is filtered by search query, if pirce filter also present, then data is filtered by both search query and price filter
   if (search) {
-    if (source === "admin") {
-      // Admin: Broad search across multiple fields
+    if (source === "website") {
+      // Website: Exact match for city (case-insensitive)
+      filter.city = { $regex: `^${search}$`, $options: "i" };
+    } else {
+      // Default (Admin and others): Broad search across multiple fields
       filter.$or = [
         { name: { $regex: search, $options: "i" } },
         { country: { $regex: search, $options: "i" } },
         { state: { $regex: search, $options: "i" } },
         { city: { $regex: search, $options: "i" } },
       ];
-    } else if (source === "website") {
-      // Website: Exact match for city (case-insensitive)
-      filter.city = { $regex: `^${search}$`, $options: "i" };
     }
   }
 
@@ -237,6 +237,7 @@ export const getHotelsByDestination = asyncHandler(async (req, res, next) => {
       sortField.estimatedPrice = -1;
       break;
   }
+
   // Use the pagination utility function
   const { data: hotels, pagination } = await paginate(
     Hotel,
