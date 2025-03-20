@@ -72,10 +72,8 @@ export const createLocations = asyncHandler(async (req, res, next) => {
 export const getAllLocationsForDestination = asyncHandler(
   async (req, res, next) => {
     const { destinationId } = req.params;
-    const { location } = req.query;
     const locations = await Location.find({
       destination: destinationId,
-      location,
     }).sort({ day: 1 });
 
     if (!locations || locations.length === 0) {
