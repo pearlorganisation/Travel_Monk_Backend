@@ -38,7 +38,7 @@ const vehicleSchema = new mongoose.Schema(
     destinations: [
       {
         type: mongoose.Schema.Types.ObjectId, // Reference to Destination model
-        ref: "Destinations",
+        ref: "Destination",
         // required: true,
       },
     ],
