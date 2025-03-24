@@ -30,13 +30,19 @@ export const createActivity = asyncHandler(async (req, res, next) => {
 export const getAllActivities = asyncHandler(async (req, res, next) => {
   const page = parseInt(req.query.page || "1");
   const limit = parseInt(req.query.limit || "10");
+  const filter = {};
 
+  const { search } = req.query;
+  if (search) {
+    filter.name = { $regex: search, $options: "i" };
+  }
   // Use the pagination utility function
   const { data: activities, pagination } = await paginate(
     Activity,
     page,
     limit,
-    [{ path: "destination", select: "name" }]
+    [{ path: "destination", select: "name" }],
+    filter
   );
 
   // Check if no contacts are found
