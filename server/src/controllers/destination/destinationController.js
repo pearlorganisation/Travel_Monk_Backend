@@ -76,7 +76,7 @@ export const createDestination = asyncHandler(async (req, res, next) => {
 
 export const getAllDestination = asyncHandler(async (req, res, next) => {
   const page = parseInt(req.query.page || "1");
-  const limit = parseInt(req.query.limit || "10");
+  const limit = parseInt(req.query.limit || "12");
   const filter = {};
 
   const { search } = req.query;
