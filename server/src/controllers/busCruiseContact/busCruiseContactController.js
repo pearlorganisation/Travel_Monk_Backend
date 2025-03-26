@@ -3,6 +3,7 @@ import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 
 export const createBusCruiseContact = asyncHandler(async (req, res, next) => {
+  console.log("the requested body is", req.body)
   const newBusCruiseContact = await BusCruiseContact.create(req.body);
   if (!newBusCruiseContact) {
     return next(new ApiErrorResponse("Contact is not created", 400));
