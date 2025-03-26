@@ -189,7 +189,7 @@ export const getHotelsByDestination = asyncHandler(async (req, res, next) => {
 
   const filter = { destination: destinationId }; // Initialize filter with destinationId so we get only data which belongs to this destination
 
-  const { search, priceRange, minPrice, maxPrice } = req.query; // can select only one at a time priceRange or minPrice and maxPrice
+  const { search, priceRange, minPrice, maxPrice, source } = req.query; // can select only one at a time priceRange or minPrice and maxPrice
 
   // Handle priceRange filter (if any priceRange is selected)
   if (priceRange) {
@@ -211,14 +211,20 @@ export const getHotelsByDestination = asyncHandler(async (req, res, next) => {
   }
   // console.log(JSON.stringify(filter, null, 2));
   // Handle search filter (if present)
+  // Price and search query can be slected together, if search query is present, and data is filtered by search query, if pirce filter also present, then data is filtered by both search query and price filter
   if (search) {
-    // Price and search query can be slected together, if search query is present, and data is filtered by search query, if pirce filter also present, then data is filtered by both search query and price filter
-    filter.$or = [
-      { name: { $regex: search, $options: "i" } },
-      { country: { $regex: search, $options: "i" } },
-      { state: { $regex: search, $options: "i" } },
-      { city: { $regex: search, $options: "i" } },
-    ];
+    if (source === "website") {
+      // Website: Exact match for city (case-insensitive)
+      filter.city = { $regex: `^${search}$`, $options: "i" };
+    } else {
+      // Default (Admin and others): Broad search across multiple fields
+      filter.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { country: { $regex: search, $options: "i" } },
+        { state: { $regex: search, $options: "i" } },
+        { city: { $regex: search, $options: "i" } },
+      ];
+    }
   }
 
   // Sorting
@@ -231,6 +237,7 @@ export const getHotelsByDestination = asyncHandler(async (req, res, next) => {
       sortField.estimatedPrice = -1;
       break;
   }
+
   // Use the pagination utility function
   const { data: hotels, pagination } = await paginate(
     Hotel,
@@ -242,10 +249,17 @@ export const getHotelsByDestination = asyncHandler(async (req, res, next) => {
     sortField
   );
 
+  // if (!hotels.length) {
+  //   return next(
+  //     new ApiErrorResponse("No hotels found for this destination.", 404)
+  //   );
+  // }
   if (!hotels.length) {
-    return next(
-      new ApiErrorResponse("No hotels found for this destination.", 404)
-    );
+    return res.status(200).json({
+      success: true,
+      message: "No hotels found.",
+      data: [], // Return empty array instead of error
+    });
   }
 
   const allPrices = [];
