@@ -21,7 +21,7 @@ export const createBooking = asyncHandler(async (req, res, next) => {
   try {
     const order = await razorpayInstance.orders.create(options);
     const preBuiltPackageBooking = await PreBuiltPackageBooking.create({
-      bookingId: `${generateBookingId()}`,
+      bookingId: generateBookingId(),
       user: req.user._id,
       packageId,
       numberOfTravellers,
