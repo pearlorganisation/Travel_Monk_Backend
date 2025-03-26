@@ -1,4 +1,5 @@
 import FullyCustomizeEnquiry from "../../models/customizationEnquiry/fullyCustomizationEnquiry.js";
+import Destinations from "../../models/destination/destinations.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 import { sendFullyCustomizeEnquiryMail } from "../../utils/Mail/emailTemplates.js";
@@ -75,10 +76,15 @@ export const getAllFullyCustomizeEnquiries = asyncHandler(
     const { search } = req.query;
     const filter = {};
     if (search) {
+      const destination = await Destinations.find({
+        name: { $regex: search, $options: "i" },
+      });
+      const destinationIds = destination.map((destination) => destination._id);
       filter["$or"] = [
         { name: { $regex: search, $options: "i" } },
         { email: { $regex: search, $options: "i" } },
         { mobileNumber: { $regex: search, $options: "i" } },
+        { destination: { $in: destinationIds } },
       ];
     }
     const { data: enquiries, pagination } = await paginate(

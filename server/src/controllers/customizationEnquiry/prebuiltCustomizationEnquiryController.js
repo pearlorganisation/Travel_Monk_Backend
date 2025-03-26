@@ -1,4 +1,5 @@
 import PreBuiltPackageCustomizationEnquiry from "../../models/customizationEnquiry/preBuiltPackageCustomizationEnquiry.js";
+import Package from "../../models/package/package.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 import { sendPreBuiltPackageCustomizationEnquiryMail } from "../../utils/Mail/emailTemplates.js";
@@ -67,8 +68,10 @@ export const getAllPreBuiltPackageCustomizationEnquiries = asyncHandler(
         { name: { $regex: search, $options: "i" } },
         { email: { $regex: search, $options: "i" } },
         { mobileNumber: { $regex: search, $options: "i" } },
+        { "package.name": { $regex: search, $options: "i" } },
       ];
     }
+    console.log(JSON.stringify(filter, null, 2));
     const { data: enquiries, pagination } = await paginate(
       PreBuiltPackageCustomizationEnquiry,
       page,
