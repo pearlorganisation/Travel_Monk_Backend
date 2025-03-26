@@ -72,6 +72,15 @@ export const getAllFullyCustomizeEnquiries = asyncHandler(
   async (req, res, next) => {
     const page = parseInt(req.query.page || "1"); // Default to page 1
     const limit = parseInt(req.query.limit || "10"); // Default to 10 items per page
+    const { search } = req.query;
+    const filter = {};
+    if (search) {
+      filter["$or"] = [
+        { name: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+        { mobileNumber: { $regex: search, $options: "i" } },
+      ];
+    }
     const { data: enquiries, pagination } = await paginate(
       FullyCustomizeEnquiry,
       page,
@@ -82,7 +91,8 @@ export const getAllFullyCustomizeEnquiries = asyncHandler(
         { path: "selectedVehicle" },
         { path: "itinerary.selectedHotel" },
         { path: "itinerary.selectedActivities.value" },
-      ]
+      ],
+      filter
     );
 
     // Check if enquiries exist
@@ -129,6 +139,7 @@ export const getAllFullyCustomizeEnquiries = asyncHandler(
 //     });
 //   }
 // );
+
 export const getFullyCustomizeEnquiryById = asyncHandler(
   async (req, res, next) => {
     const { id } = req.params;

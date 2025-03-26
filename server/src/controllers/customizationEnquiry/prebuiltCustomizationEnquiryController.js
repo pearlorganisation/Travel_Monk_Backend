@@ -60,6 +60,15 @@ export const getAllPreBuiltPackageCustomizationEnquiries = asyncHandler(
   async (req, res, next) => {
     const page = parseInt(req.query.page || "1"); // Default to page 1
     const limit = parseInt(req.query.limit || "10"); // Default to 10 items per page
+    const { search } = req.query;
+    const filter = {};
+    if (search) {
+      filter["$or"] = [
+        { name: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+        { mobileNumber: { $regex: search, $options: "i" } },
+      ];
+    }
     const { data: enquiries, pagination } = await paginate(
       PreBuiltPackageCustomizationEnquiry,
       page,
@@ -70,7 +79,8 @@ export const getAllPreBuiltPackageCustomizationEnquiries = asyncHandler(
         { path: "selectedVehicle.vehicle" },
         { path: "itinerary.selectedHotel.hotel" },
         { path: "itinerary.selectedActivities.value" },
-      ]
+      ],
+      filter
     );
 
     // Check if enquiries exist
