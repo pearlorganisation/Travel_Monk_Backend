@@ -13,7 +13,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export const getAllPackages = asyncHandler(async (req, res, next) => {
-  const { month, paging } = req.query;
+  const { month, paging, search } = req.query;
+  console.log(search);
   const filter = {};
 
   // Check if pagination is disabled
@@ -50,7 +51,6 @@ export const getAllPackages = asyncHandler(async (req, res, next) => {
       break;
   }
 
-  const { search } = req.query;
   if (search) {
     const destination = await Destinations.find({
       name: { $regex: search, $options: "i" },
@@ -60,7 +60,7 @@ export const getAllPackages = asyncHandler(async (req, res, next) => {
     filter.$or = [
       { name: { $regex: search, $options: "i" } },
       { slug: { $regex: search, $options: "i" } },
-      { destination: { $in: destinationIds } },
+      { packageDestination: { $in: destinationIds } },
     ];
   }
   const { data: packages, pagination } = await paginate(
