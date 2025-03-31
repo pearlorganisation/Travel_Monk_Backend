@@ -23,7 +23,11 @@ export const getAllPackages = asyncHandler(async (req, res, next) => {
     filter.isGroupPackage = true;
     const packages = await Package.find(filter);
     if (!packages || packages.length === 0) {
-      return next(new ApiErrorResponse("Packages not found", 404));
+      return res.status(200).json({
+        success: true,
+        message: `No packages found for ${month}`,
+        data: packages || [],
+      });
     }
     return res.status(200).json({
       success: true,
