@@ -54,6 +54,8 @@ const preBuiltPackageCustomizationEnquirySchema = new mongoose.Schema(
     },
     mobileNumber: { type: String, required: true },
     message: { type: String, required: true },
+    inclusions: [String],
+    exclusions: [String],
   },
   { timestamps: true }
 );
