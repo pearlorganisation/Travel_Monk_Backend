@@ -374,3 +374,41 @@ export const getPackagesByDestination = asyncHandler(async (req, res, next) => {
     data: packages,
   });
 });
+
+export const getAllBestsellerPackages = asyncHandler(async (req, res, next) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const { type } = req.query; // "Indian" or "International"
+
+  const filter = { isBestSeller: true };
+  // If user passes type like ?destinationType=Indian
+  if (type) {
+    const destinations = await Destinations.find({
+      type,
+    }).select("_id");
+    const destinationIds = destinations.map((dest) => dest._id);
+    filter.packageDestination = { $in: destinationIds };
+  }
+  
+  // Use the pagination utility function
+  const { data: bestSellerPackages, pagination } = await paginate(
+    Package,
+    page,
+    limit,
+    [],
+    filter
+  );
+  if (!bestSellerPackages || bestSellerPackages.length === 0) {
+    return res.status(200).json({
+      success: true,
+      message: "No best seller packages found",
+      data: [],
+    });
+  }
+  return res.status(200).json({
+    success: true,
+    message: "Best seller packages retrieved successfully",
+    pagination,
+    data: bestSellerPackages,
+  });
+});

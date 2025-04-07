@@ -25,7 +25,11 @@
       <p>We are excited to confirm your booking! Here are the details:</p>
       <ul>
         <li><strong>Booking ID:</strong> <%= bookingId %></li>
+        <% if (typeof packageName !== "undefined") { %>
         <li><strong>Package Name:</strong> <%= packageName %></li>
+        <% } %> <% if (typeof destinationName !== "undefined") { %>
+        <li><strong>Destination:</strong> <%= destinationName %></li>
+        <% } %>
         <li>
           <strong>Number of Travellers:</strong> <%= numberOfTravellers %>
         </li>

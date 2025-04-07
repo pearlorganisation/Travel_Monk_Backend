@@ -2,6 +2,7 @@ import express from "express";
 import {
   createPackage,
   deletePackageById,
+  getAllBestsellerPackages,
   getAllPackages,
   getPackageById,
   updatePackageById,
@@ -24,6 +25,8 @@ router
     createPackage
   )
   .get(getAllPackages); // admin or main web?
+
+router.route("/best-seller").get(getAllBestsellerPackages); // For getting best seller packages in home page
 
 router
   .route("/:packageId")
