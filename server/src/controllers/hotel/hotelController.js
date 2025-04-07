@@ -53,14 +53,23 @@ export const getAllHotels = asyncHandler(async (req, res, next) => {
   const fields = req.query.fields || ""; // Fields to include
   const filter = {};
 
-  if (req.query.isBest) {
+  const { search, isBest } = req.query;
+  if (search) {
+    filter.$or = [
+      { name: { $regex: search, $options: "i" } },
+      { country: { $regex: search, $options: "i" } },
+      { state: { $regex: search, $options: "i" } },
+      { city: { $regex: search, $options: "i" } },
+    ];
+  }
+  if (isBest) {
     filter.isBest = req.query.isBest;
   }
   const { data: hotels, pagination } = await paginate(
     Hotel,
     page,
     limit,
-    [],
+    [{ path: "destination" }],
     filter,
     fields
   );

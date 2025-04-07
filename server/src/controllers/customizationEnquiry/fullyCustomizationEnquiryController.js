@@ -1,4 +1,5 @@
 import FullyCustomizeEnquiry from "../../models/customizationEnquiry/fullyCustomizationEnquiry.js";
+import Destinations from "../../models/destination/destinations.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 import { sendFullyCustomizeEnquiryMail } from "../../utils/Mail/emailTemplates.js";
@@ -72,6 +73,20 @@ export const getAllFullyCustomizeEnquiries = asyncHandler(
   async (req, res, next) => {
     const page = parseInt(req.query.page || "1"); // Default to page 1
     const limit = parseInt(req.query.limit || "10"); // Default to 10 items per page
+    const { search } = req.query;
+    const filter = {};
+    if (search) {
+      const destination = await Destinations.find({
+        name: { $regex: search, $options: "i" },
+      });
+      const destinationIds = destination.map((destination) => destination._id);
+      filter["$or"] = [
+        { name: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+        { mobileNumber: { $regex: search, $options: "i" } },
+        { destination: { $in: destinationIds } },
+      ];
+    }
     const { data: enquiries, pagination } = await paginate(
       FullyCustomizeEnquiry,
       page,
@@ -82,7 +97,8 @@ export const getAllFullyCustomizeEnquiries = asyncHandler(
         { path: "selectedVehicle" },
         { path: "itinerary.selectedHotel" },
         { path: "itinerary.selectedActivities.value" },
-      ]
+      ],
+      filter
     );
 
     // Check if enquiries exist
@@ -129,6 +145,7 @@ export const getAllFullyCustomizeEnquiries = asyncHandler(
 //     });
 //   }
 // );
+
 export const getFullyCustomizeEnquiryById = asyncHandler(
   async (req, res, next) => {
     const { id } = req.params;

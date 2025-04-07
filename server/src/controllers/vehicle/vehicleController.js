@@ -71,8 +71,30 @@ export const getAllVehicles = asyncHandler(async (req, res, next) => {
   const page = parseInt(req.query.page || "1"); // Default to page 1
   const limit = parseInt(req.query.limit || "10"); // Default to 10 items per page
 
+  const filter = {};
+  const { search } = req.query;
+  if (search) {
+    filter.vehicleName = { $regex: search, $options: "i" };
+  }
+  const sortOption = {}; // Sorting options - can make helper
+  switch (req.query.sortBy) {
+    case "price-asc":
+      sortOption.pricePerDay = 1;
+      break;
+    case "price-desc":
+      sortOption.pricePerDay = -1;
+      break;
+  }
   // Use the pagination utility function
-  const { data: vehicles, pagination } = await paginate(Vehicle, page, limit);
+  const { data: vehicles, pagination } = await paginate(
+    Vehicle,
+    page,
+    limit,
+    [{ path: "destinations" }],
+    filter,
+    "",
+    sortOption
+  );
 
   // Check if no vehicles are found
   if (!vehicles || vehicles.length === 0) {
@@ -83,8 +105,8 @@ export const getAllVehicles = asyncHandler(async (req, res, next) => {
   return res.status(200).json({
     success: true,
     message: "All vehicles retrieved successfully",
-    data: vehicles,
     pagination,
+    data: vehicles,
   });
 });
 

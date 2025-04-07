@@ -8,6 +8,7 @@ import { sendBookingConfirmationMail } from "../../utils/Mail/emailTemplates.js"
 import { paginate } from "../../utils/pagination.js";
 import User from "../../models/user/user.js";
 import { populate } from "dotenv";
+import generateBookingId from "../../utils/generateBookingId.js";
 
 export const createBooking = asyncHandler(async (req, res, next) => {
   const {
@@ -29,7 +30,7 @@ export const createBooking = asyncHandler(async (req, res, next) => {
   try {
     const order = await razorpayInstance.orders.create(options);
     const preBuiltPackageBooking = await PreBuiltPackageBooking.create({
-      bookingId: `BID_${nanoid(8)}${Date.now()}`,
+      bookingId: generateBookingId(),
       user: req.user._id,
       packageId,
       numberOfTravellers,
