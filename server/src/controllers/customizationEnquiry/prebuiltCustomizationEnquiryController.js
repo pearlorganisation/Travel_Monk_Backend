@@ -7,6 +7,7 @@ import { paginate } from "../../utils/pagination.js";
 
 export const createPreBuiltPackageCustomizationEnquiry = asyncHandler(
   async (req, res, next) => {
+    console.log("the requested body is", req.body)
     const newEnquiry = await PreBuiltPackageCustomizationEnquiry.create({
       ...req.body,
       user: req.user._id,
@@ -159,7 +160,9 @@ export const getMyPreBuiltPackageCustomizationEnquiries = asyncHandler(
       PreBuiltPackageCustomizationEnquiry,
       page,
       limit,
-      [],
+      [
+        // {path: "package.packageId"}
+      ],
       { user: req.user._id }
     );
 

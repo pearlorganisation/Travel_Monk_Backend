@@ -79,7 +79,7 @@ export const getAllDestination = asyncHandler(async (req, res, next) => {
   const limit = parseInt(req.query.limit || "10");
   const filter = {};
 
-  const { search } = req.query;
+  const { search, categoryType } = req.query;
   if (search) {
     filter.$or = [
       { name: { $regex: search, $options: "i" } },
@@ -91,7 +91,7 @@ export const getAllDestination = asyncHandler(async (req, res, next) => {
   if (req.query.type) {
     filter.type = { $regex: new RegExp(req.query.type, "i") };
   }
-
+  
   // Fetch destinations with pagination
   const { data: destinations, pagination } = await paginate(
     Destination,

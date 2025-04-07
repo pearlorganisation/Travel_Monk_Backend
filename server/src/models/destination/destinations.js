@@ -16,6 +16,7 @@ const destinationSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    
     banner: {
       filename: { type: String, required: true },
       path: { type: String, required: true },
