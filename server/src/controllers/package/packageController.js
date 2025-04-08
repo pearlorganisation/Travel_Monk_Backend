@@ -6,13 +6,15 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { deleteFile } from "../../utils/fileUtils.js";
+import Destinations from "../../models/destination/destinations.js";
 
 // Define __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export const getAllPackages = asyncHandler(async (req, res, next) => {
-  const { month, paging } = req.query;
+  const { month, paging, search } = req.query;
+  console.log(search);
   const filter = {};
 
   // Check if pagination is disabled
@@ -23,7 +25,11 @@ export const getAllPackages = asyncHandler(async (req, res, next) => {
     filter.isGroupPackage = true;
     const packages = await Package.find(filter);
     if (!packages || packages.length === 0) {
-      return next(new ApiErrorResponse("Packages not found", 404));
+      return res.status(200).json({
+        success: true,
+        message: `No packages found for ${month}`,
+        data: packages || [],
+      });
     }
     return res.status(200).json({
       success: true,
@@ -45,12 +51,16 @@ export const getAllPackages = asyncHandler(async (req, res, next) => {
       break;
   }
 
-  const { search } = req.query;
   if (search) {
+    const destination = await Destinations.find({
+      name: { $regex: search, $options: "i" },
+    });
+    const destinationIds = destination.map((destination) => destination._id);
     // Case-insensitive search on name and city fields
     filter.$or = [
       { name: { $regex: search, $options: "i" } },
       { slug: { $regex: search, $options: "i" } },
+      { packageDestination: { $in: destinationIds } },
     ];
   }
   const { data: packages, pagination } = await paginate(
@@ -374,5 +384,43 @@ export const getPackagesByDestination = asyncHandler(async (req, res, next) => {
     message: "Packages found for destination",
     pagination,
     data: packages,
+  });
+});
+
+export const getAllBestsellerPackages = asyncHandler(async (req, res, next) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const { type } = req.query; // "Indian" or "International"
+
+  const filter = { isBestSeller: true };
+  // If user passes type like ?destinationType=Indian
+  if (type) {
+    const destinations = await Destinations.find({
+      type,
+    }).select("_id");
+    const destinationIds = destinations.map((dest) => dest._id);
+    filter.packageDestination = { $in: destinationIds };
+  }
+  
+  // Use the pagination utility function
+  const { data: bestSellerPackages, pagination } = await paginate(
+    Package,
+    page,
+    limit,
+    [],
+    filter
+  );
+  if (!bestSellerPackages || bestSellerPackages.length === 0) {
+    return res.status(200).json({
+      success: true,
+      message: "No best seller packages found",
+      data: [],
+    });
+  }
+  return res.status(200).json({
+    success: true,
+    message: "Best seller packages retrieved successfully",
+    pagination,
+    data: bestSellerPackages,
   });
 });

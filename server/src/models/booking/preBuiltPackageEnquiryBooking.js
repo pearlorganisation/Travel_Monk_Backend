@@ -1,22 +1,19 @@
 import mongoose from "mongoose";
 
-// PreBuiltPackageBooking Schema
-const preBuiltPackageBookingSchema = new mongoose.Schema(
+// PreBuiltPackageEnquiryBooking Schema
+const preBuiltPackageEnquiryBookingSchema = new mongoose.Schema(
   {
     bookingId: { type: String, required: true, unique: true },
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    packageId: {
+    preBuiltPackageEnquiry: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Package",
+      ref: "PreBuiltPackageCustomizationEnquiry",
       required: true,
     },
-    numberOfTravellers: { type: Number, required: true },
-    totalPrice: { type: Number, required: true },
-    advancePayment:{ type: Number, required: true},
-    remainingPayment :{type: Number, required: true},
+    advancedPayment: { type: Number, required: true },
     bookingStatus: {
       type: String,
-      enum: ["Pending", "Completed", "Failed"],
+      enum: ["Pending", "Advance_Payment_Complete", "Completed", "Failed"],
       required: true,
     },
     paymentStatus: {
@@ -36,14 +33,12 @@ const preBuiltPackageBookingSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Create a text index on  bookingStatus, and paymentStatus
-preBuiltPackageBookingSchema.index({
+preBuiltPackageEnquiryBookingSchema.index({
   paymentStatus: "text",
 });
-// Create Model
-const PreBuiltPackageBooking = mongoose.model(
-  "PreBuiltPackageBooking",
-  preBuiltPackageBookingSchema
-);
 
-export default PreBuiltPackageBooking;
+const PreBuiltPackageEnquiryBooking = mongoose.model(
+  "PreBuiltPackageEnquiryBooking",
+  preBuiltPackageEnquiryBookingSchema
+);
+export default PreBuiltPackageEnquiryBooking;

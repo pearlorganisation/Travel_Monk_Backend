@@ -25,11 +25,19 @@
       <p>We are excited to confirm your booking! Here are the details:</p>
       <ul>
         <li><strong>Booking ID:</strong> <%= bookingId %></li>
+        <% if (typeof packageName !== "undefined") { %>
         <li><strong>Package Name:</strong> <%= packageName %></li>
+        <% } %> <% if (typeof destinationName !== "undefined") { %>
+        <li><strong>Destination:</strong> <%= destinationName %></li>
+        <% } %>
         <li>
           <strong>Number of Travellers:</strong> <%= numberOfTravellers %>
         </li>
+        <% if (typeof totalPrice !== "undefined") { %>
         <li><strong>Total Price:</strong> ₹<%= totalPrice %></li>
+        <% } %> <% if (typeof advancedPayment !== "undefined") { %>
+        <li><strong>Advance Payment:</strong> ₹<%= advancedPayment %></li>
+        <% } %>
       </ul>
       <p>
         Thank you for choosing us! If you have any questions, feel free to

@@ -3,6 +3,7 @@ import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import Activity from "../../models/activity/activity.js";
 import { paginate } from "../../utils/pagination.js";
+import Destinations from "../../models/destination/destinations.js";
 
 export const createActivity = asyncHandler(async (req, res, next) => {
   const { name, destination } = req.body;
@@ -32,9 +33,16 @@ export const getAllActivities = asyncHandler(async (req, res, next) => {
   const limit = parseInt(req.query.limit || "10");
   const filter = {};
 
-  const { search } = req.query;
+  const { search } = req.query; // filter on the basis of destination name
   if (search) {
-    filter.name = { $regex: search, $options: "i" };
+    const destination = await Destinations.find({
+      name: { $regex: search, $options: "i" },
+    });
+    const destinationIds = destination.map((destination) => destination._id);
+    filter.$or = [
+      { destination: { $in: destinationIds } },
+      { name: { $regex: search, $options: "i" } },
+    ];
   }
   // Use the pagination utility function
   const { data: activities, pagination } = await paginate(

@@ -160,9 +160,7 @@ export const getMyPreBuiltPackageCustomizationEnquiries = asyncHandler(
       PreBuiltPackageCustomizationEnquiry,
       page,
       limit,
-      [
-        // {path: "package.packageId"}
-      ],
+      [{ path: "package.packageId" }],
       { user: req.user._id }
     );
 
