@@ -16,7 +16,6 @@ export const paginate = async (
 
   // Apply field selection if provided
   if (select) {
-    //[fields]
     const selectFields = select.split(",").join(" "); // Convert comma-separated to space-separated
     query = query.select(selectFields);
   }

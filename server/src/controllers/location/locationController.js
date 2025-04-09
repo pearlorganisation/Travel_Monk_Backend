@@ -3,6 +3,7 @@ import { asyncHandler } from "../../utils/errors/asyncHandler.js";
 import ApiErrorResponse from "../../utils/errors/ApiErrorResponse.js";
 import Location from "../../models/location/location.js";
 import { paginate } from "../../utils/pagination.js";
+import { paginateWithAggregation } from "../../utils/paginateWithAggregation.js";
 
 // Can create multiple locations for a single destination
 export const createLocations = asyncHandler(async (req, res, next) => {
@@ -157,15 +158,61 @@ export const deleteLocationById = asyncHandler(async (req, res, next) => {
 });
 
 // add filter or more
+// export const getAllLocations = asyncHandler(async (req, res, next) => {
+//   const page = parseInt(req.query.page || "1");
+//   const limit = parseInt(req.query.limit || "10");
+
+//   const { data: locations, pagination } = await paginate(
+//     Location,
+//     page,
+//     limit,
+//     [{ path: "destination" }],
+//     {},
+//     "",
+//     {}
+//   );
+
+//   if (locations.length === 0) {
+//     return next(new ApiErrorResponse("No Locations Found", 404));
+//   }
+
+//   return res.status(200).json({
+//     success: true,
+//     message: "Locations Found Successfully",
+//     pagination,
+//     data: locations,
+//   });
+// });
+
 export const getAllLocations = asyncHandler(async (req, res, next) => {
   const page = parseInt(req.query.page || "1");
   const limit = parseInt(req.query.limit || "10");
+  const { search } = req.query;
+  const matchStage = {};
+  if (search) {
+    matchStage.$or = [
+      { "location.name": { $regex: search, $options: "i" } },
+      { "destination.name": { $regex: search, $options: "i" } },
+    ];
+  }
 
-  const { data: locations, pagination } = await paginate(
+  const { data: locations, pagination } = await paginateWithAggregation(
     Location,
     page,
     limit,
-    [{ path: "destination" }]
+    [
+      {
+        $lookup: {
+          from: "destinations",
+          localField: "destination",
+          foreignField: "_id",
+          as: "destination",
+        },
+      },
+      { $unwind: "$destination" },
+    ],
+    matchStage, // match stage
+    { "destination.name": 1 } // sort by destination name
   );
 
   if (locations.length === 0) {
