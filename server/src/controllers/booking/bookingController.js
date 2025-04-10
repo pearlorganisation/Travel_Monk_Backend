@@ -225,7 +225,7 @@ export const createPreBuiltPackageEnquiryBooking = asyncHandler(
   async (req, res, next) => {
     const { advancedPayment } = req.body;
     const { id } = req.params; // of PreBuiltPackageCustomizationEnquiry
-
+    console.log("the id of the enquiry is and advanced payment is", id, advancedPayment)
     const preBuiltPackageCustomizationEnquiry =
       await PreBuiltPackageCustomizationEnquiry.findById(id);
     if (!preBuiltPackageCustomizationEnquiry) {

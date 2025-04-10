@@ -222,7 +222,20 @@ export const getAllUsers = asyncHandler(async (req, res, next) => {
 });
 
 export const getUsersCustomPackage = asyncHandler(async (req, res, next) => {
-  let customPackage = await CustomPackage.find({ user: req.user._id });
+  
+  
+  const { page=1, limit=10} = req.query;
+  const skip = (page - 1) * limit;
+  const totalCustomPackages = await CustomPackage.countDocuments({ user: req.user._id });
+  console.log("the custom packages are", totalCustomPackages)
+  const totalPages = Math.ceil(totalCustomPackages/limit)
+
+  let customPackage = await CustomPackage.find({ user: req.user._id }).populate([
+    { path: "user", select: "-password -role -refreshToken"},
+    { path: "selectedVehicle" }
+  ]).skip(skip).limit(limit);
+    
+  
   if (!customPackage) {
     return next(new ApiErrorResponse("Failded to get Custom Packages", 400));
   }
@@ -231,6 +244,14 @@ export const getUsersCustomPackage = asyncHandler(async (req, res, next) => {
     message: customPackage.length
       ? "All Custom Packages found"
       : "No custom packages found",
+      pagination:{
+                  total: totalCustomPackages,
+                  current_page: page,
+                  limit,
+                  next: page < totalPages ? page + 1 : null,
+                  prev: page > 1 ? page - 1 : null,
+                  // pages: pagesArray,
+      },
     data: customPackage,
   });
 });
