@@ -5,6 +5,7 @@ import morgan from "morgan";
 import cors from "cors";
 import dontenv from "dotenv";
 import compression from "compression";
+import helmet from "helmet";
 import { fileURLToPath } from "url";
 
 const app = express();
@@ -14,6 +15,9 @@ app.set("view engine", "ejs");
 app.set("views", path.resolve("./views"));
 
 dontenv.config();
+
+// ✅ Security Middleware
+app.use(helmet());
 
 // Middlewares
 app.use(express.json());
