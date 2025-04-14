@@ -17,7 +17,7 @@ app.set("views", path.resolve("./views"));
 dontenv.config();
 
 // ✅ Security Middleware
-app.use(helmet());
+// app.use(helmet());
 
 // Middlewares
 app.use(express.json());
