@@ -15,15 +15,8 @@ import FullyCustomizePackageEnquiryBooking from "../../models/booking/fullyCusto
 import FullyCustomizeEnquiry from "../../models/customizationEnquiry/fullyCustomizationEnquiry.js";
 
 export const createBooking = asyncHandler(async (req, res, next) => {
-  const {
-    totalPrice,
-    packageId,
-    numberOfTravellers,
-    advancePayment,
-    remainingPayment
-  } = req.body;
-
-  console.log("the payment is", advancePayment, remainingPayment)
+  const { totalPrice, packageId, numberOfTravellers, remainingPayment } =
+    req.body;
   const options = {
     amount: advancePayment * 100, // Convert amount to smallest unit (paise for INR)
     currency: "INR",
@@ -39,7 +32,6 @@ export const createBooking = asyncHandler(async (req, res, next) => {
       packageId,
       numberOfTravellers,
       totalPrice,
-      advancePayment,
       remainingPayment,
       bookingStatus: "Pending",
       paymentStatus: "Unpaid",

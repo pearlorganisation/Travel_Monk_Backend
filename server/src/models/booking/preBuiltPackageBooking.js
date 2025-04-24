@@ -12,8 +12,7 @@ const preBuiltPackageBookingSchema = new mongoose.Schema(
     },
     numberOfTravellers: { type: Number, required: true },
     totalPrice: { type: Number, required: true },
-    advancePayment:{ type: Number, required: true},
-    remainingPayment :{type: Number, required: true},
+    remainingPayment: { type: Number, required: true },
     bookingStatus: {
       type: String,
       enum: ["Pending", "Completed", "Failed"],
