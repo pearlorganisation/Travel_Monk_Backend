@@ -6,6 +6,7 @@ import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import { deleteFile } from "../../utils/fileUtils.js";
+import Destinations from "../../models/destination/destinations.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -74,7 +75,14 @@ export const getAllVehicles = asyncHandler(async (req, res, next) => {
   const filter = {};
   const { search } = req.query;
   if (search) {
-    filter.vehicleName = { $regex: search, $options: "i" };
+    const destination = await Destinations.find({
+      name: { $regex: search, $options: "i" },
+    });
+    const destinationIds = destination.map((destination) => destination._id);
+    filter.$or = [
+      { destinations: { $in: destinationIds } },
+      { vehicleName: { $regex: search, $options: "i" } },
+    ];
   }
   const sortOption = {}; // Sorting options - can make helper
   switch (req.query.sortBy) {

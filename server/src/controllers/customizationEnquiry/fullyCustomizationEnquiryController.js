@@ -7,6 +7,7 @@ import { paginate } from "../../utils/pagination.js";
 
 export const createFullyCustomizeEnquiry = asyncHandler(
   async (req, res, next) => {
+    console.log("the returned requested body is", req.body)
     // Create a new enquiry
     const newEnquiry = await FullyCustomizeEnquiry.create({
       ...req.body,
@@ -254,19 +255,21 @@ export const getMyFullyCustomizeEnquiries = asyncHandler(
 export const updateFullyCustomizeEnquiryById = asyncHandler(
   async (req, res, next) => {
     const { id } = req.params;
+    console.log("the requested body is before destructuring is", req.body)
 
     // Ensure duration exists before modifying it
     let updateData = {
       ...req.body,
     };
 
+    console.log("the requested body is", updateData)
     if (req.body.duration) {
       updateData["duration.days"] = req.body.duration.days;
       updateData["duration.nights"] = req.body.duration.nights;
       delete updateData.duration; // Remove the entire duration object to avoid conflicts
     }
 
-    console.log("Final update data:", updateData);
+    // console.log("Final update data:", updateData);
 
     // Find and update the enquiry
     const updatedEnquiry = await FullyCustomizeEnquiry.findByIdAndUpdate(

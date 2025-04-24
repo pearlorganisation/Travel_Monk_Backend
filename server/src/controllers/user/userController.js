@@ -169,7 +169,7 @@ export const updateUserDetails = asyncHandler(async (req, res, next) => {
 
   const user = await User.findById(userId);
   if (!user) {
-    return next(new ApiError("User not found", 404));
+    return next(new ApiErrorResponse("User not found", 404));
   }
   if (req.body.email && req.body.email !== user.email) {
     return next(new ApiErrorResponse("Email cannot be updated", 400));
